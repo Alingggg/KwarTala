@@ -5,3 +5,6 @@ export { default as AddExpenseModal } from "./modal/AddExpenseModal";
 export { default as EditExpenseModal } from "./modal/EditExpenseModal";
 export { default as DeleteExpenseModal } from "./modal/DeleteExpenseModal";
 export { default as EditBudgetModal } from "./modal/EditBudgetModal";
+export { default as Button } from "./Button";
+export { default as ExpenseCard } from "./ExpenseCard";
+export { default as ExpenseChart } from "./ExpenseChart";
