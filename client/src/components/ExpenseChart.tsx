@@ -6,6 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  CartesianGrid,
 } from "recharts";
 
 const data = [
@@ -17,12 +18,27 @@ const data = [
   { name: "Week 6", pv: 3800 },
 ];
 
+function tickFormatter(value: any) {
+  if (value >= 1000) {
+    return `${value / 1000}k`;
+  }
+  return value;
+}
+
 function ExpenseChart() {
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 5, right: 5, left: -35, bottom: -10 }}>
-        <XAxis dataKey="name" tickLine={false} axisLine={false} tick={false} />
-        <YAxis tickLine={false} axisLine={false} tick={false} />
+      <BarChart
+        data={data}
+        margin={{ top: 5, right: 5, left: -35, bottom: -10 }}
+      >
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <XAxis dataKey="name" tickLine={false} axisLine={false} />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={tickFormatter}
+        />
         <Tooltip
           cursor={{ fill: "rgba(185, 186, 163, 0.1)" }}
           contentStyle={{

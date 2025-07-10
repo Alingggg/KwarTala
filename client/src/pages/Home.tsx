@@ -28,9 +28,9 @@ function Home() {
         Hello, Tung Tung Tung
       </h1>
 
-      <div className="grid grid-cols-3 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Budget Section */}
-        <div className="col-span-2 bg-ash-gray-900 text-timberwolf-800 p-6 rounded-lg flex flex-col">
+        <div className="bg-ash-gray-900 text-timberwolf-800 p-6 rounded-lg flex flex-col">
           <div className="bg-night-500 p-6 rounded-lg">
             <p className="text-sm text-ash-gray-400">Budget</p>
             <p className="text-4xl font-bold text-white">

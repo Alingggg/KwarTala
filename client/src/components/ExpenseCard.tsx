@@ -14,19 +14,21 @@ export function ExpenseCard({
   iconColor,
 }: ExpenseCardProps) {
   return (
-    <div className="bg-ash-gray-900 p-4 rounded-lg flex items-center text-white">
-      <div className={`w-10 h-10 rounded-full ${iconColor} mr-4`}></div>
-      <div className="flex-grow grid grid-cols-3 items-center">
-        <span className="font-medium">{category}</span>
-        <span className="font-semibold text-center">P{amount.toFixed(2)}</span>
-        <span className="text-ash-gray-400 text-right">{description}</span>
+    <div className="bg-timberwolf-700 p-4 rounded-lg flex items-center text-night-500">
+      <div
+        className={`w-10 h-10 rounded-full ${iconColor} mr-4 flex-shrink-0`}
+      ></div>
+      <div className="flex-grow">
+        <div className="font-medium">{category}</div>
+        <div className="text-sm text-night-700">{description}</div>
       </div>
-      <div className="ml-6 flex items-center space-x-4">
-        <button className="text-ash-gray-400 hover:text-white">
-          <FiEdit size={20} />
+      <div className="font-semibold mx-4">P{amount.toFixed(2)}</div>
+      <div className="flex items-center space-x-2">
+        <button className="p-2 text-night-700 hover:text-night-500 hover:bg-ash-gray-400 rounded-full">
+          <FiEdit size={18} />
         </button>
-        <button className="text-ash-gray-400 hover:text-auburn-500">
-          <FiTrash2 size={20} />
+        <button className="p-2 text-night-700 hover:text-white hover:bg-auburn-500 rounded-full">
+          <FiTrash2 size={18} />
         </button>
       </div>
     </div>
