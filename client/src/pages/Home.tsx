@@ -1,27 +1,29 @@
 import { Button, ExpenseCard, ExpenseChart } from "@/components";
+import { useModalContext } from "@/hooks";
+
+const recentTransactions = [
+  {
+    category: "Entertainment",
+    amount: 400,
+    description: "Absolute Cinema",
+    iconColor: "bg-blue-500",
+  },
+  {
+    category: "Food",
+    amount: 400,
+    description: "Jalibi",
+    iconColor: "bg-orange-500",
+  },
+  {
+    category: "Grocery",
+    amount: 400,
+    description: "Puregold",
+    iconColor: "bg-green-500",
+  },
+];
 
 function Home() {
-  const recentTransactions = [
-    {
-      category: "Entertainment",
-      amount: 400,
-      description: "Absolute Cinema",
-      iconColor: "bg-blue-500",
-    },
-    {
-      category: "Food",
-      amount: 400,
-      description: "Jalibi",
-      iconColor: "bg-orange-500",
-    },
-    {
-      category: "Grocery",
-      amount: 400,
-      description: "Puregold",
-      iconColor: "bg-green-500",
-    },
-  ];
-
+  const { openModal } = useModalContext();
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold text-night-600 mb-8">Hello, John</h1>
@@ -39,7 +41,11 @@ function Home() {
             </p>
           </div>
           <div className="bg-ash-gray-800 p-4 rounded-lg mt-4">
-            <Button variant="secondary" className="w-full mb-4">
+            <Button
+              onClick={() => openModal("EDIT_BUDGET", { budget: 10000 })}
+              variant="secondary"
+              className="w-full mb-4"
+            >
               Edit Budget
             </Button>
             <div>
@@ -59,7 +65,9 @@ function Home() {
               </div>
             </div>
           </div>
-          <Button className="mt-4">Add Expense</Button>
+          <Button onClick={() => openModal("ADD_EXPENSE")} className="mt-4">
+            Add Expense
+          </Button>
         </div>
 
         {/* Expense Chart */}

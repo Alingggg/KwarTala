@@ -1,4 +1,5 @@
 import { FiEdit, FiTrash2 } from "@/assets/icons";
+import { useModalContext } from "@/hooks";
 
 interface ExpenseCardProps {
   category: string;
@@ -13,6 +14,7 @@ export function ExpenseCard({
   description,
   iconColor,
 }: ExpenseCardProps) {
+  const { openModal } = useModalContext();
   return (
     <div className="bg-timberwolf-700 p-4 rounded-lg flex items-center text-night-500">
       <div
@@ -24,10 +26,16 @@ export function ExpenseCard({
       </div>
       <div className="font-semibold mx-4">P{amount.toFixed(2)}</div>
       <div className="flex items-center space-x-2">
-        <button className="p-2 text-night-700 hover:text-night-500 hover:bg-ash-gray-400 rounded-full">
+        <button
+          onClick={() => openModal("EDIT_EXPENSE", { id: 1 })}
+          className="p-2 text-night-700 hover:text-night-500 hover:bg-ash-gray-400 rounded-full"
+        >
           <FiEdit size={18} />
         </button>
-        <button className="p-2 text-night-700 hover:text-white hover:bg-auburn-500 rounded-full">
+        <button
+          onClick={() => openModal("DELETE_EXPENSE", { id: 1 })}
+          className="p-2 text-night-700 hover:text-white hover:bg-auburn-500 rounded-full"
+        >
           <FiTrash2 size={18} />
         </button>
       </div>

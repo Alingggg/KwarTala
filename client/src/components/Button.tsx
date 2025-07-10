@@ -5,6 +5,7 @@ interface ButtonProps {
   className?: string;
   variant?: "primary" | "secondary";
   size?: "default" | "sm" | "lg";
+  onClick?: () => void;
 }
 
 const buttonStyles = {
@@ -23,10 +24,11 @@ const buttonStyles = {
 };
 
 function Button({
+  children,
   className,
   variant = "primary",
   size = "default",
-  children,
+  onClick,
 }: ButtonProps) {
   const variantClass = buttonStyles.variants[variant];
   const sizeClass = buttonStyles.sizes[size];
@@ -34,6 +36,7 @@ function Button({
   return (
     <button
       className={`${buttonStyles.base} ${variantClass} ${sizeClass} ${className}`}
+      onClick={onClick}
     >
       {children}
     </button>
