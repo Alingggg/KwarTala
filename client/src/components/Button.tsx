@@ -13,7 +13,7 @@ const buttonStyles = {
     primary:
       "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500",
     secondary:
-      "bg-ash-gray-700 text-white hover:bg-ash-gray-600 focus:ring-ash-gray-500",
+      "bg-night-600 text-timberwolf-900 hover:bg-night-700 focus:ring-night-600 font-semibold",
   },
   sizes: {
     default: "h-10 py-2 px-4",

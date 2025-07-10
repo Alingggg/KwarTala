@@ -24,16 +24,14 @@ function Home() {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold text-night-600 mb-8">
-        Hello, Tung Tung Tung
-      </h1>
+      <h1 className="text-3xl font-bold text-night-600 mb-8">Hello, John</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Budget Section */}
         <div className="bg-ash-gray-900 text-timberwolf-800 p-6 rounded-lg flex flex-col">
           <div className="bg-night-500 p-6 rounded-lg">
             <p className="text-sm text-ash-gray-400">Budget</p>
-            <p className="text-4xl font-bold text-white">
+            <p className="text-4xl font-bold text-timberwolf-900">
               P3,854
               <span className="text-base font-normal text-ash-gray-400 ml-2">
                 remaining of P10,000
@@ -45,7 +43,7 @@ function Home() {
               Edit Budget
             </Button>
             <div>
-              <div className="flex justify-between text-xs text-ash-gray-400 mb-1">
+              <div className="flex justify-between text-xs text-night-700 font-medium mb-1">
                 <span>September 1</span>
                 <span>September 30</span>
               </div>
@@ -55,7 +53,7 @@ function Home() {
                   style={{ width: "61.46%" }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-ash-gray-400 mt-1">
+              <div className="flex justify-between text-xs text-night-700 font-medium mt-1">
                 <span>P0</span>
                 <span>P10,000</span>
               </div>
@@ -78,7 +76,7 @@ function Home() {
           </span>
           <div className="flex-grow border-t border-ash-gray-400 ml-4"></div>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {recentTransactions.map((transaction, index) => (
             <ExpenseCard key={index} {...transaction} />
           ))}

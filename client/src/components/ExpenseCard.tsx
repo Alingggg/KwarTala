@@ -19,7 +19,7 @@ export function ExpenseCard({
         className={`w-10 h-10 rounded-full ${iconColor} mr-4 flex-shrink-0`}
       ></div>
       <div className="flex-grow">
-        <div className="font-medium">{category}</div>
+        <div className="font-semibold">{category}</div>
         <div className="text-sm text-night-700">{description}</div>
       </div>
       <div className="font-semibold mx-4">P{amount.toFixed(2)}</div>

@@ -22,7 +22,7 @@ const NavItem = ({ to, icon, label }: NavItemProps) => (
       `flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
         isActive
           ? "bg-timberwolf-800 text-night-500"
-          : "text-ash-gray-500 hover:bg-night-400"
+          : "text-ash-gray-500 hover:bg-night-600 hover:text-timberwolf-900"
       }`
     }
   >

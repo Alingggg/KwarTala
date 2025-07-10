@@ -28,16 +28,25 @@ function tickFormatter(value: any) {
 function ExpenseChart() {
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart
-        data={data}
-        margin={{ top: 5, right: 5, left: -35, bottom: -10 }}
-      >
-        <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis dataKey="name" tickLine={false} axisLine={false} />
+      <BarChart data={data} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+        <CartesianGrid
+          vertical={false}
+          strokeDasharray="3 3"
+          stroke="#2f4b3d"
+        />
+        <XAxis
+          dataKey="name"
+          tickLine={false}
+          axisLine={false}
+          tick={{ fontSize: 12, fill: "#999b7a" }}
+        />
         <YAxis
           tickLine={false}
           axisLine={false}
           tickFormatter={tickFormatter}
+          tickCount={6}
+          domain={[0, "dataMax + 1000"]}
+          tick={{ fontSize: 12, fill: "#999b7a" }}
         />
         <Tooltip
           cursor={{ fill: "rgba(185, 186, 163, 0.1)" }}
