@@ -1,11 +1,13 @@
-import Sidebar from "@/components/Sidebar";
+import { Sidebar } from "@/components";
 import { Outlet } from "react-router";
 
 function DashboardLayout() {
   return (
-    <div>
-      <Outlet />
+    <div className="flex h-screen bg-timberwolf-800 text-night-500">
       <Sidebar />
+      <main className="flex-1 overflow-y-auto">
+        <Outlet />
+      </main>
     </div>
   );
 }
