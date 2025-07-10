@@ -1,1 +1,67 @@
 @import "tailwindcss";
+
+body {
+  font-family: "Poppins", "Inter", sans-serif;
+}
+
+@theme {
+  /* night */
+  --color-night: #0a100d;
+  --color-night-100: #020303;
+  --color-night-200: #040605;
+  --color-night-300: #060908;
+  --color-night-400: #080d0a;
+  --color-night-500: #0a100d;
+  --color-night-600: #2f4b3d;
+  --color-night-700: #54876e;
+  --color-night-800: #88b49e;
+  --color-night-900: #c3dacf;
+
+  /* ash_gray */
+  --color-ash-gray: #b9baa3;
+  --color-ash-gray-100: #27281e;
+  --color-ash-gray-200: #4e4f3c;
+  --color-ash-gray-300: #757759;
+  --color-ash-gray-400: #999b7a;
+  --color-ash-gray-500: #b9baa3;
+  --color-ash-gray-600: #c6c7b5;
+  --color-ash-gray-700: #d4d5c7;
+  --color-ash-gray-800: #e2e3da;
+  --color-ash-gray-900: #f1f1ec;
+
+  /* timberwolf */
+  --color-timberwolf: #d6d5c9;
+  --color-timberwolf-100: #2f2e24;
+  --color-timberwolf-200: #5e5c47;
+  --color-timberwolf-300: #8d8a6b;
+  --color-timberwolf-400: #b2b099;
+  --color-timberwolf-500: #d6d5c9;
+  --color-timberwolf-600: #deddd3;
+  --color-timberwolf-700: #e6e5de;
+  --color-timberwolf-800: #eeeee9;
+  --color-timberwolf-900: #f7f6f4;
+
+  /* auburn */
+  --color-auburn: #a22c29;
+  --color-auburn-100: #210908;
+  --color-auburn-200: #411110;
+  --color-auburn-300: #621a18;
+  --color-auburn-400: #832221;
+  --color-auburn-500: #a22c29;
+  --color-auburn-600: #ce3e3b;
+  --color-auburn-700: #da6e6c;
+  --color-auburn-800: #e79e9d;
+  --color-auburn-900: #f3cfce;
+
+  /* burnt_umber */
+  --color-burnt-umber: #902923;
+  --color-burnt-umber-100: #1d0807;
+  --color-burnt-umber-200: #39100e;
+  --color-burnt-umber-300: #561815;
+  --color-burnt-umber-400: #73201c;
+  --color-burnt-umber-500: #902923;
+  --color-burnt-umber-600: #c53730;
+  --color-burnt-umber-700: #d8655f;
+  --color-burnt-umber-800: #e59894;
+  --color-burnt-umber-900: #f2ccca;
+}
