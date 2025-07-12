@@ -30,7 +30,7 @@ function AddExpenseModal({ onClose }: { onClose: () => void }) {
             <Button type="button" variant="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="success">
               Add Expense
             </Button>
           </div>

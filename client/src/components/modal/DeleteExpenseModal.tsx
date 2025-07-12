@@ -56,7 +56,12 @@ function DeleteExpenseModal({
           >
             Cancel
           </Button>
-          <Button type="button" onClick={handleDelete} className="w-full">
+          <Button
+            type="button"
+            onClick={handleDelete}
+            variant="danger"
+            className="w-full"
+          >
             Delete
           </Button>
         </div>

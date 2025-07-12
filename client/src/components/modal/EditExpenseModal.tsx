@@ -47,7 +47,9 @@ function EditExpenseModal({
             <Button type="button" variant="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit" variant="success">
+              Save Changes
+            </Button>
           </div>
         </form>
       </div>

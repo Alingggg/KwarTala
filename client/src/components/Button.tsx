@@ -4,7 +4,7 @@ interface ButtonProps {
   children: ReactNode;
   type?: "button" | "submit";
   className?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "success" | "danger";
   size?: "default" | "sm" | "lg";
   onClick?: () => void;
 }
@@ -15,7 +15,11 @@ const buttonStyles = {
     primary:
       "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500",
     secondary:
+      "bg-ash-gray-300 text-timberwolf-900 hover:bg-ash-gray-400 focus:ring-ash-gray-400 font-semibold",
+    success:
       "bg-night-600 text-timberwolf-900 hover:bg-night-700 focus:ring-night-600 font-semibold",
+    danger:
+      "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500 font-semibold",
   },
   sizes: {
     default: "h-10 py-2 px-4",
@@ -38,7 +42,9 @@ function Button({
   return (
     <button
       type={type}
-      className={`${buttonStyles.base} ${variantClass} ${sizeClass} ${className}`}
+      className={`${buttonStyles.base} ${variantClass} ${sizeClass} ${
+        className || ""
+      }`}
       onClick={onClick}
     >
       {children}
