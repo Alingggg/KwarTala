@@ -51,10 +51,11 @@ function ExpenseChart() {
         <Tooltip
           cursor={{ fill: "rgba(185, 186, 163, 0.1)" }}
           contentStyle={{
-            background: "rgba(10, 16, 13, 0.8)",
+            background: "#f1f1ec",
             borderColor: "#54876e",
-            color: "#f7f6f4",
+            color: "#0a100d",
             borderRadius: "0.5rem",
+            border: "1px solid #54876e",
           }}
         />
         <Bar dataKey="pv" radius={[4, 4, 0, 0]}>

@@ -27,13 +27,17 @@ export function ExpenseCard({
       <div className="font-semibold mx-4">P{amount.toFixed(2)}</div>
       <div className="flex items-center space-x-2">
         <button
-          onClick={() => openModal("EDIT_EXPENSE", { id: 1 })}
+          onClick={() =>
+            openModal("EDIT_EXPENSE", { category, amount, description })
+          }
           className="p-2 text-night-700 hover:text-night-500 hover:bg-ash-gray-400 rounded-full"
         >
           <FiEdit size={18} />
         </button>
         <button
-          onClick={() => openModal("DELETE_EXPENSE", { id: 1 })}
+          onClick={() =>
+            openModal("DELETE_EXPENSE", { category, amount, description })
+          }
           className="p-2 text-night-700 hover:text-white hover:bg-auburn-500 rounded-full"
         >
           <FiTrash2 size={18} />

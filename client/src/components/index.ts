@@ -8,3 +8,4 @@ export { default as EditBudgetModal } from "./modal/EditBudgetModal";
 export { default as Button } from "./Button";
 export { default as ExpenseCard } from "./ExpenseCard";
 export { default as ExpenseChart } from "./ExpenseChart";
+export { default as Input } from "./Input";

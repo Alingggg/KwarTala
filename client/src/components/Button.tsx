@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 interface ButtonProps {
   children: ReactNode;
+  type?: "button" | "submit";
   className?: string;
   variant?: "primary" | "secondary";
   size?: "default" | "sm" | "lg";
@@ -25,6 +26,7 @@ const buttonStyles = {
 
 function Button({
   children,
+  type = "button",
   className,
   variant = "primary",
   size = "default",
@@ -35,6 +37,7 @@ function Button({
 
   return (
     <button
+      type={type}
       className={`${buttonStyles.base} ${variantClass} ${sizeClass} ${className}`}
       onClick={onClick}
     >
