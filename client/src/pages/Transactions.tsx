@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Button, ExpenseCard } from "@/components";
-import { FiChevronLeft, FiChevronRight, FiCalendar } from "@/assets/icons";
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiCalendar,
+  FiFilter,
+} from "@/assets/icons";
 import { useModalContext } from "@/hooks";
 
 interface Transaction {
@@ -17,6 +22,7 @@ interface WeekData {
   transactions: Transaction[];
   weeklyTotal: number;
   weeklyBudget: number;
+  weeklyRemaining: number;
 }
 
 interface MonthData {
@@ -34,13 +40,14 @@ const mockData: MonthData[] = [
     month: "February",
     year: 2025,
     monthlyTotal: 13570,
-    monthlyBudget: 10000,
-    remaining: -3570,
+    monthlyBudget: 15000,
+    remaining: 1430,
     weeks: [
       {
         weekNumber: 1,
         weeklyTotal: 4799,
-        weeklyBudget: 2500,
+        weeklyBudget: 3000,
+        weeklyRemaining: -1799,
         transactions: [
           {
             id: "1",
@@ -87,7 +94,8 @@ const mockData: MonthData[] = [
       {
         weekNumber: 2,
         weeklyTotal: 2211,
-        weeklyBudget: 2500,
+        weeklyBudget: 3000,
+        weeklyRemaining: 789,
         transactions: [
           {
             id: "6",
@@ -115,7 +123,69 @@ const mockData: MonthData[] = [
           },
         ],
       },
-      // Add more weeks as needed
+      {
+        weekNumber: 3,
+        weeklyTotal: 3200,
+        weeklyBudget: 3000,
+        weeklyRemaining: -200,
+        transactions: [
+          {
+            id: "9",
+            date: "Feb. 18",
+            category: "Grocery",
+            amount: 1200,
+            description: "Weekly Shopping",
+            iconColor: "bg-yellow-500",
+          },
+          {
+            id: "10",
+            date: "Feb. 20",
+            category: "Entertainment",
+            amount: 800,
+            description: "Concert",
+            iconColor: "bg-pink-500",
+          },
+          {
+            id: "11",
+            date: "Feb. 22",
+            category: "Transport",
+            amount: 400,
+            description: "Uber",
+            iconColor: "bg-indigo-500",
+          },
+        ],
+      },
+      {
+        weekNumber: 4,
+        weeklyTotal: 3360,
+        weeklyBudget: 3000,
+        weeklyRemaining: -360,
+        transactions: [
+          {
+            id: "12",
+            date: "Feb. 25",
+            category: "Dinner",
+            amount: 1500,
+            description: "Anniversary",
+            iconColor: "bg-blue-500",
+          },
+          {
+            id: "13",
+            date: "Feb. 27",
+            category: "Shopping",
+            amount: 860,
+            description: "Clothes",
+            iconColor: "bg-purple-500",
+          },
+        ],
+      },
+      {
+        weekNumber: 5,
+        weeklyTotal: 0,
+        weeklyBudget: 3000,
+        weeklyRemaining: 3000,
+        transactions: [],
+      },
     ],
   },
 ];
@@ -144,10 +214,27 @@ function Transactions() {
     return "text-auburn-500";
   };
 
-  const getWeekStatusColor = (weeklyTotal: number, weeklyBudget: number) => {
-    if (weeklyTotal <= weeklyBudget) return "text-night-700";
-    return "text-auburn-500";
+  // Generate all 5 weeks, filling in missing ones with empty data
+  const getAllWeeks = () => {
+    const allWeeks = [];
+    for (let i = 1; i <= 5; i++) {
+      const existingWeek = currentMonth.weeks.find((w) => w.weekNumber === i);
+      if (existingWeek) {
+        allWeeks.push(existingWeek);
+      } else {
+        allWeeks.push({
+          weekNumber: i,
+          weeklyTotal: 0,
+          weeklyBudget: 3000, // Default weekly budget
+          weeklyRemaining: 3000,
+          transactions: [],
+        });
+      }
+    }
+    return allWeeks;
   };
+
+  const allWeeks = getAllWeeks();
 
   return (
     <div className="p-8">
@@ -172,50 +259,54 @@ function Transactions() {
       </div>
 
       {/* Month Navigation */}
-      <div className="bg-ash-gray-900 p-6 rounded-lg mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={() => navigateMonth("prev")}
-            disabled={currentMonthIndex === 0}
-            className="p-2 rounded-lg bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <FiChevronLeft size={20} />
-          </button>
+      <div className="relative mb-6">
+        {/* Navigation Buttons */}
+        <button
+          onClick={() => navigateMonth("prev")}
+          disabled={currentMonthIndex === 0}
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+        >
+          <FiChevronLeft size={24} />
+        </button>
 
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-night-600 flex items-center justify-center">
-              <FiCalendar className="mr-2" />
+        <button
+          onClick={() => navigateMonth("next")}
+          disabled={currentMonthIndex === mockData.length - 1}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+        >
+          <FiChevronRight size={24} />
+        </button>
+
+        {/* Month Header */}
+        <div className="text-center py-4">
+          <div className="flex items-center justify-center">
+            <FiCalendar className="mr-3 text-night-600" size={28} />
+            <h2 className="text-3xl font-bold text-night-600">
               {currentMonth.month} {currentMonth.year}
             </h2>
           </div>
-
-          <button
-            onClick={() => navigateMonth("next")}
-            disabled={currentMonthIndex === mockData.length - 1}
-            className="p-2 rounded-lg bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <FiChevronRight size={20} />
-          </button>
         </div>
+      </div>
 
-        {/* Monthly Summary */}
-        <div className="grid grid-cols-3 gap-6 text-center">
-          <div className="bg-night-500 p-4 rounded-lg">
-            <p className="text-sm text-ash-gray-400">Monthly Budget</p>
-            <p className="text-2xl font-bold text-timberwolf-900">
+      {/* Monthly Summary */}
+      <div className="bg-ash-gray-900 p-6 rounded-lg mb-6">
+        <div className="grid grid-cols-3 gap-6">
+          <div className="text-center">
+            <p className="text-sm text-ash-gray-400 mb-2">Monthly Budget</p>
+            <p className="text-3xl font-bold text-night-600">
               P{currentMonth.monthlyBudget.toLocaleString()}
             </p>
           </div>
-          <div className="bg-night-500 p-4 rounded-lg">
-            <p className="text-sm text-ash-gray-400">Total Spent</p>
-            <p className="text-2xl font-bold text-timberwolf-900">
+          <div className="text-center">
+            <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
+            <p className="text-3xl font-bold text-night-600">
               P{currentMonth.monthlyTotal.toLocaleString()}
             </p>
           </div>
-          <div className="bg-night-500 p-4 rounded-lg">
-            <p className="text-sm text-ash-gray-400">Remaining</p>
+          <div className="text-center">
+            <p className="text-sm text-ash-gray-400 mb-2">Remaining</p>
             <p
-              className={`text-2xl font-bold ${getStatusColor(
+              className={`text-3xl font-bold ${getStatusColor(
                 currentMonth.remaining
               )}`}
             >
@@ -225,55 +316,89 @@ function Transactions() {
         </div>
       </div>
 
-      {/* Weeks Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {currentMonth.weeks.map((week) => (
-          <div
-            key={week.weekNumber}
-            onClick={() =>
-              setSelectedWeek(
-                selectedWeek === week.weekNumber ? null : week.weekNumber
-              )
-            }
-            className={`p-4 rounded-lg cursor-pointer transition-colors ${
-              selectedWeek === week.weekNumber
+      {/* Week Filter */}
+      <div className="mb-6">
+        <div className="flex items-center mb-3">
+          <FiFilter className="mr-2 text-night-600" size={16} />
+          <span className="font-semibold text-night-600">Filter by Week</span>
+        </div>
+        <div className="grid grid-cols-6 gap-2 max-w-4xl">
+          <button
+            onClick={() => setSelectedWeek(null)}
+            className={`px-3 py-2 rounded-lg font-medium transition-colors text-center ${
+              selectedWeek === null
                 ? "bg-night-600 text-timberwolf-900"
                 : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
             }`}
           >
-            <h3 className="font-semibold mb-2">Week {week.weekNumber}</h3>
-            <p className="text-sm opacity-75">
-              Budget: P{week.weeklyBudget.toLocaleString()}
-            </p>
-            <p
-              className={`font-bold ${getWeekStatusColor(
-                week.weeklyTotal,
-                week.weeklyBudget
-              )}`}
+            All Weeks
+          </button>
+          {allWeeks.map((week) => (
+            <button
+              key={week.weekNumber}
+              onClick={() =>
+                setSelectedWeek(
+                  selectedWeek === week.weekNumber ? null : week.weekNumber
+                )
+              }
+              className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                selectedWeek === week.weekNumber
+                  ? "bg-night-600 text-timberwolf-900"
+                  : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
+              }`}
             >
-              Spent: P{week.weeklyTotal.toLocaleString()}
-            </p>
-            <p className="text-xs mt-1">
-              {week.transactions.length} transaction
-              {week.transactions.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-        ))}
+              <div className="text-center">
+                <div className="text-sm">Week {week.weekNumber}</div>
+                <div className="text-xs opacity-75">
+                  P{week.weeklyTotal.toLocaleString()}
+                </div>
+                <div
+                  className={`text-xs font-medium ${
+                    selectedWeek === week.weekNumber
+                      ? week.weeklyRemaining >= 0
+                        ? "text-night-800" // Better contrast for positive when selected
+                        : "text-auburn-700" // Better contrast for negative when selected
+                      : getStatusColor(week.weeklyRemaining)
+                  }`}
+                >
+                  {week.weeklyRemaining >= 0
+                    ? `+P${week.weeklyRemaining}`
+                    : `P${week.weeklyRemaining}`}
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Transactions List */}
       <div className="bg-ash-gray-900 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-night-600 mb-4">
-          {selectedWeek
-            ? `Week ${selectedWeek} Transactions`
-            : `All ${currentMonth.month} Transactions`}
-        </h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-night-600">
+            {selectedWeek
+              ? `Week ${selectedWeek} Transactions`
+              : `All ${currentMonth.month} Transactions`}
+          </h3>
+          {selectedWeek && (
+            <div className="text-right">
+              <p className="text-sm text-ash-gray-400">
+                Week {selectedWeek} Budget
+              </p>
+              <p className="font-semibold text-night-600">
+                P
+                {allWeeks
+                  .find((w) => w.weekNumber === selectedWeek)
+                  ?.weeklyBudget.toLocaleString()}
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="space-y-3">
           {(selectedWeek
-            ? currentMonth.weeks.find((w) => w.weekNumber === selectedWeek)
+            ? allWeeks.find((w) => w.weekNumber === selectedWeek)
                 ?.transactions || []
-            : currentMonth.weeks.flatMap((week) => week.transactions)
+            : allWeeks.flatMap((week) => week.transactions)
           ).map((transaction) => (
             <ExpenseCard
               key={transaction.id}
@@ -289,11 +414,12 @@ function Transactions() {
 
         {/* No transactions message */}
         {(selectedWeek
-          ? currentMonth.weeks.find((w) => w.weekNumber === selectedWeek)
-              ?.transactions || []
-          : currentMonth.weeks.flatMap((week) => week.transactions)
+          ? allWeeks.find((w) => w.weekNumber === selectedWeek)?.transactions ||
+            []
+          : allWeeks.flatMap((week) => week.transactions)
         ).length === 0 && (
-          <div className="text-center py-8 text-ash-gray-500">
+          <div className="text-center py-12 text-ash-gray-500">
+            <FiCalendar size={48} className="mx-auto mb-4 opacity-50" />
             <p className="text-lg">No transactions found</p>
             <p className="text-sm mt-2">
               {selectedWeek

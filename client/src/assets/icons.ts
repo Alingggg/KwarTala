@@ -11,5 +11,6 @@ export {
   FiDollarSign,
   FiChevronLeft,
   FiChevronRight,
+  FiFilter,
 } from "react-icons/fi";
 export { TfiWallet } from "react-icons/tfi";

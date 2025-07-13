@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Input } from "@/components";
-import { FiX, FiDollarSign } from "@/assets/icons";
+import { FiX } from "@/assets/icons";
 
 interface EditBudgetModalProps {
   onClose: () => void;
@@ -58,7 +58,6 @@ function EditBudgetModal({
         </button>
 
         <div className="flex items-center mb-6">
-          <FiDollarSign className="mr-2 text-night-600" size={24} />
           <h2 className="text-2xl font-bold">Edit Budget</h2>
         </div>
 
