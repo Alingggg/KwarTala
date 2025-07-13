@@ -13,5 +13,10 @@ export {
   FiChevronRight,
   FiFilter,
   FiPieChart,
+  FiPlus,
+  FiEdit3,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiMinus,
 } from "react-icons/fi";
 export { TfiWallet } from "react-icons/tfi";

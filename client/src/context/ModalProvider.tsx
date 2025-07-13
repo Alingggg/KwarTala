@@ -6,6 +6,8 @@ type ModalType =
   | "EDIT_EXPENSE"
   | "DELETE_EXPENSE"
   | "EDIT_BUDGET"
+  | "ADD_GOAL"
+  | "EDIT_GOAL"
   | null;
 
 interface ModalContextType {

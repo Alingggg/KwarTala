@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import { Analytics, Home, Transactions } from "@/pages";
+import { Analytics, Goals, Home, Transactions } from "@/pages";
 import { DashboardLayout } from "@/components";
 
 function AppRouter() {
@@ -10,6 +10,7 @@ function AppRouter() {
           <Route index element={<Home />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="goals" element={<Goals />} />
         </Route>
       </Routes>
     </BrowserRouter>
