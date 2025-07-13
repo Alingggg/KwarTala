@@ -24,6 +24,7 @@ const recentTransactions = [
 
 function Home() {
   const { openModal } = useModalContext();
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold text-night-600 mb-8">Hello, John</h1>

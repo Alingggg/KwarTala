@@ -39,17 +39,35 @@ function Sidebar() {
     { to: "/goals", icon: <FiTarget />, label: "Goals" },
   ];
 
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <aside className="w-64 bg-night-500 text-timberwolf-500 flex flex-col p-6">
-      <div className="flex items-center mb-12">
+      <div className="flex items-center mb-8">
         <div className="w-12 h-12 rounded-full bg-ash-gray-900 mr-4"></div>
         <span className="text-xl font-semibold">KwarTala</span>
       </div>
+
+      <div className="bg-night-600 p-4 rounded-lg mb-8">
+        <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
+          Today
+        </p>
+        <p className="text-sm font-medium text-timberwolf-900 mt-1">
+          {currentDate}
+        </p>
+      </div>
+
       <nav className="flex flex-col space-y-2">
         {navItems.map((item) => (
           <NavItem key={item.label} {...item} />
         ))}
       </nav>
+
       <div className="mt-auto">
         <button className="flex items-center px-4 py-3 text-lg font-medium text-ash-gray-500 hover:bg-night-400 rounded-lg w-full">
           <FiLogOut />

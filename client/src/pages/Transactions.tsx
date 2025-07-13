@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Button, ExpenseCard } from "@/components";
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiCalendar,
-  FiDollarSign,
-} from "@/assets/icons";
+import { FiChevronLeft, FiChevronRight, FiCalendar } from "@/assets/icons";
 import { useModalContext } from "@/hooks";
 
 interface Transaction {
@@ -170,7 +165,6 @@ function Transactions() {
               })
             }
           >
-            <FiDollarSign className="mr-2" />
             Edit Budget
           </Button>
           <Button onClick={() => openModal("ADD_EXPENSE")}>Add Expense</Button>
