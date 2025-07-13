@@ -318,11 +318,11 @@ function Transactions() {
 
       {/* Week Filter */}
       <div className="mb-6">
-        <div className="flex items-center mb-3">
+        <div className="flex items-center justify-center mb-3">
           <FiFilter className="mr-2 text-night-600" size={16} />
           <span className="font-semibold text-night-600">Filter by Week</span>
         </div>
-        <div className="grid grid-cols-6 gap-2 max-w-4xl">
+        <div className="grid grid-cols-6 gap-2 max-w-4xl mx-auto">
           <button
             onClick={() => setSelectedWeek(null)}
             className={`px-3 py-2 rounded-lg font-medium transition-colors text-center ${
@@ -356,8 +356,8 @@ function Transactions() {
                   className={`text-xs font-medium ${
                     selectedWeek === week.weekNumber
                       ? week.weeklyRemaining >= 0
-                        ? "text-night-800" // Better contrast for positive when selected
-                        : "text-auburn-700" // Better contrast for negative when selected
+                        ? "text-night-800"
+                        : "text-auburn-700"
                       : getStatusColor(week.weeklyRemaining)
                   }`}
                 >
