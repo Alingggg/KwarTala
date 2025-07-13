@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import { Home } from "@/pages";
+import { Home, Transactions } from "@/pages";
 import { DashboardLayout } from "@/components";
 
 function AppRouter() {
@@ -8,6 +8,7 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Home />} />
+          <Route path="transactions" element={<Transactions />} />
         </Route>
       </Routes>
     </BrowserRouter>

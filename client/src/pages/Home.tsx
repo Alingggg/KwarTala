@@ -42,7 +42,13 @@ function Home() {
           </div>
           <div className="bg-ash-gray-800 p-4 rounded-lg mt-4">
             <Button
-              onClick={() => openModal("EDIT_BUDGET", { budget: 10000 })}
+              onClick={() =>
+                openModal("EDIT_BUDGET", {
+                  month: "September",
+                  year: 2024,
+                  currentBudget: 10000,
+                })
+              }
               variant="secondary"
               className="w-full mb-4"
             >
