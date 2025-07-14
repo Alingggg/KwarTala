@@ -4,6 +4,8 @@ interface InputProps {
   id: string;
   placeholder?: string;
   value?: string;
+  min?: string;
+  max?: string;
 }
 
 function Input({
@@ -12,6 +14,8 @@ function Input({
   id,
   placeholder,
   value,
+  min,
+  max,
   ...otherProps
 }: InputProps) {
   return (
@@ -27,6 +31,8 @@ function Input({
         id={id}
         placeholder={placeholder}
         value={value}
+        min={min}
+        max={max}
         {...otherProps}
         className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
           type === "number"

@@ -3,22 +3,84 @@ import { useModalContext } from "@/hooks";
 
 const recentTransactions = [
   {
+    id: "1",
     category: "Entertainment",
     amount: 400,
     description: "Absolute Cinema",
     iconColor: "bg-blue-500",
+    date: "Jul 14",
   },
   {
+    id: "2",
     category: "Food",
     amount: 400,
     description: "Jalibi",
     iconColor: "bg-orange-500",
+    date: "Jul 14",
   },
   {
+    id: "3",
     category: "Grocery",
     amount: 400,
     description: "Puregold",
     iconColor: "bg-green-500",
+    date: "Jul 13",
+  },
+  {
+    id: "4",
+    category: "Transportation",
+    amount: 250,
+    description: "Grab Ride",
+    iconColor: "bg-purple-500",
+    date: "Jul 13",
+  },
+  {
+    id: "5",
+    category: "Bills",
+    amount: 1200,
+    description: "Electricity Bill",
+    iconColor: "bg-yellow-500",
+    date: "Jul 12",
+  },
+  {
+    id: "6",
+    category: "Food",
+    amount: 180,
+    description: "McDonald's",
+    iconColor: "bg-orange-500",
+    date: "Jul 12",
+  },
+  {
+    id: "7",
+    category: "Shopping",
+    amount: 850,
+    description: "Uniqlo Shirt",
+    iconColor: "bg-pink-500",
+    date: "Jul 11",
+  },
+  {
+    id: "8",
+    category: "Entertainment",
+    amount: 300,
+    description: "Netflix Subscription",
+    iconColor: "bg-blue-500",
+    date: "Jul 10",
+  },
+  {
+    id: "9",
+    category: "Food",
+    amount: 120,
+    description: "Starbucks",
+    iconColor: "bg-orange-500",
+    date: "Jul 10",
+  },
+  {
+    id: "10",
+    category: "Transportation",
+    amount: 80,
+    description: "Bus Fare",
+    iconColor: "bg-purple-500",
+    date: "Jul 9",
   },
 ];
 
@@ -27,7 +89,7 @@ function Home() {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold text-night-600 mb-8">Hello, John</h1>
+      <h1 className="text-3xl font-bold text-night-600 mb-6">Hello, John</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Budget Section */}
@@ -92,8 +154,8 @@ function Home() {
           <div className="flex-grow border-t border-ash-gray-400 ml-4"></div>
         </div>
         <div className="space-y-4">
-          {recentTransactions.map((transaction, index) => (
-            <ExpenseCard key={index} {...transaction} />
+          {recentTransactions.slice(0, 10).map((transaction, index) => (
+            <ExpenseCard key={transaction.id || index} {...transaction} />
           ))}
         </div>
       </div>

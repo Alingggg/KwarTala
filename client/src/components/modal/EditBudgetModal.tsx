@@ -22,7 +22,25 @@ function EditBudgetModal({
     ).padStart(2, "0")}`
   );
 
-  const currentYear = new Date().getFullYear();
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1; // getMonth() returns 0-11, so add 1
+
+  // Calculate min date (1 year back from current month)
+  // If current month is July 2025, min date should be August 2024
+  let minYear = currentYear - 1;
+  let minMonth = currentMonth + 1;
+
+  // Handle month overflow (if current month is December, next month is January of next year)
+  if (minMonth > 12) {
+    minMonth = 1;
+    minYear = currentYear;
+  }
+
+  const minDate = `${minYear}-${String(minMonth).padStart(2, "0")}`;
+
+  // Calculate max date (current month of current year)
+  const maxDate = `${currentYear}-${String(currentMonth).padStart(2, "0")}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +65,11 @@ function EditBudgetModal({
     return "No change to current budget";
   };
 
+  // Check if selected month is in the past (before current month)
+  const selectedDate = new Date(selectedMonth + "-01");
+  const currentMonthDate = new Date(currentYear, currentMonth - 1, 1);
+  const isEditingPastMonth = selectedDate < currentMonthDate;
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-ash-gray-900 p-8 rounded-lg w-full max-w-md text-night-500 relative">
@@ -69,8 +92,8 @@ function EditBudgetModal({
               id="budgetPeriod"
               type="month"
               value={selectedMonth}
-              // min={`${currentYear - 1}-01`}
-              // max={`${currentYear}-12`}
+              min={minDate}
+              max={maxDate}
             />
             <p className="text-xs text-night-700 mt-1">
               You can edit budgets up to 1 year in the past
@@ -106,8 +129,7 @@ function EditBudgetModal({
           </div>
 
           {/* Warning for Past Dates */}
-          {new Date(selectedMonth) <
-            new Date(new Date().getFullYear(), new Date().getMonth()) && (
+          {isEditingPastMonth && (
             <div className="bg-auburn-900 border border-auburn-500 p-3 rounded-lg">
               <p className="text-auburn-600 text-sm">
                 ⚠️ You're editing a budget for a past period. This will
