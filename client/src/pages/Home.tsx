@@ -93,8 +93,8 @@ function Home() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Budget Section */}
-        <div className="bg-ash-gray-900 text-timberwolf-800 p-6 rounded-lg flex flex-col">
-          <div className="bg-night-500 p-6 rounded-lg">
+        <div className="bg-ash-gray-900 text-timberwolf-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
+          <div className="bg-night-500 p-6 rounded-lg shadow-sm">
             <p className="text-sm text-ash-gray-400">Budget</p>
             <p className="text-4xl font-bold text-timberwolf-900">
               P3,854
@@ -103,7 +103,7 @@ function Home() {
               </span>
             </p>
           </div>
-          <div className="bg-ash-gray-800 p-4 rounded-lg mt-4">
+          <div className="bg-ash-gray-800 p-4 rounded-lg mt-4 shadow-inner">
             <Button
               onClick={() =>
                 openModal("EDIT_BUDGET", {
@@ -122,9 +122,9 @@ function Home() {
                 <span>September 1</span>
                 <span>September 30</span>
               </div>
-              <div className="w-full bg-ash-gray-700 rounded-full h-2.5">
+              <div className="w-full bg-ash-gray-700 rounded-full h-2.5 shadow-inner">
                 <div
-                  className="bg-auburn-500 h-2.5 rounded-full"
+                  className="bg-auburn-500 h-2.5 rounded-full shadow-sm"
                   style={{ width: "61.46%" }}
                 ></div>
               </div>
@@ -134,24 +134,27 @@ function Home() {
               </div>
             </div>
           </div>
-          <Button onClick={() => openModal("ADD_EXPENSE")} className="mt-4">
+          <Button
+            onClick={() => openModal("ADD_EXPENSE")}
+            className="mt-4 shadow-sm"
+          >
             Add Expense
           </Button>
         </div>
 
         {/* Expense Chart */}
-        <div className="col-span-1 bg-ash-gray-900 p-6 rounded-lg">
+        <div className="col-span-1 bg-ash-gray-900 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
           <ExpenseChart />
         </div>
       </div>
 
       {/* Recent Transactions */}
-      <div>
-        <div className="flex items-center mb-4">
-          <span className="font-semibold text-night-600">
+      <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="flex items-center mb-6">
+          <span className="text-xl font-bold text-night-600">
             Recent Transactions
           </span>
-          <div className="flex-grow border-t border-ash-gray-400 ml-4"></div>
+          <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
         </div>
         <div className="space-y-4">
           {recentTransactions.slice(0, 10).map((transaction, index) => (
