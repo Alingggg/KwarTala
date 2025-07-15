@@ -215,175 +215,79 @@ function Analytics() {
         </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-ash-gray-400 text-sm">Total Spent</p>
-              <p className="text-2xl font-bold text-night-600">
-                P{totalSpent.toLocaleString()}
-              </p>
-            </div>
-            <FiDollarSign className="text-night-600" size={24} />
-          </div>
-        </div>
-
-        <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-ash-gray-400 text-sm">Daily Average</p>
-              <p className="text-2xl font-bold text-night-600">
-                P{avgDailySpending.toFixed(0)}
-              </p>
-            </div>
-            <FiCalendar className="text-night-600" size={24} />
-          </div>
-        </div>
-
-        <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-ash-gray-400 text-sm">Budget Remaining</p>
-              <p
-                className={`text-2xl font-bold ${
-                  budgetRemaining >= 0 ? "text-night-700" : "text-auburn-500"
-                }`}
-              >
-                P{budgetRemaining.toLocaleString()}
-              </p>
-            </div>
-            <FiPieChart className="text-night-600" size={24} />
-          </div>
-        </div>
-      </div>
-
-      {/* Budget Spending Guide */}
-      <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-night-600">
-            Spending Guide
-          </h3>
-          <div className="text-right">
-            <p className="text-xs text-ash-gray-400">
-              Days remaining in {currentData.month}
+      {/* Finalized Budget Overview */}
+      <div className="bg-ash-gray-900 p-8 rounded-xl shadow-lg mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Side: Progress and Remaining Budget */}
+          <div className="flex flex-col justify-center">
+            <p className="text-sm text-ash-gray-400">Budget Remaining</p>
+            <p
+              className={`text-5xl font-bold ${
+                budgetRemaining >= 0 ? "text-night-600" : "text-auburn-500"
+              }`}
+            >
+              ₱{budgetRemaining.toLocaleString()}
             </p>
-            <p className="text-lg font-bold text-night-600">
-              {Math.max(0, daysInMonth - 14)}
+            <p className="text-base text-ash-gray-500 mt-1">
+              of ₱{currentData.monthlyBudget.toLocaleString()} monthly budget
             </p>
-          </div>
-        </div>
-
-        {budgetRemaining >= 0 ? (
-          // Within Budget - Show spending allowances
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Daily Allowance */}
-              <div className="text-center bg-timberwolf-900 p-4 rounded-lg">
-                <p className="text-sm text-ash-gray-400 mb-2">DAILY LIMIT</p>
-                <p className="text-3xl font-bold text-night-600 mb-2">
-                  ₱
-                  {Math.round(
-                    budgetRemaining / Math.max(1, daysInMonth - 14)
-                  ).toLocaleString()}
-                </p>
-                <p className="text-xs text-ash-gray-500">To stay on budget</p>
+            <div className="mt-6">
+              <div className="w-full bg-ash-gray-700 rounded-full h-3 shadow-inner">
+                <div
+                  className={`${
+                    budgetRemaining >= 0 ? "bg-night-700" : "bg-auburn-500"
+                  } h-3 rounded-full shadow-sm`}
+                  style={{
+                    width: `${Math.min(
+                      (totalSpent / currentData.monthlyBudget) * 100,
+                      100
+                    )}%`,
+                  }}
+                ></div>
               </div>
-
-              {/* Weekly Allowance */}
-              <div className="text-center bg-timberwolf-900 p-4 rounded-lg">
-                <p className="text-sm text-ash-gray-400 mb-2">WEEKLY LIMIT</p>
-                <p className="text-3xl font-bold text-night-600 mb-2">
-                  ₱
-                  {Math.round(
-                    (budgetRemaining / Math.max(1, daysInMonth - 14)) * 7
-                  ).toLocaleString()}
-                </p>
-                <p className="text-xs text-ash-gray-500">For the next 7 days</p>
-              </div>
-
-              {/* Budget Progress */}
-              <div className="text-center bg-timberwolf-900 p-4 rounded-lg">
-                <p className="text-sm text-ash-gray-400 mb-2">BUDGET USED</p>
-                <p className="text-3xl font-bold text-night-600 mb-2">
+              <div className="flex justify-between text-xs text-night-700 font-medium mt-2">
+                <span>₱0 spent</span>
+                <span>
                   {Math.round((totalSpent / currentData.monthlyBudget) * 100)}%
-                </p>
-                <p className="text-xs text-ash-gray-500">
-                  ₱{totalSpent.toLocaleString()} of ₱
-                  {currentData.monthlyBudget.toLocaleString()}
-                </p>
+                  used
+                </span>
               </div>
             </div>
-            {/* Quick Tips */}
-            <div className="mt-8 pt-6 border-t border-ash-gray-700">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-night-700 rounded-full"></div>
-                  <p className="text-sm text-ash-gray-400">
-                    <span className="font-semibold text-night-600">
-                      Target:
-                    </span>{" "}
-                    Under ₱
-                    {Math.round(
+          </div>
+
+          {/* Right Side: Key Metrics & Limits */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-timberwolf-900 p-4 rounded-lg">
+              <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
+              <p className="text-2xl font-bold text-night-600">
+                ₱{totalSpent.toLocaleString()}
+              </p>
+            </div>
+            <div className="bg-timberwolf-900 p-4 rounded-lg">
+              <p className="text-sm text-ash-gray-400 mb-2">Daily Average</p>
+              <p className="text-2xl font-bold text-night-600">
+                ₱{avgDailySpending.toFixed(0)}
+              </p>
+            </div>
+            <div className="bg-timberwolf-900 p-4 rounded-lg">
+              <p className="text-sm text-ash-gray-400 mb-2">Daily Limit</p>
+              <p className="text-2xl font-bold text-night-600">
+                ₱
+                {budgetRemaining >= 0
+                  ? Math.round(
                       budgetRemaining / Math.max(1, daysInMonth - 14)
-                    ).toLocaleString()}
-                    /day
-                  </p>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-night-700 rounded-full"></div>
-                  <p className="text-sm text-ash-gray-400">
-                    <span className="font-semibold text-night-600">
-                      Current Avg:
-                    </span>{" "}
-                    ₱{avgDailySpending.toFixed(0)}/day
-                  </p>
-                </div>
-              </div>
+                    ).toLocaleString()
+                  : "0"}
+              </p>
+            </div>
+            <div className="bg-timberwolf-900 p-4 rounded-lg">
+              <p className="text-sm text-ash-gray-400 mb-2">Days Remaining</p>
+              <p className="text-2xl font-bold text-night-600">
+                {Math.max(0, daysInMonth - 14)}
+              </p>
             </div>
           </div>
-        ) : (
-          // Over Budget - Show recovery information
-          <div className="bg-auburn-900 p-6 rounded-lg border border-auburn-800">
-            <div className="flex items-center space-x-3 mb-4">
-              <FiDollarSign className="text-auburn-500" size={20} />
-              <div>
-                <h4 className="font-semibold text-auburn-500">
-                  Budget Exceeded
-                </h4>
-                <p className="text-sm text-timberwolf-700">
-                  You've overspent by ₱
-                  {Math.abs(budgetRemaining).toLocaleString()} this month
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <p className="text-xs text-timberwolf-700 mb-1">
-                  Total overspend
-                </p>
-                <p className="text-lg font-bold text-auburn-500">
-                  ₱{Math.abs(budgetRemaining).toLocaleString()}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-timberwolf-700 mb-1">
-                  Daily average over
-                </p>
-                <p className="text-lg font-bold text-auburn-500">
-                  ₱{Math.round(Math.abs(budgetRemaining) / 14).toLocaleString()}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-timberwolf-700 mb-1">Budget usage</p>
-                <p className="text-lg font-bold text-auburn-500">
-                  {Math.round((totalSpent / currentData.monthlyBudget) * 100)}%
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
