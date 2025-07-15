@@ -324,26 +324,28 @@ function Transactions() {
       </div>
 
       {/* Monthly Summary */}
-      <div className="bg-ash-gray-900 p-8 rounded-xl mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="bg-night-500 p-8 rounded-xl mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div className="grid grid-cols-3 gap-6">
           <div className="text-center">
             <p className="text-sm text-ash-gray-400 mb-2">Monthly Budget</p>
-            <p className="text-3xl font-bold text-night-600">
+            <p className="text-3xl font-bold text-timberwolf-900">
               P{currentMonth.monthlyBudget.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
-            <p className="text-3xl font-bold text-night-600">
+            <p className="text-3xl font-bold text-timberwolf-900">
               P{currentMonth.monthlyTotal.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-ash-gray-400 mb-2">Remaining</p>
             <p
-              className={`text-3xl font-bold ${getStatusColor(
-                currentMonth.remaining
-              )}`}
+              className={`text-3xl font-bold ${
+                currentMonth.remaining >= 0
+                  ? "text-timberwolf-900"
+                  : "text-auburn-500"
+              }`}
             >
               P{currentMonth.remaining.toLocaleString()}
             </p>
@@ -352,8 +354,8 @@ function Transactions() {
       </div>
 
       {/* Week Filter */}
-      <div className="mb-8">
-        <div className="flex items-center justify-center mb-6">
+      <div className="mb-8 bg-ash-gray-900 p-4 rounded-lg shadow-lg">
+        <div className="flex items-center justify-center mb-4">
           <FiFilter className="mr-2 text-night-600" size={16} />
           <span className="text-lg font-bold text-night-600">
             Filter by Week
@@ -365,7 +367,7 @@ function Transactions() {
             className={`px-3 py-3 rounded-lg font-medium transition-all duration-200 text-center shadow-sm hover:shadow-md ${
               selectedWeek === null
                 ? "bg-night-600 text-timberwolf-900 shadow-md"
-                : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
+                : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
             }`}
           >
             All Weeks
@@ -381,7 +383,7 @@ function Transactions() {
               className={`px-3 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
                 selectedWeek === week.weekNumber
                   ? "bg-night-600 text-timberwolf-900 shadow-md"
-                  : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
+                  : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
               }`}
             >
               <div className="text-center">
@@ -412,11 +414,11 @@ function Transactions() {
 
       {/* Weekly Budget Info (when week is selected) */}
       {selectedWeekData && (
-        <div className="bg-ash-gray-900 p-6 rounded-xl mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="bg-night-500 p-6 rounded-xl mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
           <div className="grid grid-cols-3 gap-6">
             <div className="text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Weekly Budget</p>
-              <p className="text-2xl font-bold text-night-600">
+              <p className="text-2xl font-bold text-timberwolf-900">
                 P{selectedWeekData.weeklyBudget.toLocaleString()}
               </p>
             </div>
@@ -424,16 +426,18 @@ function Transactions() {
               <p className="text-sm text-ash-gray-400 mb-2">
                 Week {selectedWeek} Spent
               </p>
-              <p className="text-2xl font-bold text-night-600">
+              <p className="text-2xl font-bold text-timberwolf-900">
                 P{selectedWeekData.weeklyTotal.toLocaleString()}
               </p>
             </div>
             <div className="text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Remaining</p>
               <p
-                className={`text-2xl font-bold ${getStatusColor(
-                  selectedWeekData.weeklyRemaining
-                )}`}
+                className={`text-2xl font-bold ${
+                  selectedWeekData.weeklyRemaining >= 0
+                    ? "text-timberwolf-900"
+                    : "text-auburn-500"
+                }`}
               >
                 P{selectedWeekData.weeklyRemaining.toLocaleString()}
               </p>

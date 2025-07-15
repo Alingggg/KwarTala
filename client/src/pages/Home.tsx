@@ -124,7 +124,7 @@ function Home() {
               </div>
               <div className="w-full bg-ash-gray-700 rounded-full h-2.5 shadow-inner">
                 <div
-                  className="bg-auburn-500 h-2.5 rounded-full shadow-sm"
+                  className="bg-emerald-500 h-2.5 rounded-full shadow-sm"
                   style={{ width: "61.46%" }}
                 ></div>
               </div>

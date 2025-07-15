@@ -202,7 +202,7 @@ function Analytics() {
       </div>
 
       {/* Finalized Budget Overview */}
-      <div className="bg-ash-gray-900 p-8 rounded-xl shadow-lg mb-8">
+      <div className="bg-night-500 p-8 rounded-xl shadow-lg mb-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side: Progress and Remaining Budget */}
           <div className="flex flex-col justify-center">
@@ -211,7 +211,9 @@ function Analytics() {
                 <p className="text-sm text-ash-gray-400">Budget Remaining</p>
                 <p
                   className={`text-3xl font-bold ${
-                    budgetRemaining >= 0 ? "text-night-600" : "text-auburn-500"
+                    budgetRemaining >= 0
+                      ? "text-timberwolf-900"
+                      : "text-auburn-500"
                   }`}
                 >
                   ₱{budgetRemaining.toLocaleString()}
@@ -219,17 +221,17 @@ function Analytics() {
               </div>
               <div>
                 <p className="text-sm text-ash-gray-400">Monthly Budget</p>
-                <p className="text-3xl font-bold text-night-600">
+                <p className="text-3xl font-bold text-timberwolf-900">
                   ₱{currentData.monthlyBudget.toLocaleString()}
                 </p>
               </div>
             </div>
 
             <div className="mt-6">
-              <div className="w-full bg-ash-gray-700 rounded-full h-3 shadow-inner">
+              <div className="w-full bg-night-600 rounded-full h-3 shadow-inner">
                 <div
                   className={`${
-                    budgetRemaining >= 0 ? "bg-night-700" : "bg-auburn-500"
+                    budgetRemaining >= 0 ? "bg-emerald-500" : "bg-auburn-500"
                   } h-3 rounded-full shadow-sm`}
                   style={{
                     width: `${Math.min(
@@ -239,7 +241,7 @@ function Analytics() {
                   }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-ash-gray-500 font-medium mt-2">
+              <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
                 <span>
                   {Math.round((totalSpent / currentData.monthlyBudget) * 100)}%
                   Used
@@ -251,25 +253,25 @@ function Analytics() {
 
           {/* Right Side: Key Metrics & Limits */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-timberwolf-900 p-4 rounded-lg text-center">
+            <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
-              <p className="text-2xl font-bold text-night-600">
+              <p className="text-2xl font-bold text-timberwolf-900">
                 ₱{totalSpent.toLocaleString()}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">&nbsp;</p>
             </div>
-            <div className="bg-timberwolf-900 p-4 rounded-lg text-center">
+            <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Daily Average</p>
-              <p className="text-2xl font-bold text-night-600">
+              <p className="text-2xl font-bold text-timberwolf-900">
                 ₱{avgDailySpending.toFixed(0)}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
                 Avg. spend per day
               </p>
             </div>
-            <div className="bg-timberwolf-900 p-4 rounded-lg text-center">
+            <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Daily Limit</p>
-              <p className="text-2xl font-bold text-night-600">
+              <p className="text-2xl font-bold text-timberwolf-900">
                 ₱
                 {budgetRemaining >= 0
                   ? Math.round(
