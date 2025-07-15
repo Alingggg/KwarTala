@@ -36,37 +36,7 @@ function Transactions() {
     return "text-auburn-500";
   };
 
-  // Generate all 5 weeks, filling in missing ones with empty data
-  const getAllWeeks = () => {
-    const allWeeks = [];
-    const daysInMonth = new Date(
-      currentMonth.year,
-      mockData.indexOf(currentMonth) + 1,
-      0
-    ).getDate();
-
-    for (let i = 1; i <= 5; i++) {
-      const existingWeek = currentMonth.weeks.find((w) => w.weekNumber === i);
-      if (existingWeek) {
-        allWeeks.push(existingWeek);
-      } else {
-        // Create a placeholder for weeks that don't exist in the data
-        const isWeek5 = i === 5;
-        const daysInWeek = isWeek5 ? Math.max(0, daysInMonth - 28) : 7;
-        allWeeks.push({
-          weekNumber: i,
-          weeklyTotal: 0,
-          weeklyBudget: isWeek5 ? 1500 : 3000, // Default weekly budget
-          weeklyRemaining: isWeek5 ? 1500 : 3000,
-          transactions: [],
-          daysInWeek: daysInWeek,
-        });
-      }
-    }
-    return allWeeks;
-  };
-
-  const allWeeks = getAllWeeks();
+  const allWeeks = currentMonth.weeks;
 
   // Sort transactions by date
   const sortTransactions = (transactions: Transaction[]) => {

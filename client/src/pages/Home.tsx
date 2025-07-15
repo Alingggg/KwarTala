@@ -5,22 +5,8 @@ import { mockData as allMonthsData } from "@/assets/mockData";
 // Assuming the home page shows the first month's data.
 const mockData = allMonthsData[0];
 
-// Helper to get and sort recent transactions
-const getRecentTransactions = () => {
-  const allTransactions = mockData.weeks.flatMap((week) => week.transactions);
-  return allTransactions.sort((a, b) => {
-    const dateA = new Date(a.date.replace(".", "") + " " + mockData.year);
-    const dateB = new Date(b.date.replace(".", "") + " " + mockData.year);
-    return dateB.getTime() - dateA.getTime();
-  });
-};
-
-const recentTransactions = getRecentTransactions();
-
 function Home() {
   const { openModal } = useModalContext();
-  const budgetPercentage =
-    (mockData.monthlyTotal / mockData.monthlyBudget) * 100;
 
   return (
     <div className="p-8">
@@ -60,7 +46,7 @@ function Home() {
               <div className="w-full bg-ash-gray-700 rounded-full h-2.5 shadow-inner">
                 <div
                   className="bg-emerald-500 h-2.5 rounded-full shadow-sm"
-                  style={{ width: `${budgetPercentage}%` }}
+                  style={{ width: `${mockData.budgetUsedPercentage}%` }}
                 ></div>
               </div>
               <div className="flex justify-between text-xs text-night-700 font-medium mt-1">
@@ -92,9 +78,12 @@ function Home() {
           <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
         </div>
         <div className="space-y-4">
-          {recentTransactions.slice(0, 10).map((transaction, index) => (
-            <ExpenseCard key={transaction.id || index} {...transaction} />
-          ))}
+          {mockData.weeks
+            .flatMap((week) => week.transactions)
+            .slice(0, 10)
+            .map((transaction, index) => (
+              <ExpenseCard key={transaction.id || index} {...transaction} />
+            ))}
         </div>
       </div>
     </div>

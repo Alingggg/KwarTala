@@ -4,60 +4,6 @@ import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { mockData as allMonthsData } from "@/assets/mockData";
 
-// --- Helper Functions to process mockData for Analytics ---
-
-const CATEGORY_COLORS: { [key: string]: string } = {
-  Food: "#2da62f", // emerald
-  Breakfast: "#2da62f",
-  Lunch: "#2da62f",
-  Dinner: "#2da62f",
-  Grocery: "#2da62f",
-  Transportation: "#a22c29", // auburn
-  Transport: "#a22c29",
-  Entertainment: "#4f46e5", // indigo
-  Shopping: "#f59e0b", // amber
-  Bills: "#2d9596", // teal
-  Others: "#7c3aed", // violet
-  Miscellaneous: "#7c3aed",
-};
-
-const getAnalyticsData = (monthData: (typeof allMonthsData)[0]) => {
-  const allTransactions = monthData.weeks.flatMap((week) => week.transactions);
-
-  // 1. Calculate Category Data
-  const categoryMap = new Map<string, number>();
-  allTransactions.forEach((t) => {
-    const mainCategory =
-      Object.keys(CATEGORY_COLORS).find((c) =>
-        t.category.toLowerCase().includes(c.toLowerCase())
-      ) || "Others";
-    categoryMap.set(
-      mainCategory,
-      (categoryMap.get(mainCategory) || 0) + t.amount
-    );
-  });
-
-  const categoryData = Array.from(categoryMap.entries()).map(
-    ([name, amount]) => ({
-      name,
-      amount,
-      percentage: Math.round((amount / monthData.monthlyTotal) * 100) || 0,
-      color: CATEGORY_COLORS[name] || "#7c3aed",
-    })
-  );
-
-  // 2. Get Top 5 Expenses
-  const topExpenses = [...allTransactions]
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 5);
-
-  return {
-    ...monthData,
-    categoryData,
-    topExpenses,
-  };
-};
-
 // Custom pie chart tooltip
 const CustomPieTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
@@ -83,20 +29,9 @@ const CustomPieTooltip = ({ active, payload }: any) => {
 function Analytics() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
 
-  // Process the data for all available months
-  const analyticsData = allMonthsData.map(getAnalyticsData);
+  const analyticsData = allMonthsData;
 
   const currentData = analyticsData[currentMonthIndex];
-  const totalSpent = currentData.monthlyTotal;
-
-  // Calculate days in current month (simplified)
-  const daysInMonth = new Date(
-    currentData.year,
-    currentMonthIndex + 1,
-    0
-  ).getDate();
-  const avgDailySpending = totalSpent / daysInMonth;
-  const budgetRemaining = currentData.remaining;
 
   const navigateMonth = (direction: "prev" | "next") => {
     if (direction === "prev" && currentMonthIndex < analyticsData.length - 1) {
@@ -146,19 +81,19 @@ function Analytics() {
       {/* Finalized Budget Overview */}
       <div className="bg-night-500 p-8 rounded-xl shadow-lg mb-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side: Progress and Remaining Budget */}
+          {/* Progress and Remaining Budget */}
           <div className="flex flex-col justify-center">
             <div className="flex items-baseline space-x-6">
               <div>
                 <p className="text-sm text-ash-gray-400">Budget Remaining</p>
                 <p
                   className={`text-3xl font-bold ${
-                    budgetRemaining >= 0
+                    currentData.remaining >= 0
                       ? "text-timberwolf-900"
                       : "text-auburn-500"
                   }`}
                 >
-                  ₱{budgetRemaining.toLocaleString()}
+                  ₱{currentData.remaining.toLocaleString()}
                 </p>
               </div>
               <div>
@@ -173,39 +108,38 @@ function Analytics() {
               <div className="w-full bg-night-600 rounded-full h-3 shadow-inner">
                 <div
                   className={`${
-                    budgetRemaining >= 0 ? "bg-emerald-500" : "bg-auburn-500"
+                    currentData.remaining >= 0
+                      ? "bg-emerald-500"
+                      : "bg-auburn-500"
                   } h-3 rounded-full shadow-sm`}
                   style={{
                     width: `${Math.min(
-                      (totalSpent / currentData.monthlyBudget) * 100,
+                      currentData.budgetUsedPercentage,
                       100
                     )}%`,
                   }}
                 ></div>
               </div>
               <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
-                <span>
-                  {Math.round((totalSpent / currentData.monthlyBudget) * 100)}%
-                  Used
-                </span>
-                <span>{Math.max(0, daysInMonth - 14)} Days Remaining</span>
+                <span>{currentData.budgetUsedPercentage}% Used</span>
+                <span>{currentData.daysRemaining} Days Remaining</span>
               </div>
             </div>
           </div>
 
-          {/* Right Side: Key Metrics & Limits */}
+          {/* Key Metrics & Limits */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
               <p className="text-2xl font-bold text-timberwolf-900">
-                ₱{totalSpent.toLocaleString()}
+                ₱{currentData.monthlyTotal.toLocaleString()}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">&nbsp;</p>
             </div>
             <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Daily Average</p>
               <p className="text-2xl font-bold text-timberwolf-900">
-                ₱{avgDailySpending.toFixed(0)}
+                ₱{currentData.avgDailySpending.toLocaleString()}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
                 Avg. spend per day
@@ -215,10 +149,8 @@ function Analytics() {
               <p className="text-sm text-ash-gray-400 mb-2">Daily Limit</p>
               <p className="text-2xl font-bold text-timberwolf-900">
                 ₱
-                {budgetRemaining >= 0
-                  ? Math.round(
-                      budgetRemaining / Math.max(1, daysInMonth - 14)
-                    ).toLocaleString()
+                {currentData.dailyLimit > 0
+                  ? currentData.dailyLimit.toLocaleString()
                   : "0"}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
@@ -300,7 +232,7 @@ function Analytics() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
-        {/* Top Expenses - Full Width */}
+        {/* Top Expenses */}
         <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
           <h3 className="text-lg font-semibold text-night-600 mb-4">
             Top Expenses
