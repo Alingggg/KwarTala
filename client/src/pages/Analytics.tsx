@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { ExpenseChart } from "@/components";
-import {
-  FiDollarSign,
-  FiCalendar,
-  FiPieChart,
-  FiChevronLeft,
-  FiChevronRight,
-} from "@/assets/icons";
+import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 // Sample data for different months with distinct colors
@@ -162,14 +156,6 @@ function Analytics() {
   const avgDailySpending = totalSpent / daysInMonth;
   const budgetRemaining = currentData.monthlyBudget - totalSpent;
 
-  // Calculate universal weekly average (excluding incomplete weeks)
-  const completeWeeks = currentData.weeklyTrends.filter(
-    (week) => week.days === 7
-  );
-  const weeklyAverage =
-    completeWeeks.reduce((sum, week) => sum + week.spending, 0) /
-    completeWeeks.length;
-
   const navigateMonth = (direction: "prev" | "next") => {
     if (direction === "prev" && currentMonthIndex < analyticsData.length - 1) {
       setCurrentMonthIndex(currentMonthIndex + 1);
@@ -220,17 +206,25 @@ function Analytics() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side: Progress and Remaining Budget */}
           <div className="flex flex-col justify-center">
-            <p className="text-sm text-ash-gray-400">Budget Remaining</p>
-            <p
-              className={`text-5xl font-bold ${
-                budgetRemaining >= 0 ? "text-night-600" : "text-auburn-500"
-              }`}
-            >
-              ₱{budgetRemaining.toLocaleString()}
-            </p>
-            <p className="text-base text-ash-gray-500 mt-1">
-              of ₱{currentData.monthlyBudget.toLocaleString()} monthly budget
-            </p>
+            <div className="flex items-baseline space-x-6">
+              <div>
+                <p className="text-sm text-ash-gray-400">Budget Remaining</p>
+                <p
+                  className={`text-3xl font-bold ${
+                    budgetRemaining >= 0 ? "text-night-600" : "text-auburn-500"
+                  }`}
+                >
+                  ₱{budgetRemaining.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-ash-gray-400">Monthly Budget</p>
+                <p className="text-3xl font-bold text-night-600">
+                  ₱{currentData.monthlyBudget.toLocaleString()}
+                </p>
+              </div>
+            </div>
+
             <div className="mt-6">
               <div className="w-full bg-ash-gray-700 rounded-full h-3 shadow-inner">
                 <div
@@ -245,31 +239,35 @@ function Analytics() {
                   }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-night-700 font-medium mt-2">
-                <span>₱0 spent</span>
+              <div className="flex justify-between text-xs text-ash-gray-500 font-medium mt-2">
                 <span>
                   {Math.round((totalSpent / currentData.monthlyBudget) * 100)}%
-                  used
+                  Used
                 </span>
+                <span>{Math.max(0, daysInMonth - 14)} Days Remaining</span>
               </div>
             </div>
           </div>
 
           {/* Right Side: Key Metrics & Limits */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-timberwolf-900 p-4 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-timberwolf-900 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
               <p className="text-2xl font-bold text-night-600">
                 ₱{totalSpent.toLocaleString()}
               </p>
+              <p className="text-xs text-ash-gray-500 mt-1">&nbsp;</p>
             </div>
-            <div className="bg-timberwolf-900 p-4 rounded-lg">
+            <div className="bg-timberwolf-900 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Daily Average</p>
               <p className="text-2xl font-bold text-night-600">
                 ₱{avgDailySpending.toFixed(0)}
               </p>
+              <p className="text-xs text-ash-gray-500 mt-1">
+                Avg. spend per day
+              </p>
             </div>
-            <div className="bg-timberwolf-900 p-4 rounded-lg">
+            <div className="bg-timberwolf-900 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Daily Limit</p>
               <p className="text-2xl font-bold text-night-600">
                 ₱
@@ -279,11 +277,8 @@ function Analytics() {
                     ).toLocaleString()
                   : "0"}
               </p>
-            </div>
-            <div className="bg-timberwolf-900 p-4 rounded-lg">
-              <p className="text-sm text-ash-gray-400 mb-2">Days Remaining</p>
-              <p className="text-2xl font-bold text-night-600">
-                {Math.max(0, daysInMonth - 14)}
+              <p className="text-xs text-ash-gray-500 mt-1">
+                To stay on budget
               </p>
             </div>
           </div>
