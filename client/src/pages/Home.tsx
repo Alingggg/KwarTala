@@ -1,91 +1,26 @@
 import { Button, ExpenseCard, ExpenseChart } from "@/components";
 import { useModalContext } from "@/hooks";
+import { mockData as allMonthsData } from "@/data/mockData";
 
-const recentTransactions = [
-  {
-    id: "1",
-    category: "Entertainment",
-    amount: 400,
-    description: "Absolute Cinema",
-    iconColor: "bg-blue-500",
-    date: "Jul 14",
-  },
-  {
-    id: "2",
-    category: "Food",
-    amount: 400,
-    description: "Jalibi",
-    iconColor: "bg-orange-500",
-    date: "Jul 14",
-  },
-  {
-    id: "3",
-    category: "Grocery",
-    amount: 400,
-    description: "Puregold",
-    iconColor: "bg-green-500",
-    date: "Jul 13",
-  },
-  {
-    id: "4",
-    category: "Transportation",
-    amount: 250,
-    description: "Grab Ride",
-    iconColor: "bg-purple-500",
-    date: "Jul 13",
-  },
-  {
-    id: "5",
-    category: "Bills",
-    amount: 1200,
-    description: "Electricity Bill",
-    iconColor: "bg-yellow-500",
-    date: "Jul 12",
-  },
-  {
-    id: "6",
-    category: "Food",
-    amount: 180,
-    description: "McDonald's",
-    iconColor: "bg-orange-500",
-    date: "Jul 12",
-  },
-  {
-    id: "7",
-    category: "Shopping",
-    amount: 850,
-    description: "Uniqlo Shirt",
-    iconColor: "bg-pink-500",
-    date: "Jul 11",
-  },
-  {
-    id: "8",
-    category: "Entertainment",
-    amount: 300,
-    description: "Netflix Subscription",
-    iconColor: "bg-blue-500",
-    date: "Jul 10",
-  },
-  {
-    id: "9",
-    category: "Food",
-    amount: 120,
-    description: "Starbucks",
-    iconColor: "bg-orange-500",
-    date: "Jul 10",
-  },
-  {
-    id: "10",
-    category: "Transportation",
-    amount: 80,
-    description: "Bus Fare",
-    iconColor: "bg-purple-500",
-    date: "Jul 9",
-  },
-];
+// Assuming the home page shows the first month's data.
+const mockData = allMonthsData[0];
+
+// Helper to get and sort recent transactions
+const getRecentTransactions = () => {
+  const allTransactions = mockData.weeks.flatMap((week) => week.transactions);
+  return allTransactions.sort((a, b) => {
+    const dateA = new Date(a.date.replace(".", "") + " " + mockData.year);
+    const dateB = new Date(b.date.replace(".", "") + " " + mockData.year);
+    return dateB.getTime() - dateA.getTime();
+  });
+};
+
+const recentTransactions = getRecentTransactions();
 
 function Home() {
   const { openModal } = useModalContext();
+  const budgetPercentage =
+    (mockData.monthlyTotal / mockData.monthlyBudget) * 100;
 
   return (
     <div className="p-8">
@@ -97,9 +32,9 @@ function Home() {
           <div className="bg-night-500 p-6 rounded-lg shadow-sm">
             <p className="text-sm text-ash-gray-400">Budget</p>
             <p className="text-4xl font-bold text-timberwolf-900">
-              P3,854
+              P{mockData.remaining.toLocaleString()}
               <span className="text-base font-normal text-ash-gray-400 ml-2">
-                remaining of P10,000
+                remaining of P{mockData.monthlyBudget.toLocaleString()}
               </span>
             </p>
           </div>
@@ -107,9 +42,9 @@ function Home() {
             <Button
               onClick={() =>
                 openModal("EDIT_BUDGET", {
-                  month: "September",
-                  year: 2024,
-                  currentBudget: 10000,
+                  month: mockData.month,
+                  year: mockData.year,
+                  currentBudget: mockData.monthlyBudget,
                 })
               }
               variant="secondary"
@@ -119,18 +54,18 @@ function Home() {
             </Button>
             <div>
               <div className="flex justify-between text-xs text-night-700 font-medium mb-1">
-                <span>September 1</span>
-                <span>September 30</span>
+                <span>{mockData.month} 1</span>
+                <span>{mockData.month} 28</span>
               </div>
               <div className="w-full bg-ash-gray-700 rounded-full h-2.5 shadow-inner">
                 <div
                   className="bg-emerald-500 h-2.5 rounded-full shadow-sm"
-                  style={{ width: "61.46%" }}
+                  style={{ width: `${budgetPercentage}%` }}
                 ></div>
               </div>
               <div className="flex justify-between text-xs text-night-700 font-medium mt-1">
                 <span>P0</span>
-                <span>P10,000</span>
+                <span>P{mockData.monthlyBudget.toLocaleString()}</span>
               </div>
             </div>
           </div>

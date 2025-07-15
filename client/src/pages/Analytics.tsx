@@ -2,123 +2,68 @@ import { useState } from "react";
 import { ExpenseChart } from "@/components";
 import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { mockData as allMonthsData } from "@/data/mockData";
 
-// Sample data for different months with distinct colors
-const analyticsData = [
-  {
-    month: "February",
-    year: 2025,
-    categoryData: [
-      { name: "Food", amount: 3500, percentage: 35, color: "#2da62f" }, // emerald
-      {
-        name: "Transportation",
-        amount: 1800,
-        percentage: 18,
-        color: "#a22c29",
-      }, // auburn
-      { name: "Entertainment", amount: 1200, percentage: 12, color: "#4f46e5" }, // indigo
-      { name: "Shopping", amount: 2000, percentage: 20, color: "#f59e0b" }, // amber
-      { name: "Bills", amount: 800, percentage: 8, color: "#2d9596" }, // teal
-      { name: "Others", amount: 700, percentage: 7, color: "#7c3aed" }, // violet
-    ],
-    weeklyTrends: [
-      { week: "Week 1", spending: 920, days: 7 },
-      { week: "Week 2", spending: 650, days: 7 },
-      { week: "Week 3", spending: 1100, days: 7 },
-      { week: "Week 4", spending: 750, days: 7 },
-    ],
-    topExpenses: [
-      {
-        description: "Anniversary Dinner",
-        amount: 1500,
-        category: "Food",
-        date: "Feb 25",
-      },
-      {
-        description: "Valentine's Day",
-        amount: 1269,
-        category: "Food",
-        date: "Feb 14",
-      },
-      {
-        description: "Weekly Shopping",
-        amount: 1200,
-        category: "Shopping",
-        date: "Feb 18",
-      },
-      {
-        description: "Clothes Shopping",
-        amount: 860,
-        category: "Shopping",
-        date: "Feb 27",
-      },
-      {
-        description: "Concert Tickets",
-        amount: 800,
-        category: "Entertainment",
-        date: "Feb 20",
-      },
-    ],
-    monthlyBudget: 15000,
-  },
-  {
-    month: "January",
-    year: 2025,
-    categoryData: [
-      { name: "Food", amount: 2800, percentage: 32, color: "#2da62f" }, // emerald
-      {
-        name: "Transportation",
-        amount: 1600,
-        percentage: 18,
-        color: "#a22c29",
-      }, // auburn
-      { name: "Entertainment", amount: 900, percentage: 10, color: "#4f46e5" }, // indigo
-      { name: "Shopping", amount: 1800, percentage: 21, color: "#f59e0b" }, // amber
-      { name: "Bills", amount: 1200, percentage: 14, color: "#2d9596" }, // teal
-      { name: "Others", amount: 400, percentage: 5, color: "#7c3aed" }, // violet
-    ],
-    weeklyTrends: [
-      { week: "Week 1", spending: 1200, days: 7 },
-      { week: "Week 2", spending: 800, days: 7 },
-      { week: "Week 3", spending: 950, days: 7 },
-      { week: "Week 4", spending: 1100, days: 7 },
-      { week: "Week 5", spending: 650, days: 3 },
-    ],
-    topExpenses: [
-      {
-        description: "Rent Payment",
-        amount: 1200,
-        category: "Bills",
-        date: "Jan 1",
-      },
-      {
-        description: "New Year Dinner",
-        amount: 980,
-        category: "Food",
-        date: "Jan 1",
-      },
-      {
-        description: "Winter Clothes",
-        amount: 850,
-        category: "Shopping",
-        date: "Jan 15",
-      },
-      {
-        description: "Grocery Shopping",
-        amount: 750,
-        category: "Food",
-        date: "Jan 10",
-      },
-      {
-        description: "Gas Bill",
-        amount: 650,
-        category: "Bills",
-        date: "Jan 5",
-      },
-    ],
-    monthlyBudget: 14000,
-  },
-];
+// --- Helper Functions to process mockData for Analytics ---
+
+const CATEGORY_COLORS: { [key: string]: string } = {
+  Food: "#2da62f", // emerald
+  Breakfast: "#2da62f",
+  Lunch: "#2da62f",
+  Dinner: "#2da62f",
+  Grocery: "#2da62f",
+  Transportation: "#a22c29", // auburn
+  Transport: "#a22c29",
+  Entertainment: "#4f46e5", // indigo
+  Shopping: "#f59e0b", // amber
+  Bills: "#2d9596", // teal
+  Others: "#7c3aed", // violet
+  Miscellaneous: "#7c3aed",
+};
+
+const getAnalyticsData = (monthData: (typeof allMonthsData)[0]) => {
+  const allTransactions = monthData.weeks.flatMap((week) => week.transactions);
+
+  // 1. Calculate Category Data
+  const categoryMap = new Map<string, number>();
+  allTransactions.forEach((t) => {
+    const mainCategory =
+      Object.keys(CATEGORY_COLORS).find((c) =>
+        t.category.toLowerCase().includes(c.toLowerCase())
+      ) || "Others";
+    categoryMap.set(
+      mainCategory,
+      (categoryMap.get(mainCategory) || 0) + t.amount
+    );
+  });
+
+  const categoryData = Array.from(categoryMap.entries()).map(
+    ([name, amount]) => ({
+      name,
+      amount,
+      percentage: Math.round((amount / monthData.monthlyTotal) * 100) || 0,
+      color: CATEGORY_COLORS[name] || "#7c3aed",
+    })
+  );
+
+  // 2. Get Top 5 Expenses
+  const topExpenses = [...allTransactions]
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 5);
+
+  // 3. Get Weekly Trends for ExpenseChart
+  const weeklyTrends = monthData.weeks.map((week) => ({
+    week: `Week ${week.weekNumber}`,
+    spending: week.weeklyTotal,
+  }));
+
+  return {
+    ...monthData,
+    categoryData,
+    topExpenses,
+    weeklyTrends,
+  };
+};
 
 // Custom pie chart tooltip
 const CustomPieTooltip = ({ active, payload }: any) => {
@@ -145,16 +90,20 @@ const CustomPieTooltip = ({ active, payload }: any) => {
 function Analytics() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
 
-  const currentData = analyticsData[currentMonthIndex];
-  const totalSpent = currentData.categoryData.reduce(
-    (sum, item) => sum + item.amount,
-    0
-  );
+  // Process the data for all available months
+  const analyticsData = allMonthsData.map(getAnalyticsData);
 
-  // Calculate days in current month (simplified - using 28 for Feb, 31 for Jan)
-  const daysInMonth = currentData.month === "February" ? 28 : 31;
+  const currentData = analyticsData[currentMonthIndex];
+  const totalSpent = currentData.monthlyTotal;
+
+  // Calculate days in current month (simplified)
+  const daysInMonth = new Date(
+    currentData.year,
+    currentMonthIndex + 1,
+    0
+  ).getDate();
   const avgDailySpending = totalSpent / daysInMonth;
-  const budgetRemaining = currentData.monthlyBudget - totalSpent;
+  const budgetRemaining = currentData.remaining;
 
   const navigateMonth = (direction: "prev" | "next") => {
     if (direction === "prev" && currentMonthIndex < analyticsData.length - 1) {
@@ -290,7 +239,7 @@ function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Expense Chart from Home */}
         <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
-          <ExpenseChart />
+          <ExpenseChart monthIndex={currentMonthIndex} />
         </div>
 
         {/* Category Breakdown - Combined Pie Chart and List */}
@@ -364,9 +313,9 @@ function Analytics() {
             Top Expenses
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-            {currentData.topExpenses.slice(0, 6).map((expense, index) => (
+            {currentData.topExpenses.map((expense, index) => (
               <div
-                key={index}
+                key={expense.id || index}
                 className="flex items-center justify-between py-3 border-b border-ash-gray-700"
               >
                 <div>

@@ -9,30 +9,51 @@ import {
   Cell,
   CartesianGrid,
 } from "recharts";
+import { mockData as allMonthsData } from "@/data/mockData";
 
-// Sample data structure for different views
-const weeklyData = [
-  { name: "Week 1", total: 2400, days: 7 },
-  { name: "Week 2", total: 1398, days: 7 },
-  { name: "Week 3", total: 9800, days: 7 },
-  { name: "Week 4", total: 3908, days: 7 },
-  { name: "Week 5", total: 4800, days: 5 }, // Current week might have fewer days
-];
+// --- Helper Functions ---
 
-const monthlyData = [
-  { name: "Feb '24", total: 13570, days: 29 },
-  { name: "Mar '24", total: 8940, days: 31 },
-  { name: "Apr '24", total: 12350, days: 30 },
-  { name: "May '24", total: 9780, days: 31 },
-  { name: "Jun '24", total: 11200, days: 30 },
-  { name: "Jul '24", total: 10500, days: 31 },
-  { name: "Aug '24", total: 9800, days: 31 },
-  { name: "Sep '24", total: 12400, days: 30 },
-  { name: "Oct '24", total: 8900, days: 31 },
-  { name: "Nov '24", total: 10200, days: 30 },
-  { name: "Dec '24", total: 11800, days: 31 },
-  { name: "Jan '25", total: 9500, days: 31 },
-];
+// Generate monthly data for the chart from all available data
+const getMonthlyChartData = () => {
+  const monthIndexMap: { [key: string]: number } = {
+    January: 0,
+    February: 1,
+    March: 2,
+    April: 3,
+    May: 4,
+    June: 5,
+    July: 6,
+    August: 7,
+    September: 8,
+    October: 9,
+    November: 10,
+    December: 11,
+  };
+
+  return allMonthsData
+    .map((month) => {
+      const monthIndex = monthIndexMap[month.month];
+      const daysInMonth = new Date(month.year, monthIndex + 1, 0).getDate();
+      return {
+        name: `${month.month.slice(0, 3)} '${String(month.year).slice(2)}`,
+        total: month.monthlyTotal,
+        days: daysInMonth,
+      };
+    })
+    .reverse(); // Show most recent month last
+};
+
+// Generate weekly data for a specific month index
+const getWeeklyChartData = (monthIndex: number) => {
+  const month = allMonthsData[monthIndex];
+  if (!month) return [];
+
+  return month.weeks.map((week) => ({
+    name: `Week ${week.weekNumber}`,
+    total: week.weeklyTotal,
+    days: week.daysInWeek, // Use the new daysInWeek field
+  }));
+};
 
 function tickFormatter(value: any): string {
   const numValue = Number(value);
@@ -50,7 +71,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const data = payload[0].payload;
     const total = data.total;
     const days = data.days;
-    const dailyAverage = total / days;
+    const dailyAverage = days > 0 ? total / days : 0; // Avoid division by zero
 
     return (
       <div className="bg-ash-gray-900 border border-night-700 p-3 rounded-lg shadow-lg">
@@ -73,8 +94,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 type ChartView = "weekly" | "monthly";
 
-function ExpenseChart() {
+interface ExpenseChartProps {
+  // Optional prop to specify which month's weekly data to show.
+  // Defaults to the first month if not provided.
+  monthIndex?: number;
+}
+
+function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
   const [chartView, setChartView] = useState<ChartView>("weekly");
+
+  // The component now fetches and processes its own data
+  const weeklyData = getWeeklyChartData(monthIndex);
+  const monthlyData = getMonthlyChartData();
+
   const currentData = chartView === "weekly" ? weeklyData : monthlyData;
 
   return (
