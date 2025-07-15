@@ -9,7 +9,7 @@ import {
   Cell,
   CartesianGrid,
 } from "recharts";
-import { mockData as allMonthsData } from "@/data/mockData";
+import { mockData as allMonthsData } from "@/assets/mockData";
 
 // --- Helper Functions ---
 

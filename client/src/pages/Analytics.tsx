@@ -51,17 +51,10 @@ const getAnalyticsData = (monthData: (typeof allMonthsData)[0]) => {
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 5);
 
-  // 3. Get Weekly Trends for ExpenseChart
-  const weeklyTrends = monthData.weeks.map((week) => ({
-    week: `Week ${week.weekNumber}`,
-    spending: week.weeklyTotal,
-  }));
-
   return {
     ...monthData,
     categoryData,
     topExpenses,
-    weeklyTrends,
   };
 };
 
