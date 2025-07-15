@@ -34,7 +34,13 @@ export function ExpenseCard({
       <div className="flex items-center space-x-2">
         <button
           onClick={() =>
-            openModal("EDIT_EXPENSE", { id, category, amount, description })
+            openModal("EDIT_EXPENSE", {
+              id,
+              category,
+              amount,
+              description,
+              date,
+            })
           }
           className="p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors"
           title="Edit expense"
@@ -43,7 +49,13 @@ export function ExpenseCard({
         </button>
         <button
           onClick={() =>
-            openModal("DELETE_EXPENSE", { id, category, amount, description })
+            openModal("DELETE_EXPENSE", {
+              id,
+              category,
+              amount,
+              description,
+              date,
+            })
           }
           className="p-2 text-auburn-600 hover:text-white hover:bg-auburn-500 rounded-full transition-colors"
           title="Delete expense"

@@ -6,6 +6,7 @@ interface EditExpenseModalProps {
   category: string;
   amount: number;
   description: string;
+  date?: string;
 }
 
 function EditExpenseModal({
@@ -13,6 +14,7 @@ function EditExpenseModal({
   category,
   amount,
   description,
+  date,
 }: EditExpenseModalProps) {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -30,6 +32,13 @@ function EditExpenseModal({
             id="amount"
             type="number"
             // defaultValue={amount}
+          />
+          <Input
+            label="Date"
+            id="date"
+            type="text"
+            // defaultValue={date}
+            placeholder="e.g., Mar. 16"
           />
           <Input
             label="Category"

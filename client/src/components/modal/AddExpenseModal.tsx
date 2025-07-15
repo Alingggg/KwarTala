@@ -15,6 +15,12 @@ function AddExpenseModal({ onClose }: { onClose: () => void }) {
         <form className="space-y-4">
           <Input label="Amount" id="amount" type="number" placeholder="P0.00" />
           <Input
+            label="Date"
+            id="date"
+            type="text"
+            placeholder="e.g., Mar. 16"
+          />
+          <Input
             label="Category"
             id="category"
             type="text"

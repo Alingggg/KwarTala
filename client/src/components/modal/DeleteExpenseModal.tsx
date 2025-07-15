@@ -6,6 +6,7 @@ interface DeleteExpenseModalProps {
   category: string;
   amount: number;
   description: string;
+  date?: string;
 }
 
 function DeleteExpenseModal({
@@ -13,6 +14,7 @@ function DeleteExpenseModal({
   category,
   amount,
   description,
+  date,
 }: DeleteExpenseModalProps) {
   const handleDelete = () => {
     console.log("Deleting");
@@ -46,6 +48,11 @@ function DeleteExpenseModal({
           <p>
             <span className="font-semibold">Amount:</span> P{amount.toFixed(2)}
           </p>
+          {date && (
+            <p>
+              <span className="font-semibold">Date:</span> {date}
+            </p>
+          )}
         </div>
         <div className="flex justify-center space-x-4">
           <Button
