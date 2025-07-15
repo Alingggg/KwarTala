@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ExpenseChart } from "@/components";
 import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import { mockData as allMonthsData } from "@/data/mockData";
+import { mockData as allMonthsData } from "@/assets/mockData";
 
 // --- Helper Functions to process mockData for Analytics ---
 

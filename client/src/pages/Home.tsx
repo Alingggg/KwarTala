@@ -1,6 +1,6 @@
 import { Button, ExpenseCard, ExpenseChart } from "@/components";
 import { useModalContext } from "@/hooks";
-import { mockData as allMonthsData } from "@/data/mockData";
+import { mockData as allMonthsData } from "@/assets/mockData";
 
 // Assuming the home page shows the first month's data.
 const mockData = allMonthsData[0];

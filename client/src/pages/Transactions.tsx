@@ -9,7 +9,7 @@ import {
   FiChevronDown,
 } from "@/assets/icons";
 import { useModalContext } from "@/hooks";
-import { mockData, type Transaction } from "@/data/mockData";
+import { mockData, type Transaction } from "@/assets/mockData";
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
