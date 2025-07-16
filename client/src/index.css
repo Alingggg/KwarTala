@@ -149,3 +149,26 @@ body {
   --color-rose-800: #f39eb7;
   --color-rose-900: #f9cbdb;
 }
+
+.no-scrollbar-arrows::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Optional: Also customize the scrollbar appearance */
+.no-scrollbar-arrows::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.no-scrollbar-arrows::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.no-scrollbar-arrows::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.no-scrollbar-arrows::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
