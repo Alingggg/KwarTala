@@ -47,11 +47,46 @@ const getWeeklyChartData = (monthIndex: number) => {
   const month = allMonthsData[monthIndex];
   if (!month) return [];
 
-  return month.weeks.map((week) => ({
-    name: `Week ${week.weekNumber}`,
-    total: week.weeklyTotal,
-    days: week.daysInWeek,
-  }));
+  const monthIndexMap: { [key: string]: number } = {
+    January: 0,
+    February: 1,
+    March: 2,
+    April: 3,
+    May: 4,
+    June: 5,
+    July: 6,
+    August: 7,
+    September: 8,
+    October: 9,
+    November: 10,
+    December: 11,
+  };
+
+  const monthIndex2 = monthIndexMap[month.month];
+  const year = month.year;
+
+  return month.weeks.map((week) => {
+    // Calculate the date range for each week
+    const startDay = (week.weekNumber - 1) * 7 + 1;
+    const endDay = Math.min(
+      startDay + week.daysInWeek - 1,
+      new Date(year, monthIndex2 + 1, 0).getDate()
+    );
+
+    // Format the date range with month abbreviation
+    const monthAbbr = month.month.slice(0, 3);
+    const dateRange =
+      startDay === endDay
+        ? `${monthAbbr}. ${startDay}`
+        : `${monthAbbr}. ${startDay}-${endDay}`;
+
+    return {
+      name: `Week ${week.weekNumber}`,
+      dateRange: dateRange,
+      total: week.weeklyTotal,
+      days: week.daysInWeek,
+    };
+  });
 };
 
 function tickFormatter(value: any): string {
@@ -63,6 +98,40 @@ function tickFormatter(value: any): string {
   }
   return String(numValue);
 }
+
+// Custom tick component for weekly view with date range below
+const CustomXAxisTick = ({ x, y, payload }: any) => {
+  const weeklyData = getWeeklyChartData(0); // This will be updated dynamically
+  const weekData = weeklyData.find((w) => w.name === payload.value);
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dy={16}
+        textAnchor="middle"
+        fill="#999b7a"
+        fontSize="10"
+        fontWeight="500"
+      >
+        {payload.value}
+      </text>
+      {weekData && (
+        <text
+          x={0}
+          y={0}
+          dy={28}
+          textAnchor="middle"
+          fill="#999b7a"
+          fontSize="8"
+        >
+          {weekData.dateRange}
+        </text>
+      )}
+    </g>
+  );
+};
 
 // Custom tooltip component
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -76,6 +145,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return (
       <div className="bg-ash-gray-900 border border-night-700 p-3 rounded-lg shadow-lg">
         <p className="text-night-600 font-semibold mb-2">{label}</p>
+        {data.dateRange && (
+          <p className="text-night-500 text-xs mb-2">{data.dateRange}</p>
+        )}
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
             <span className="font-medium">Total:</span> {currency}
@@ -107,6 +179,39 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
   const monthlyData = getMonthlyChartData();
 
   const currentData = chartView === "weekly" ? weeklyData : monthlyData;
+
+  // Create a custom tick component that has access to the current monthly data
+  const WeeklyXAxisTick = ({ x, y, payload }: any) => {
+    const weekData = weeklyData.find((w) => w.name === payload.value);
+
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          x={0}
+          y={0}
+          dy={16}
+          textAnchor="middle"
+          fill="#999b7a"
+          fontSize="10"
+          fontWeight="500"
+        >
+          {payload.value}
+        </text>
+        {weekData && (
+          <text
+            x={0}
+            y={0}
+            dy={28}
+            textAnchor="middle"
+            fill="#999b7a"
+            fontSize="8"
+          >
+            {weekData.dateRange}
+          </text>
+        )}
+      </g>
+    );
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -154,10 +259,14 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
               dataKey="name"
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 10, fill: "#999b7a" }}
+              tick={
+                chartView === "weekly"
+                  ? WeeklyXAxisTick
+                  : { fontSize: 10, fill: "#999b7a" }
+              }
               angle={chartView === "monthly" ? -45 : 0}
               textAnchor={chartView === "monthly" ? "end" : "middle"}
-              height={chartView === "monthly" ? 50 : 30}
+              height={chartView === "weekly" ? 45 : 50}
             />
             <YAxis
               tickLine={false}
