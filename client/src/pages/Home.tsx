@@ -56,22 +56,30 @@ function Home() {
                 })
               }
               variant="secondary"
-              className="w-full mb-4"
+              className="w-full mb-6"
             >
               Edit Budget
             </Button>
-            <div>
-              <div className="flex justify-between text-xs text-night-700 font-medium mb-1">
-                <span>{mockData.month} 1</span>
-                <span>{mockData.month} 28</span>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-night-600">
+                  Budget Progress
+                </span>
+                <span className="text-sm font-semibold text-night-600">
+                  {mockData.budgetUsedPercentage}% used
+                </span>
               </div>
-              <div className="w-full bg-ash-gray-700 rounded-full h-2.5 shadow-inner">
+              <div className="w-full bg-ash-gray-700 rounded-full h-3 shadow-inner">
                 <div
-                  className="bg-emerald-500 h-2.5 rounded-full shadow-sm"
-                  style={{ width: `${mockData.budgetUsedPercentage}%` }}
+                  className={`h-3 rounded-full shadow-sm ${
+                    mockData.remaining >= 0 ? "bg-night-700" : "bg-auburn-500"
+                  }`}
+                  style={{
+                    width: `${Math.min(mockData.budgetUsedPercentage, 100)}%`,
+                  }}
                 ></div>
               </div>
-              <div className="flex justify-between text-xs text-night-700 font-medium mt-1">
+              <div className="flex justify-between text-sm text-night-600 font-medium">
                 <span>{currency}0</span>
                 <span>
                   {currency}

@@ -113,7 +113,7 @@ function Analytics() {
                 <div
                   className={`${
                     currentData.remaining >= 0
-                      ? "bg-emerald-500"
+                      ? "bg-night-700"
                       : "bg-auburn-500"
                   } h-3 rounded-full shadow-sm`}
                   style={{
