@@ -1,5 +1,5 @@
 import { Button, ExpenseCard, ExpenseChart } from "@/components";
-import { useModalContext } from "@/hooks";
+import { useModalContext, useCurrencyContext } from "@/hooks";
 import { mockData as allMonthsData } from "@/assets/mockData";
 
 // Assuming the home page shows the first month's data.
@@ -7,6 +7,7 @@ const mockData = allMonthsData[0];
 
 function Home() {
   const { openModal } = useModalContext();
+  const { currency } = useCurrencyContext();
 
   return (
     <div className="p-8">
@@ -18,9 +19,11 @@ function Home() {
           <div className="bg-night-500 p-6 rounded-lg shadow-sm">
             <p className="text-sm text-ash-gray-400">Budget</p>
             <p className="text-4xl font-bold text-timberwolf-900">
-              P{mockData.remaining.toLocaleString()}
+              {currency}
+              {mockData.remaining.toLocaleString()}
               <span className="text-base font-normal text-ash-gray-400 ml-2">
-                remaining of P{mockData.monthlyBudget.toLocaleString()}
+                remaining of {currency}
+                {mockData.monthlyBudget.toLocaleString()}
               </span>
             </p>
           </div>
@@ -50,8 +53,11 @@ function Home() {
                 ></div>
               </div>
               <div className="flex justify-between text-xs text-night-700 font-medium mt-1">
-                <span>P0</span>
-                <span>P{mockData.monthlyBudget.toLocaleString()}</span>
+                <span>{currency}0</span>
+                <span>
+                  {currency}
+                  {mockData.monthlyBudget.toLocaleString()}
+                </span>
               </div>
             </div>
           </div>

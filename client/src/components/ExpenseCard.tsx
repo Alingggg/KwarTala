@@ -1,5 +1,5 @@
 import { FiEdit, FiTrash2 } from "@/assets/icons";
-import { useModalContext } from "@/hooks";
+import { useModalContext, useCurrencyContext } from "@/hooks";
 
 interface ExpenseCardProps {
   id?: string;
@@ -19,6 +19,7 @@ export function ExpenseCard({
   date,
 }: ExpenseCardProps) {
   const { openModal } = useModalContext();
+  const { currency } = useCurrencyContext();
 
   return (
     <div className="bg-timberwolf-700 p-4 rounded-lg flex items-center text-night-500">
@@ -30,7 +31,10 @@ export function ExpenseCard({
         <div className="text-sm text-night-700">{description}</div>
         {date && <div className="text-xs text-night-600 mt-1">{date}</div>}
       </div>
-      <div className="font-semibold text-lg mx-4">P{amount.toFixed(2)}</div>
+      <div className="font-semibold text-lg mx-4">
+        {currency}
+        {amount.toFixed(2)}
+      </div>
       <div className="flex items-center space-x-2">
         <button
           onClick={() =>

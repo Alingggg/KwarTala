@@ -3,9 +3,11 @@ import { ExpenseChart } from "@/components";
 import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { mockData as allMonthsData } from "@/assets/mockData";
+import { useCurrencyContext } from "@/hooks";
 
 // Custom pie chart tooltip
 const CustomPieTooltip = ({ active, payload }: any) => {
+  const { currency } = useCurrencyContext();
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -13,7 +15,7 @@ const CustomPieTooltip = ({ active, payload }: any) => {
         <p className="text-night-600 font-semibold mb-1">{data.name}</p>
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
-            <span className="font-medium">Amount:</span> P{" "}
+            <span className="font-medium">Amount:</span> {currency}
             {data.amount.toLocaleString()}
           </p>
           <p className="text-night-500 text-sm">
@@ -28,9 +30,9 @@ const CustomPieTooltip = ({ active, payload }: any) => {
 
 function Analytics() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
+  const { currency } = useCurrencyContext();
 
   const analyticsData = allMonthsData;
-
   const currentData = analyticsData[currentMonthIndex];
 
   const navigateMonth = (direction: "prev" | "next") => {
@@ -93,13 +95,15 @@ function Analytics() {
                       : "text-auburn-500"
                   }`}
                 >
-                  ₱{currentData.remaining.toLocaleString()}
+                  {currency}
+                  {currentData.remaining.toLocaleString()}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-ash-gray-400">Monthly Budget</p>
                 <p className="text-3xl font-bold text-timberwolf-900">
-                  ₱{currentData.monthlyBudget.toLocaleString()}
+                  {currency}
+                  {currentData.monthlyBudget.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -132,14 +136,16 @@ function Analytics() {
             <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
               <p className="text-2xl font-bold text-timberwolf-900">
-                ₱{currentData.monthlyTotal.toLocaleString()}
+                {currency}
+                {currentData.monthlyTotal.toLocaleString()}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">&nbsp;</p>
             </div>
             <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Daily Average</p>
               <p className="text-2xl font-bold text-timberwolf-900">
-                ₱{currentData.avgDailySpending.toLocaleString()}
+                {currency}
+                {currentData.avgDailySpending.toLocaleString()}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
                 Avg. spend per day
@@ -148,7 +154,7 @@ function Analytics() {
             <div className="bg-night-600 p-4 rounded-lg text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Daily Limit</p>
               <p className="text-2xl font-bold text-timberwolf-900">
-                ₱
+                {currency}
                 {currentData.dailyLimit > 0
                   ? currentData.dailyLimit.toLocaleString()
                   : "0"}
@@ -218,7 +224,8 @@ function Analytics() {
                   </div>
                   <div className="text-right ml-2 flex-shrink-0">
                     <p className="font-semibold text-night-600">
-                      ₱{category.amount.toLocaleString()}
+                      {currency}
+                      {category.amount.toLocaleString()}
                     </p>
                     <p className="text-xs text-ash-gray-400 font-medium">
                       {category.percentage}%
@@ -252,7 +259,8 @@ function Analytics() {
                   </p>
                 </div>
                 <p className="font-semibold text-auburn-500">
-                  ₱{expense.amount.toLocaleString()}
+                  {currency}
+                  {expense.amount.toLocaleString()}
                 </p>
               </div>
             ))}

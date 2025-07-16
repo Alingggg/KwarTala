@@ -8,7 +8,7 @@ import {
   FiChevronUp,
   FiChevronDown,
 } from "@/assets/icons";
-import { useModalContext } from "@/hooks";
+import { useModalContext, useCurrencyContext } from "@/hooks";
 import { mockData, type Transaction } from "@/assets/mockData";
 
 function Transactions() {
@@ -16,6 +16,7 @@ function Transactions() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const { openModal } = useModalContext();
+  const { currency } = useCurrencyContext();
 
   const currentMonth = mockData[currentMonthIndex];
 
@@ -128,13 +129,15 @@ function Transactions() {
           <div className="text-center">
             <p className="text-sm text-ash-gray-400 mb-2">Monthly Budget</p>
             <p className="text-3xl font-bold text-timberwolf-900">
-              P{currentMonth.monthlyBudget.toLocaleString()}
+              {currency}
+              {currentMonth.monthlyBudget.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
             <p className="text-3xl font-bold text-timberwolf-900">
-              P{currentMonth.monthlyTotal.toLocaleString()}
+              {currency}
+              {currentMonth.monthlyTotal.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
@@ -146,7 +149,8 @@ function Transactions() {
                   : "text-auburn-500"
               }`}
             >
-              P{currentMonth.remaining.toLocaleString()}
+              {currency}
+              {currentMonth.remaining.toLocaleString()}
             </p>
           </div>
         </div>
@@ -190,7 +194,8 @@ function Transactions() {
                   Week {week.weekNumber}
                 </div>
                 <div className="text-xs opacity-75 mt-1">
-                  P{week.weeklyTotal.toLocaleString()}
+                  {currency}
+                  {week.weeklyTotal.toLocaleString()}
                 </div>
                 <div
                   className={`text-xs font-medium mt-1 ${
@@ -202,8 +207,8 @@ function Transactions() {
                   }`}
                 >
                   {week.weeklyRemaining >= 0
-                    ? `+P${week.weeklyRemaining}`
-                    : `P${week.weeklyRemaining}`}
+                    ? `+${currency}${week.weeklyRemaining}`
+                    : `${currency}${week.weeklyRemaining}`}
                 </div>
               </div>
             </button>
@@ -218,7 +223,8 @@ function Transactions() {
             <div className="text-center">
               <p className="text-sm text-ash-gray-400 mb-2">Weekly Budget</p>
               <p className="text-2xl font-bold text-timberwolf-900">
-                P{selectedWeekData.weeklyBudget.toLocaleString()}
+                {currency}
+                {selectedWeekData.weeklyBudget.toLocaleString()}
               </p>
             </div>
             <div className="text-center">
@@ -226,7 +232,8 @@ function Transactions() {
                 Week {selectedWeek} Spent
               </p>
               <p className="text-2xl font-bold text-timberwolf-900">
-                P{selectedWeekData.weeklyTotal.toLocaleString()}
+                {currency}
+                {selectedWeekData.weeklyTotal.toLocaleString()}
               </p>
             </div>
             <div className="text-center">
@@ -238,7 +245,8 @@ function Transactions() {
                     : "text-auburn-500"
                 }`}
               >
-                P{selectedWeekData.weeklyRemaining.toLocaleString()}
+                {currency}
+                {selectedWeekData.weeklyRemaining.toLocaleString()}
               </p>
             </div>
           </div>

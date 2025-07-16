@@ -10,8 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { mockData as allMonthsData } from "@/assets/mockData";
-
-// --- Helper Functions ---
+import { useCurrencyContext } from "@/hooks";
 
 // Generate monthly data for the chart from all available data
 const getMonthlyChartData = () => {
@@ -51,7 +50,7 @@ const getWeeklyChartData = (monthIndex: number) => {
   return month.weeks.map((week) => ({
     name: `Week ${week.weekNumber}`,
     total: week.weeklyTotal,
-    days: week.daysInWeek, // Use the new daysInWeek field
+    days: week.daysInWeek,
   }));
 };
 
@@ -67,6 +66,7 @@ function tickFormatter(value: any): string {
 
 // Custom tooltip component
 const CustomTooltip = ({ active, payload, label }: any) => {
+  const { currency } = useCurrencyContext();
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const total = data.total;
@@ -78,11 +78,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="text-night-600 font-semibold mb-2">{label}</p>
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
-            <span className="font-medium">Total:</span> P
+            <span className="font-medium">Total:</span> {currency}
             {total.toLocaleString()}
           </p>
           <p className="text-night-500 text-sm">
-            <span className="font-medium">Daily Average:</span> P
+            <span className="font-medium">Daily Average:</span> {currency}
             {dailyAverage.toFixed(2)}
           </p>
         </div>
@@ -103,7 +103,6 @@ interface ExpenseChartProps {
 function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
   const [chartView, setChartView] = useState<ChartView>("weekly");
 
-  // The component now fetches and processes its own data
   const weeklyData = getWeeklyChartData(monthIndex);
   const monthlyData = getMonthlyChartData();
 
@@ -171,7 +170,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="total" radius={[4, 4, 0, 0]}>
-              {currentData.map((entry, index) => (
+              {currentData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill="#a22c29" />
               ))}
             </Bar>
