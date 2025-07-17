@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   BarChart,
   Bar,
@@ -111,6 +111,7 @@ const getWeeklyChartData = (monthIndex: number) => {
       dateRange: dateRange,
       total: week.weeklyTotal,
       days: week.daysInWeek,
+      dailyAverage: week.dailyAverage,
     };
   });
 };
@@ -132,7 +133,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const data = payload[0].payload;
     const total = data.total;
     const days = data.days;
-    const dailyAverage = days > 0 ? total / days : 0; // Avoid division by zero
+    const dailyAverage = data.dailyAverage;
 
     return (
       <div className="bg-ash-gray-900 border border-night-700 p-3 rounded-lg shadow-lg">
@@ -150,7 +151,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           {days > 1 && (
             <p className="text-night-500 text-sm">
               <span className="font-medium">Daily Average:</span> {currency}
-              {dailyAverage.toFixed(2)}
+              {dailyAverage.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </p>
           )}
         </div>
@@ -169,7 +173,7 @@ interface ExpenseChartProps {
 }
 
 function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
-  const [chartView, setChartView] = useState<ChartView>("daily"); // Default is now "daily"
+  const [chartView, setChartView] = useState<ChartView>("daily");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const weeklyData = getWeeklyChartData(monthIndex);
