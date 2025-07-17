@@ -46,6 +46,8 @@ function Home() {
               </span>
             </p>
           </div>
+
+          {/* Today's Spending Display */}
           <div className="bg-ash-gray-800 p-4 rounded-lg mt-4 shadow-inner">
             <Button
               onClick={() =>
@@ -60,6 +62,7 @@ function Home() {
             >
               Edit Budget
             </Button>
+
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-night-600">
@@ -87,7 +90,24 @@ function Home() {
                 </span>
               </div>
             </div>
+
+            {/* Today's Spending - New Container */}
+            <div className="bg-night-500 p-4 rounded-lg mt-4 border border-night-600">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-auburn-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-timberwolf-700">
+                    Today's Spending
+                  </span>
+                </div>
+                <span className="text-xl font-bold text-timberwolf-900">
+                  {currency}
+                  {mockData.spentToday?.toLocaleString() || 0}
+                </span>
+              </div>
+            </div>
           </div>
+
           <Button
             onClick={() => openModal("ADD_EXPENSE")}
             className="mt-4 shadow-sm"
