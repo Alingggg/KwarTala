@@ -14,6 +14,7 @@ export interface WeekData {
   weeklyBudget: number;
   weeklyRemaining: number;
   daysInWeek: number;
+  dailyAverage: number;
 }
 
 export interface CategoryAnalytics {
@@ -44,10 +45,10 @@ export const mockData: MonthData[] = [
   {
     month: "March",
     year: 2025,
-    monthlyTotal: 10210,
+    monthlyTotal: 8210,
     monthlyBudget: 15000,
-    remaining: 4790,
-    spentToday: 450,
+    remaining: 6790,
+    spentToday: 450.0,
     weeks: [
       {
         weekNumber: 1,
@@ -55,6 +56,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3500,
         weeklyRemaining: 2772,
         daysInWeek: 7,
+        dailyAverage: 104.0,
         transactions: [
           {
             id: "1",
@@ -104,6 +106,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3500,
         weeklyRemaining: 1793,
         daysInWeek: 7,
+        dailyAverage: 243.86,
         transactions: [
           {
             id: "6",
@@ -137,6 +140,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3500,
         weeklyRemaining: 1100,
         daysInWeek: 7,
+        dailyAverage: 342.86,
         transactions: [
           {
             id: "9",
@@ -170,6 +174,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3500,
         weeklyRemaining: 2000,
         daysInWeek: 7,
+        dailyAverage: 214.29,
         transactions: [
           {
             id: "12",
@@ -187,6 +192,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 1000,
         weeklyRemaining: -875,
         daysInWeek: 3,
+        dailyAverage: 625.0,
         transactions: [
           {
             id: "13",
@@ -208,11 +214,21 @@ export const mockData: MonthData[] = [
       },
     ],
     categoryData: [
-      { name: "Food", amount: 4432, percentage: 43, color: "#10b981" },
-      { name: "Shopping", amount: 2270, percentage: 22, color: "#f59e0b" },
-      { name: "Bills", amount: 1015, percentage: 10, color: "#06b6d4" },
-      { name: "Entertainment", amount: 800, percentage: 8, color: "#ec4899" },
-      { name: "Transportation", amount: 493, percentage: 5, color: "#ef4444" },
+      { name: "Food", amount: 3632, percentage: 44.25, color: "#10b981" },
+      { name: "Shopping", amount: 2270, percentage: 27.65, color: "#f59e0b" },
+      { name: "Bills", amount: 1015, percentage: 12.36, color: "#06b6d4" },
+      {
+        name: "Entertainment",
+        amount: 800,
+        percentage: 9.74,
+        color: "#ec4899",
+      },
+      {
+        name: "Transportation",
+        amount: 493,
+        percentage: 6.0,
+        color: "#ef4444",
+      },
     ],
     topExpenses: [
       {
@@ -256,9 +272,9 @@ export const mockData: MonthData[] = [
         iconColor: "bg-purple-500",
       },
     ],
-    avgDailySpending: 329,
-    dailyLimit: 319,
-    budgetUsedPercentage: 68,
+    avgDailySpending: 264.84,
+    dailyLimit: 483.87,
+    budgetUsedPercentage: 54.73,
     daysRemaining: 15,
     recentTransactions: [
       {
@@ -309,7 +325,7 @@ export const mockData: MonthData[] = [
     monthlyTotal: 4430,
     monthlyBudget: 14000,
     remaining: 9570,
-    spentToday: 0,
+    spentToday: 0.0,
     weeks: [
       {
         weekNumber: 1,
@@ -317,6 +333,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3000,
         weeklyRemaining: 170,
         daysInWeek: 7,
+        dailyAverage: 404.29,
         transactions: [
           {
             id: "14",
@@ -350,6 +367,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3000,
         weeklyRemaining: 2250,
         daysInWeek: 7,
+        dailyAverage: 107.14,
         transactions: [
           {
             id: "17",
@@ -367,6 +385,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3000,
         weeklyRemaining: 2150,
         daysInWeek: 7,
+        dailyAverage: 121.43,
         transactions: [
           {
             id: "18",
@@ -384,6 +403,7 @@ export const mockData: MonthData[] = [
         weeklyBudget: 3000,
         weeklyRemaining: 3000,
         daysInWeek: 7,
+        dailyAverage: 0.0,
         transactions: [],
       },
       {
@@ -392,13 +412,14 @@ export const mockData: MonthData[] = [
         weeklyBudget: 2000,
         weeklyRemaining: 2000,
         daysInWeek: 3,
+        dailyAverage: 0.0,
         transactions: [],
       },
     ],
     categoryData: [
-      { name: "Bills", amount: 1850, percentage: 42, color: "#06b6d4" },
-      { name: "Food", amount: 1730, percentage: 39, color: "#10b981" },
-      { name: "Shopping", amount: 850, percentage: 19, color: "#f59e0b" },
+      { name: "Bills", amount: 1850, percentage: 41.76, color: "#06b6d4" },
+      { name: "Food", amount: 1730, percentage: 39.05, color: "#10b981" },
+      { name: "Shopping", amount: 850, percentage: 19.19, color: "#f59e0b" },
     ],
     topExpenses: [
       {
@@ -442,9 +463,9 @@ export const mockData: MonthData[] = [
         iconColor: "bg-teal-500",
       },
     ],
-    avgDailySpending: 143,
-    dailyLimit: 0,
-    budgetUsedPercentage: 32,
+    avgDailySpending: 142.9,
+    dailyLimit: 451.61,
+    budgetUsedPercentage: 31.64,
     daysRemaining: 0,
     recentTransactions: [
       {
