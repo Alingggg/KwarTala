@@ -1,5 +1,6 @@
 import { Button } from "@/components";
 import { FiX, FiAlertTriangle } from "@/assets/icons";
+import { useCurrencyContext } from "@/hooks";
 
 interface DeleteExpenseModalProps {
   onClose: () => void;
@@ -20,6 +21,8 @@ function DeleteExpenseModal({
     console.log("Deleting");
     onClose();
   };
+
+  const { currency } = useCurrencyContext();
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -46,7 +49,8 @@ function DeleteExpenseModal({
             <span className="font-semibold">Description:</span> {description}
           </p>
           <p>
-            <span className="font-semibold">Amount:</span> P{amount.toFixed(2)}
+            <span className="font-semibold">Amount:</span> {currency}
+            {amount.toFixed(2)}
           </p>
           {date && (
             <p>

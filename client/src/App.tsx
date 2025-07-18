@@ -6,10 +6,10 @@ import { CurrencyProvider, ModalProvider } from "@/context";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ModalProvider>
-      <CurrencyProvider>
+    <CurrencyProvider>
+      <ModalProvider>
         <AppRouter />
-      </CurrencyProvider>
-    </ModalProvider>
+      </ModalProvider>
+    </CurrencyProvider>
   </StrictMode>
 );
