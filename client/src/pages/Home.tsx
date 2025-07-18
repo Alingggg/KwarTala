@@ -35,7 +35,7 @@ function Home() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8 mb-5 md:mb-8">
         {/* Budget Section */}
-        <div className="bg-timberwolf-900 text-timberwolf-800 p-3 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col justify-center">
+        <div className="bg-timberwolf-900 text-timberwolf-800 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col justify-center">
           <div className="bg-night-500 p-3 md:p-6 rounded-lg shadow-sm">
             <p className="text-sm text-ash-gray-400">Budget</p>
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
@@ -120,7 +120,7 @@ function Home() {
         </div>
 
         {/* Expense Chart */}
-        <div className="col-span-1 bg-timberwolf-900 p-3 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+        <div className="col-span-1 bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <ExpenseChart monthIndex={displayIndex} />
         </div>
       </div>

@@ -165,7 +165,7 @@ function Transactions() {
       </div>
 
       {/* Week Filter */}
-      <div className="mb-6 md:mb-8 bg-timberwolf-900 p-3 md:p-4 rounded-lg shadow-lg">
+      <div className="mb-6 md:mb-8 bg-timberwolf-900 p-4 rounded-lg shadow-lg">
         <div className="flex items-center justify-center mb-3 md:mb-4">
           <FiFilter className="mr-2 text-night-600" size={16} />
           <span className="text-base md:text-lg font-bold text-night-600">
