@@ -1,24 +1,47 @@
+import { useState } from "react";
+import { FiEye, FiEyeOff } from "@/assets/icons";
+
 interface InputProps {
   type?: "text" | "email" | "password" | "number" | "month";
   id: string;
   placeholder?: string;
-  value?: string;
   min?: string;
   max?: string;
+  className?: string;
 }
 
-function Input({ type, ...otherProps }: InputProps) {
+function Input({ type, className = "", ...otherProps }: InputProps) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const inputType = type === "password" && showPassword ? "text" : type;
+
   return (
-    <input
-      type={type}
-      {...otherProps}
-      className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
-        type === "number"
-          ? "appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          : ""
-      }`}
-      style={type === "number" ? { MozAppearance: "textfield" } : undefined}
-    />
+    <div className="relative">
+      <input
+        type={inputType}
+        {...otherProps}
+        className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
+          type === "number"
+            ? "appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            : ""
+        } ${type === "password" ? "pr-10" : ""} ${className}`}
+        style={type === "number" ? { MozAppearance: "textfield" } : undefined}
+      />
+
+      {type === "password" && (
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+        >
+          {showPassword ? (
+            <FiEyeOff className="h-5 w-5 text-night-500 hover:text-night-600" />
+          ) : (
+            <FiEye className="h-5 w-5 text-night-500 hover:text-night-600" />
+          )}
+        </button>
+      )}
+    </div>
   );
 }
 

@@ -1,4 +1,9 @@
 export {
+  FiEye,
+  FiEyeOff,
+  FiUser,
+  FiLock,
+  FiMail,
   FiHome,
   FiBarChart2,
   FiTarget,

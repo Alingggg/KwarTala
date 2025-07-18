@@ -150,25 +150,25 @@ body {
   --color-rose-900: #f9cbdb;
 }
 
-.no-scrollbar-arrows::-webkit-scrollbar-button {
+html ::-webkit-scrollbar-button {
   display: none;
 }
 
-/* Optional: Also customize the scrollbar appearance */
-.no-scrollbar-arrows::-webkit-scrollbar {
-  width: 0.5rem;
-  height: 0.5rem;
+html ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.no-scrollbar-arrows::-webkit-scrollbar-track {
+html ::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 4px;
 }
 
-.no-scrollbar-arrows::-webkit-scrollbar-thumb {
+html ::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.no-scrollbar-arrows::-webkit-scrollbar-thumb:hover {
+html ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }

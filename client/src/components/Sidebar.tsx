@@ -40,7 +40,7 @@ function Sidebar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { to: "/", icon: <FiHome />, label: "Home" },
+    { to: "/home", icon: <FiHome />, label: "Home" },
     { to: "/transactions", icon: <TfiWallet />, label: "Transactions" },
     { to: "/analytics", icon: <FiBarChart2 />, label: "Analytics" },
     { to: "/goals", icon: <FiTarget />, label: "Goals" },
