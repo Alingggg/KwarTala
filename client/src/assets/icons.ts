@@ -20,5 +20,7 @@ export {
   FiMinus,
   FiChevronUp,
   FiChevronDown,
+  FiMenu,
+  FiInfo,
 } from "react-icons/fi";
 export { TfiWallet } from "react-icons/tfi";

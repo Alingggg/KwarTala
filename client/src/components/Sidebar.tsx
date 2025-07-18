@@ -4,20 +4,25 @@ import {
   FiBarChart2,
   FiTarget,
   FiLogOut,
+  FiMenu,
+  FiX,
 } from "@/assets/icons";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router";
+import { useState } from "react";
 
 interface NavItemProps {
   to: string;
   icon: ReactNode;
   label: string;
+  onClick?: () => void;
 }
 
-const NavItem = ({ to, icon, label }: NavItemProps) => (
+const NavItem = ({ to, icon, label, onClick }: NavItemProps) => (
   <NavLink
     to={to}
     end
+    onClick={onClick}
     className={({ isActive }) =>
       `flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
         isActive
@@ -32,6 +37,8 @@ const NavItem = ({ to, icon, label }: NavItemProps) => (
 );
 
 function Sidebar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const navItems = [
     { to: "/", icon: <FiHome />, label: "Home" },
     { to: "/transactions", icon: <TfiWallet />, label: "Transactions" },
@@ -46,35 +53,126 @@ function Sidebar() {
     day: "numeric",
   });
 
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
-    <aside className="w-64 bg-night-500 text-timberwolf-500 flex flex-col p-6">
-      <div className="flex items-center mb-8">
-        <div className="w-12 h-12 rounded-full bg-ash-gray-900 mr-4"></div>
-        <span className="text-xl font-semibold">KwarTala</span>
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-64 bg-night-500 text-timberwolf-500 flex-col p-6">
+        <div className="flex items-center mb-8">
+          <div className="w-12 h-12 rounded-full bg-ash-gray-900 mr-4"></div>
+          <span className="text-xl font-semibold">KwarTala</span>
+        </div>
+
+        <div className="bg-night-600 p-4 rounded-lg mb-8">
+          <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
+            Today
+          </p>
+          <p className="text-sm font-medium text-timberwolf-900 mt-1">
+            {currentDate}
+          </p>
+        </div>
+
+        <nav className="flex flex-col space-y-2">
+          {navItems.map((item) => (
+            <NavItem key={item.label} {...item} />
+          ))}
+        </nav>
+
+        <div className="mt-auto">
+          <button className="flex items-center px-4 py-3 text-lg font-medium text-ash-gray-500 hover:bg-night-400 rounded-lg w-full">
+            <FiLogOut />
+            <span className="ml-4">Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile Top Navigation */}
+      <div className="md:hidden bg-night-500 text-timberwolf-500 sticky top-0 z-50">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 rounded-lg hover:bg-night-600 transition-colors mr-3"
+            >
+              <FiMenu size={24} />
+            </button>
+            <div className="w-8 h-8 rounded-full bg-ash-gray-900 mr-3"></div>
+            <span className="text-lg font-semibold">KwarTala</span>
+          </div>
+
+          <div className="text-right">
+            <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
+              Today
+            </p>
+            <p className="text-sm font-medium text-timberwolf-900">
+              {new Date().toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-night-600 p-4 rounded-lg mb-8">
-        <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
-          Today
-        </p>
-        <p className="text-sm font-medium text-timberwolf-900 mt-1">
-          {currentDate}
-        </p>
-      </div>
+      {/* Mobile Side Drawer */}
+      {isMenuOpen && (
+        <>
+          {/* Backdrop - subtle overlay */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/60 z-40"
+            onClick={closeMenu}
+          />
 
-      <nav className="flex flex-col space-y-2">
-        {navItems.map((item) => (
-          <NavItem key={item.label} {...item} />
-        ))}
-      </nav>
+          {/* Side Drawer - Reduced width */}
+          <div className="md:hidden fixed top-0 left-0 h-full w-72 max-w-[75vw] bg-night-500 text-timberwolf-500 z-50 transform translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl">
+            <div className="flex flex-col h-full p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-full bg-ash-gray-900 mr-4"></div>
+                  <span className="text-xl font-semibold">KwarTala</span>
+                </div>
+                <button
+                  onClick={closeMenu}
+                  className="p-2 rounded-lg hover:bg-night-600 transition-colors"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
 
-      <div className="mt-auto">
-        <button className="flex items-center px-4 py-3 text-lg font-medium text-ash-gray-500 hover:bg-night-400 rounded-lg w-full">
-          <FiLogOut />
-          <span className="ml-4">Logout</span>
-        </button>
-      </div>
-    </aside>
+              {/* Date Info */}
+              <div className="bg-night-600 p-4 rounded-lg mb-8">
+                <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
+                  Today
+                </p>
+                <p className="text-sm font-medium text-timberwolf-900 mt-1">
+                  {currentDate}
+                </p>
+              </div>
+
+              {/* Navigation */}
+              <nav className="flex flex-col space-y-2 flex-1">
+                {navItems.map((item) => (
+                  <NavItem key={item.label} {...item} onClick={closeMenu} />
+                ))}
+              </nav>
+
+              {/* Logout Button */}
+              <div className="mt-auto">
+                <button
+                  onClick={closeMenu}
+                  className="flex items-center px-4 py-3 text-lg font-medium text-ash-gray-500 hover:bg-night-400 rounded-lg w-full"
+                >
+                  <FiLogOut />
+                  <span className="ml-4">Logout</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 

@@ -6,12 +6,11 @@ function Home() {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
 
-  // --- Logic to find the current month's data ---
+  // Find the current month's data
   const now = new Date();
   const currentMonthName = now.toLocaleString("en-US", { month: "long" });
   const currentYear = now.getFullYear();
 
-  // Find the index of the current month in your mock data
   const currentMonthIndex = allMonthsData.findIndex(
     (data) => data.month === currentMonthName && data.year === currentYear
   );
@@ -21,34 +20,38 @@ function Home() {
   const mockData = allMonthsData[displayIndex];
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-baseline justify-between">
-          <h1 className="text-3xl font-bold text-night-600">Hello, John</h1>
-          <p className="text-2xl font-semibold text-night-600">
+    <div className="p-3 md:p-8">
+      {/* Page Header */}
+      <div className="mb-5 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-night-600">
+            Hello, John
+          </h1>
+          <p className="text-lg md:text-2xl font-semibold text-night-600">
             {mockData.month} {mockData.year}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8 mb-5 md:mb-8">
         {/* Budget Section */}
-        <div className="bg-ash-gray-900 text-timberwolf-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-center">
-          <div className="bg-night-500 p-6 rounded-lg shadow-sm">
+        <div className="bg-timberwolf-900 text-timberwolf-800 p-3 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col justify-center">
+          <div className="bg-night-500 p-3 md:p-6 rounded-lg shadow-sm">
             <p className="text-sm text-ash-gray-400">Budget</p>
-            <p className="text-4xl font-bold text-timberwolf-900">
-              {currency}
-              {mockData.remaining.toLocaleString()}
-              <span className="text-base font-normal text-ash-gray-400 ml-2">
+            <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+              <p className="text-2xl md:text-4xl font-bold text-timberwolf-900">
+                {currency}
+                {mockData.remaining.toLocaleString()}
+              </p>
+              <span className="text-sm md:text-base font-normal text-ash-gray-400">
                 remaining of {currency}
                 {mockData.monthlyBudget.toLocaleString()}
               </span>
-            </p>
+            </div>
           </div>
 
-          {/* Today's Spending Display */}
-          <div className="bg-ash-gray-800 p-4 rounded-lg mt-4 shadow-inner">
+          {/* Budget Progress and Today's Spending */}
+          <div className="bg-ash-gray-800 p-3 md:p-4 rounded-lg mt-3 md:mt-4 shadow-inner">
             <Button
               onClick={() =>
                 openModal("EDIT_BUDGET", {
@@ -58,7 +61,7 @@ function Home() {
                 })
               }
               variant="secondary"
-              className="w-full mb-6"
+              className="w-full mb-3 md:mb-6 text-sm md:text-base"
             >
               Edit Budget
             </Button>
@@ -72,9 +75,9 @@ function Home() {
                   {mockData.budgetUsedPercentage}% used
                 </span>
               </div>
-              <div className="w-full bg-ash-gray-700 rounded-full h-3 shadow-inner">
+              <div className="w-full bg-ash-gray-700 rounded-full h-2 md:h-3 shadow-inner">
                 <div
-                  className={`h-3 rounded-full shadow-sm ${
+                  className={`h-2 md:h-3 rounded-full shadow-sm ${
                     mockData.remaining >= 0 ? "bg-night-700" : "bg-auburn-500"
                   }`}
                   style={{
@@ -82,7 +85,7 @@ function Home() {
                   }}
                 ></div>
               </div>
-              <div className="flex justify-between text-sm text-night-600 font-medium">
+              <div className="flex justify-between text-xs md:text-sm text-night-600 font-medium">
                 <span>{currency}0</span>
                 <span>
                   {currency}
@@ -91,16 +94,16 @@ function Home() {
               </div>
             </div>
 
-            {/* Today's Spending - New Container */}
-            <div className="bg-night-500 p-4 rounded-lg mt-4 border border-night-600">
+            {/* Today's Spending */}
+            <div className="bg-night-500 p-3 md:p-4 rounded-lg mt-3 md:mt-4 border border-night-600">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-auburn-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-timberwolf-700">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-2 h-2 md:w-3 md:h-3 bg-auburn-500 rounded-full"></div>
+                  <span className="text-xs md:text-sm font-medium text-timberwolf-700">
                     Today's Spending
                   </span>
                 </div>
-                <span className="text-xl font-bold text-timberwolf-900">
+                <span className="text-lg md:text-xl font-bold text-timberwolf-900">
                   {currency}
                   {mockData.spentToday?.toLocaleString() || 0}
                 </span>
@@ -110,27 +113,27 @@ function Home() {
 
           <Button
             onClick={() => openModal("UPSERT_EXPENSE")}
-            className="mt-4 shadow-sm"
+            className="mt-3 md:mt-4 shadow-sm text-sm md:text-base"
           >
             Add Expense
           </Button>
         </div>
 
         {/* Expense Chart */}
-        <div className="col-span-1 bg-ash-gray-900 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="col-span-1 bg-timberwolf-900 p-3 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <ExpenseChart monthIndex={displayIndex} />
         </div>
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <div className="flex items-center mb-6">
-          <span className="text-xl font-bold text-night-600">
+      <div className="mb-4 md:mb-6">
+        <div className="flex items-center mb-4 md:mb-6">
+          <span className="text-lg md:text-xl font-bold text-night-600">
             Recent Transactions
           </span>
           <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {mockData.weeks
             .flatMap((week) => week.transactions)
             .slice(0, 10)

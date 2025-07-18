@@ -10,3 +10,4 @@ export { default as Button } from "./Button";
 export { default as ExpenseCard } from "./ExpenseCard";
 export { default as ExpenseChart } from "./ExpenseChart";
 export { default as Input } from "./Input";
+export { default as ExpenseDescriptionModal } from "./modal/ExpenseDescriptionModal";

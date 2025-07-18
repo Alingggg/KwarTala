@@ -126,7 +126,7 @@ function tickFormatter(value: any): string {
   return String(numValue);
 }
 
-// Custom tooltip component
+// Custom tooltip component for the chart
 const CustomTooltip = ({ active, payload, label }: any) => {
   const { currency } = useCurrencyContext();
   if (active && payload && payload.length) {
@@ -136,7 +136,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const dailyAverage = data.dailyAverage;
 
     return (
-      <div className="bg-ash-gray-900 border border-night-700 p-3 rounded-lg shadow-lg">
+      <div className="bg-timberwolf-900 border border-night-700 p-3 rounded-lg shadow-lg">
         <p className="text-night-600 font-semibold mb-2">
           {data.name || label}
         </p>
@@ -191,7 +191,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
       ? Math.max(800, allDailyData.length * 50) // 50px per day, minimum 800px
       : "100%";
 
-  // Create a custom tick component that has access to the current monthly data
+  // Custom tick component for weekly X axis
   const WeeklyXAxisTick = ({ x, y, payload }: any) => {
     const weekData = weeklyData.find((w) => w.name === payload.value);
 
@@ -225,7 +225,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-timberwolf-900">
       {/* Chart Header with Toggle */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-night-600">
