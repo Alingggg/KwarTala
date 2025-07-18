@@ -44,52 +44,56 @@ function Analytics() {
   };
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-night-600">Analytics</h1>
+    <div className="p-3 md:p-8">
+      {/* Page Header */}
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-night-600">
+          Analytics
+        </h1>
       </div>
 
       {/* Month Navigation */}
-      <div className="relative mb-8">
+      <div className="relative mb-6 md:mb-8">
         {/* Navigation Buttons */}
         <button
           onClick={() => navigateMonth("prev")}
           disabled={currentMonthIndex === analyticsData.length - 1}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
         >
-          <FiChevronLeft size={24} />
+          <FiChevronLeft size={20} className="md:w-6 md:h-6" />
         </button>
 
         <button
           onClick={() => navigateMonth("next")}
           disabled={currentMonthIndex === 0}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
         >
-          <FiChevronRight size={24} />
+          <FiChevronRight size={20} className="md:w-6 md:h-6" />
         </button>
 
         {/* Month Header */}
-        <div className="text-center py-6">
+        <div className="text-center py-4 md:py-6">
           <div className="flex items-center justify-center">
-            <FiCalendar className="mr-3 text-night-600" size={28} />
-            <h2 className="text-3xl font-bold text-night-600">
+            <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
+            <h2 className="text-xl md:text-3xl font-bold text-night-600">
               {currentData.month} {currentData.year}
             </h2>
           </div>
         </div>
       </div>
 
-      {/* Finalized Budget Overview */}
-      <div className="bg-night-500 p-8 rounded-xl shadow-lg mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Budget Overview */}
+      <div className="bg-night-500 p-4 md:p-8 rounded-xl shadow-lg mb-6 md:mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
           {/* Progress and Remaining Budget */}
           <div className="flex flex-col justify-center">
-            <div className="flex items-baseline space-x-6">
+            <div className="flex flex-col sm:flex-row sm:items-baseline space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
               <div>
-                <p className="text-sm text-ash-gray-400">Budget Remaining</p>
+                <p className="text-xs md:text-sm text-ash-gray-400">
+                  Budget Remaining
+                </p>
                 <p
-                  className={`text-3xl font-bold ${
+                  className={`text-xl md:text-3xl font-bold ${
                     currentData.remaining >= 0
                       ? "text-timberwolf-900"
                       : "text-auburn-500"
@@ -100,22 +104,24 @@ function Analytics() {
                 </p>
               </div>
               <div>
-                <p className="text-sm text-ash-gray-400">Monthly Budget</p>
-                <p className="text-3xl font-bold text-timberwolf-900">
+                <p className="text-xs md:text-sm text-ash-gray-400">
+                  Monthly Budget
+                </p>
+                <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
                   {currency}
                   {currentData.monthlyBudget.toLocaleString()}
                 </p>
               </div>
             </div>
 
-            <div className="mt-6">
-              <div className="w-full bg-night-600 rounded-full h-3 shadow-inner">
+            <div className="mt-4 md:mt-6">
+              <div className="w-full bg-night-600 rounded-full h-2 md:h-3 shadow-inner">
                 <div
                   className={`${
                     currentData.remaining >= 0
                       ? "bg-night-700"
                       : "bg-auburn-500"
-                  } h-3 rounded-full shadow-sm`}
+                  } h-2 md:h-3 rounded-full shadow-sm`}
                   style={{
                     width: `${Math.min(
                       currentData.budgetUsedPercentage,
@@ -132,18 +138,21 @@ function Analytics() {
           </div>
 
           {/* Key Metrics & Limits */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-night-600 p-4 rounded-lg text-center">
-              <p className="text-sm text-ash-gray-400 mb-2">Total Spent</p>
-              <p className="text-2xl font-bold text-timberwolf-900">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            <div className="bg-night-600 p-3 md:p-4 rounded-lg text-center flex flex-col justify-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                Total Spent
+              </p>
+              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
                 {currentData.monthlyTotal.toLocaleString()}
               </p>
-              <p className="text-xs text-ash-gray-500 mt-1">&nbsp;</p>
             </div>
-            <div className="bg-night-600 p-4 rounded-lg text-center">
-              <p className="text-sm text-ash-gray-400 mb-2">Daily Average</p>
-              <p className="text-2xl font-bold text-timberwolf-900">
+            <div className="bg-night-600 p-3 md:p-4 rounded-lg text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                Daily Average
+              </p>
+              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
                 {currentData.avgDailySpending.toLocaleString()}
               </p>
@@ -151,9 +160,11 @@ function Analytics() {
                 Avg. spend per day
               </p>
             </div>
-            <div className="bg-night-600 p-4 rounded-lg text-center">
-              <p className="text-sm text-ash-gray-400 mb-2">Daily Limit</p>
-              <p className="text-2xl font-bold text-timberwolf-900">
+            <div className="bg-night-600 p-3 md:p-4 rounded-lg text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                Daily Limit
+              </p>
+              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
                 {currentData.dailyLimit > 0
                   ? currentData.dailyLimit.toLocaleString()
@@ -167,27 +178,27 @@ function Analytics() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
         {/* Expense Chart from Home */}
-        <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
+        <div className="bg-ash-gray-900 p-4 md:p-6 rounded-xl shadow-lg">
           <ExpenseChart monthIndex={currentMonthIndex} />
         </div>
 
         {/* Category Breakdown - Combined Pie Chart and List */}
-        <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-semibold text-night-600 mb-4">
+        <div className="bg-ash-gray-900 p-4 md:p-6 rounded-xl shadow-lg">
+          <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Expenses by Category
           </h3>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Pie Chart */}
-            <div className="h-52 flex items-center justify-center">
+            <div className="h-48 md:h-52 flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={currentData.categoryData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={window.innerWidth < 768 ? 60 : 80}
                     dataKey="amount"
                     label={false}
                   >
@@ -207,15 +218,15 @@ function Analytics() {
             </div>
 
             {/* Category List */}
-            <div>
+            <div className="space-y-1">
               {currentData.categoryData.map((category, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between text-sm hover:bg-timberwolf-900 p-2 rounded-lg transition-colors cursor-pointer"
+                  className="flex items-center justify-between text-xs md:text-sm hover:bg-timberwolf-900 p-2 rounded-lg transition-colors cursor-pointer"
                 >
-                  <div className="flex items-center overflow-hidden">
+                  <div className="flex items-center overflow-hidden min-w-0">
                     <div
-                      className="w-3 h-3 rounded-full mr-3 flex-shrink-0"
+                      className="w-3 h-3 rounded-full mr-2 md:mr-3 flex-shrink-0"
                       style={{ backgroundColor: category.color }}
                     ></div>
                     <span className="font-medium text-night-600 truncate">
@@ -238,27 +249,27 @@ function Analytics() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
+      <div className="grid grid-cols-1 gap-6 md:gap-8 mb-6 md:mb-8">
         {/* Top Expenses */}
-        <div className="bg-ash-gray-900 p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-semibold text-night-600 mb-4">
+        <div className="bg-ash-gray-900 p-4 md:p-6 rounded-xl shadow-lg">
+          <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Top Expenses
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3 md:gap-y-4">
             {currentData.topExpenses.map((expense, index) => (
               <div
                 key={expense.id || index}
-                className="flex items-center justify-between py-3 border-b border-ash-gray-700"
+                className="flex items-center justify-between py-2 md:py-3 border-b border-ash-gray-700"
               >
-                <div>
-                  <p className="font-medium text-night-600">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-night-600 text-sm md:text-base truncate">
                     {expense.description}
                   </p>
-                  <p className="text-sm text-ash-gray-400">
+                  <p className="text-xs md:text-sm text-ash-gray-400">
                     {expense.category} • {expense.date}
                   </p>
                 </div>
-                <p className="font-semibold text-auburn-500">
+                <p className="font-semibold text-auburn-500 text-sm md:text-base ml-2 flex-shrink-0">
                   {currency}
                   {expense.amount.toLocaleString()}
                 </p>
