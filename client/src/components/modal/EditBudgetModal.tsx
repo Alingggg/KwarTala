@@ -71,25 +71,25 @@ function EditBudgetModal({
   const isEditingPastMonth = selectedDate < currentMonthDate;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-ash-gray-900 p-8 rounded-lg w-full max-w-md text-night-500 relative">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-6 md:p-8">
+      <div className="bg-ash-gray-900 p-5 md:p-7 rounded-lg w-full max-w-sm md:max-w-md text-night-500 relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-night-700 hover:text-night-500"
+          className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 z-10"
         >
-          <FiX size={24} />
+          <FiX size={18} className="md:w-5 md:h-5" />
         </button>
 
-        <div className="flex items-center mb-6">
-          <h2 className="text-2xl font-bold">Edit Budget</h2>
+        <div className="flex items-center mb-5 md:mb-6">
+          <h2 className="text-lg md:text-xl font-bold">Edit Budget</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Month/Year Selection */}
+        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
+          {/* Budget Period Selection */}
           <div>
             <label
               htmlFor="budgetPeriod"
-              className="block text-sm font-semibold text-night-600 mb-1"
+              className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
             >
               Budget Period
             </label>
@@ -105,11 +105,11 @@ function EditBudgetModal({
             </p>
           </div>
 
-          {/* Budget Amount */}
+          {/* Budget Amount Input */}
           <div>
             <label
               htmlFor="budget"
-              className="block text-sm font-semibold text-night-600 mb-1"
+              className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
             >
               Budget Amount
             </label>
@@ -121,40 +121,50 @@ function EditBudgetModal({
             />
           </div>
 
-          {/* Current vs New Comparison */}
-          <div className="bg-timberwolf-800 p-4 rounded-lg">
-            <div className="flex justify-between mb-2">
+          {/* Current vs New Budget Comparison */}
+          <div className="bg-timberwolf-800 p-3 md:p-4 rounded-lg">
+            <div className="flex justify-between mb-2 text-xs md:text-sm">
               <span className="text-night-700">Current Budget:</span>
               <span className="font-semibold">
                 P{currentBudget.toLocaleString()}
               </span>
             </div>
-            <div className="flex justify-between mb-3">
+            <div className="flex justify-between mb-2 text-xs md:text-sm">
               <span className="text-night-700">New Budget:</span>
               <span className="font-semibold">
                 P{parseFloat(budgetAmount || "0").toLocaleString()}
               </span>
             </div>
             <div className="border-t border-ash-gray-700 pt-2">
-              <p className="text-sm text-night-600">{getImpactMessage()}</p>
+              <p className="text-xs text-night-600">{getImpactMessage()}</p>
             </div>
           </div>
 
-          {/* Warning for Past Dates */}
+          {/* Warning for Editing Past Dates */}
           {isEditingPastMonth && (
             <div className="bg-auburn-900 border border-auburn-500 p-3 rounded-lg">
-              <p className="text-auburn-600 text-sm">
+              <p className="text-auburn-600 text-xs">
                 ⚠️ You're editing a budget for a past period. This will
                 recalculate your remaining budget for that month.
               </p>
             </div>
           )}
 
-          <div className="flex justify-end space-x-4 pt-4">
-            <Button type="button" variant="secondary" onClick={onClose}>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              className="w-full sm:w-auto text-xs md:text-sm px-3 py-2"
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="success">
+            <Button
+              type="submit"
+              variant="success"
+              className="w-full sm:w-auto text-xs md:text-sm px-3 py-2"
+            >
               Update Budget
             </Button>
           </div>

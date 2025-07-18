@@ -14,7 +14,7 @@ import {
 import { mockData as allMonthsData } from "@/assets/mockData";
 import { useCurrencyContext } from "@/hooks";
 
-// Generate daily data for the chart from a specific month
+// Returns daily chart data for the given month index
 const getDailyChartData = (monthIndex: number) => {
   const month = allMonthsData[monthIndex];
   if (!month) return [];
@@ -38,12 +38,12 @@ const getDailyChartData = (monthIndex: number) => {
   const year = month.year;
   const daysInMonth = new Date(year, monthIndex2 + 1, 0).getDate();
 
-  // Create an array for each day of the month
+  // Build an array with an entry for each day of the month
   const dailyData = Array.from({ length: daysInMonth }, (_, index) => {
     const day = index + 1;
     let dayTotal = 0;
 
-    // Calculate total spending for this day by checking all transactions
+    // Sum all transactions for this day
     month.weeks.forEach((week) => {
       week.transactions.forEach((transaction) => {
         // Extract day from transaction date (e.g., "Mar. 15" -> 15)
@@ -68,7 +68,7 @@ const getDailyChartData = (monthIndex: number) => {
   return dailyData;
 };
 
-// Generate weekly data for a specific month index
+// Returns weekly chart data for the given month index
 const getWeeklyChartData = (monthIndex: number) => {
   const month = allMonthsData[monthIndex];
   if (!month) return [];
@@ -116,6 +116,7 @@ const getWeeklyChartData = (monthIndex: number) => {
   });
 };
 
+// Formats Y-axis ticks (e.g., 1000 -> 1k)
 function tickFormatter(value: any): string {
   const numValue = Number(value);
   if (isNaN(numValue)) return String(value);
@@ -126,7 +127,7 @@ function tickFormatter(value: any): string {
   return String(numValue);
 }
 
-// Custom tooltip component for the chart
+// Custom tooltip for the chart
 const CustomTooltip = ({ active, payload, label }: any) => {
   const { currency } = useCurrencyContext();
   if (active && payload && payload.length) {
@@ -136,20 +137,22 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const dailyAverage = data.dailyAverage;
 
     return (
-      <div className="bg-timberwolf-900 border border-night-700 p-3 rounded-lg shadow-lg">
-        <p className="text-night-600 font-semibold mb-2">
+      <div className="bg-timberwolf-900 border border-night-700 p-2 md:p-3 rounded-lg shadow-lg max-w-xs">
+        <p className="text-night-600 font-semibold mb-1 md:mb-2 text-sm md:text-base">
           {data.name || label}
         </p>
         {data.dateRange && (
-          <p className="text-night-500 text-xs mb-2">{data.dateRange}</p>
+          <p className="text-night-500 text-xs mb-1 md:mb-2">
+            {data.dateRange}
+          </p>
         )}
         <div className="space-y-1">
-          <p className="text-night-500 text-sm">
+          <p className="text-night-500 text-xs md:text-sm">
             <span className="font-medium">Total:</span> {currency}
             {total.toLocaleString()}
           </p>
           {days > 1 && (
-            <p className="text-night-500 text-sm">
+            <p className="text-night-500 text-xs md:text-sm">
               <span className="font-medium">Daily Average:</span> {currency}
               {dailyAverage.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -167,8 +170,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 type ChartView = "weekly" | "daily";
 
 interface ExpenseChartProps {
-  // Optional prop to specify which month's weekly data to show.
-  // Defaults to the first month if not provided.
+  // Optionally specify which month's data to show (defaults to first month)
   monthIndex?: number;
 }
 
@@ -181,17 +183,14 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
 
   const currentData = chartView === "weekly" ? weeklyData : allDailyData;
 
-  // Calculate max value for consistent Y-axis scaling in daily view
+  // Find the max value for Y-axis scaling in daily view
   const maxDailyValue = Math.max(...allDailyData.map((d) => d.total));
 
-  // Calculate chart width based on data length
-  // For daily view, we want more width to show all days with proper spacing
+  // Chart width: wider for daily view to allow horizontal scrolling
   const chartWidth =
-    chartView === "daily"
-      ? Math.max(800, allDailyData.length * 50) // 50px per day, minimum 800px
-      : "100%";
+    chartView === "daily" ? Math.max(600, allDailyData.length * 35) : "100%";
 
-  // Custom tick component for weekly X axis
+  // Custom tick for weekly X axis (shows week and date range)
   const WeeklyXAxisTick = ({ x, y, payload }: any) => {
     const weekData = weeklyData.find((w) => w.name === payload.value);
 
@@ -227,8 +226,8 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
   return (
     <div className="h-full flex flex-col bg-timberwolf-900">
       {/* Chart Header with Toggle */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-night-600">
+      <div className="flex items-center justify-between mb-3 md:mb-4">
+        <h3 className="text-base md:text-lg font-semibold text-night-600">
           {chartView === "weekly" ? "Weekly" : "Daily"} Expenses
         </h3>
 
@@ -236,7 +235,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
         <div className="flex bg-timberwolf-700 rounded-lg p-1">
           <button
             onClick={() => setChartView("daily")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-2 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
               chartView === "daily"
                 ? "bg-night-600 text-timberwolf-900"
                 : "text-night-500 hover:bg-timberwolf-600"
@@ -246,7 +245,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
           </button>
           <button
             onClick={() => setChartView("weekly")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-2 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
               chartView === "weekly"
                 ? "bg-night-600 text-timberwolf-900"
                 : "text-night-500 hover:bg-timberwolf-600"
@@ -262,7 +261,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
         className="flex-1 overflow-x-auto overflow-y-hidden no-scrollbar-arrows"
         ref={scrollContainerRef}
       >
-        <div style={{ width: chartWidth, height: "100%", minHeight: "300px" }}>
+        <div style={{ width: chartWidth, height: "100%", minHeight: "250px" }}>
           <ResponsiveContainer width="100%" height="100%">
             {chartView === "weekly" ? (
               <BarChart data={currentData}>
@@ -283,10 +282,10 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={tickFormatter}
-                  tickCount={6}
+                  tickCount={5}
                   domain={[0, "dataMax + 1000"]}
-                  tick={{ fontSize: 10, fill: "#999b7a" }}
-                  width={40}
+                  tick={{ fontSize: 9, fill: "#999b7a" }}
+                  width={35}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
@@ -302,20 +301,20 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
                   dataKey="name"
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 10, fill: "#999b7a" }}
+                  tick={{ fontSize: 8, fill: "#999b7a" }}
                   interval={0} // Show all labels
                   angle={-45}
                   textAnchor="end"
-                  height={60}
+                  height={50}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={tickFormatter}
-                  tickCount={6}
+                  tickCount={5}
                   domain={[0, Math.max(maxDailyValue + 500, 1000)]}
-                  tick={{ fontSize: 10, fill: "#999b7a" }}
-                  width={40}
+                  tick={{ fontSize: 9, fill: "#999b7a" }}
+                  width={35}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line
@@ -323,8 +322,8 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
                   dataKey="total"
                   stroke="#a22c29"
                   strokeWidth={2}
-                  dot={{ fill: "#a22c29", strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: "#a22c29", strokeWidth: 2 }}
+                  dot={{ fill: "#a22c29", strokeWidth: 2, r: 3 }}
+                  activeDot={{ r: 5, stroke: "#a22c29", strokeWidth: 2 }}
                 />
               </LineChart>
             )}
