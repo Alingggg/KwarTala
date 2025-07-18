@@ -178,14 +178,15 @@ function Analytics() {
         </div>
       </div>
 
+      {/* Charts and Category Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
-        {/* Expense Chart from Home */}
-        <div className="bg-ash-gray-900 p-4 md:p-6 rounded-xl shadow-lg">
+        {/* Expense Chart */}
+        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg">
           <ExpenseChart monthIndex={currentMonthIndex} />
         </div>
 
-        {/* Category Breakdown - Combined Pie Chart and List */}
-        <div className="bg-ash-gray-900 p-4 md:p-6 rounded-xl shadow-lg">
+        {/* Category Breakdown */}
+        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg">
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Expenses by Category
           </h3>
@@ -249,9 +250,9 @@ function Analytics() {
         </div>
       </div>
 
+      {/* Top Expenses */}
       <div className="grid grid-cols-1 gap-6 md:gap-8 mb-6 md:mb-8">
-        {/* Top Expenses */}
-        <div className="bg-ash-gray-900 p-4 md:p-6 rounded-xl shadow-lg">
+        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg">
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Top Expenses
           </h3>
