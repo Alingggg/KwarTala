@@ -109,7 +109,7 @@ function Home() {
           </div>
 
           <Button
-            onClick={() => openModal("ADD_EXPENSE")}
+            onClick={() => openModal("UPSERT_EXPENSE")}
             className="mt-4 shadow-sm"
           >
             Add Expense

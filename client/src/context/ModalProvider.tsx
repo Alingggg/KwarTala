@@ -2,8 +2,7 @@ import { ModalContainer } from "@/components";
 import { createContext, useState } from "react";
 
 type ModalType =
-  | "ADD_EXPENSE"
-  | "EDIT_EXPENSE"
+  | "UPSERT_EXPENSE"
   | "DELETE_EXPENSE"
   | "EDIT_BUDGET"
   | "ADD_GOAL"

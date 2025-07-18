@@ -1,10 +1,9 @@
 import { useModalContext } from "@/hooks";
 import {
-  AddExpenseModal,
+  UpsertExpenseModal,
   AddGoalModal,
   DeleteExpenseModal,
   EditBudgetModal,
-  EditExpenseModal,
   EditGoalModal,
 } from "@/components";
 
@@ -14,8 +13,7 @@ export default function ModalContainer() {
   if (!modalType) return null;
 
   const modalMap = {
-    ADD_EXPENSE: <AddExpenseModal {...modalProps} onClose={closeModal} />,
-    EDIT_EXPENSE: <EditExpenseModal {...modalProps} onClose={closeModal} />,
+    UPSERT_EXPENSE: <UpsertExpenseModal {...modalProps} onClose={closeModal} />,
     DELETE_EXPENSE: <DeleteExpenseModal {...modalProps} onClose={closeModal} />,
     EDIT_BUDGET: <EditBudgetModal {...modalProps} onClose={closeModal} />,
     ADD_GOAL: <AddGoalModal {...modalProps} onClose={closeModal} />,

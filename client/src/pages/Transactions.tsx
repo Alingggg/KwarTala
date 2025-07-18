@@ -85,7 +85,7 @@ function Transactions() {
             Edit Budget
           </Button>
           <Button
-            onClick={() => openModal("ADD_EXPENSE")}
+            onClick={() => openModal("UPSERT_EXPENSE")}
             className="shadow-sm"
           >
             Add Expense

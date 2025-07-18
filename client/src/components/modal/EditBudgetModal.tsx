@@ -87,8 +87,13 @@ function EditBudgetModal({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Month/Year Selection */}
           <div>
+            <label
+              htmlFor="budgetPeriod"
+              className="block text-sm font-semibold text-night-600 mb-1"
+            >
+              Budget Period
+            </label>
             <Input
-              label="Budget Period"
               id="budgetPeriod"
               type="month"
               value={selectedMonth}
@@ -101,13 +106,20 @@ function EditBudgetModal({
           </div>
 
           {/* Budget Amount */}
-          <Input
-            label="Budget Amount"
-            id="budget"
-            type="number"
-            placeholder="0.00"
-            value={budgetAmount}
-          />
+          <div>
+            <label
+              htmlFor="budget"
+              className="block text-sm font-semibold text-night-600 mb-1"
+            >
+              Budget Amount
+            </label>
+            <Input
+              id="budget"
+              type="number"
+              placeholder="0.00"
+              value={budgetAmount}
+            />
+          </div>
 
           {/* Current vs New Comparison */}
           <div className="bg-timberwolf-800 p-4 rounded-lg">

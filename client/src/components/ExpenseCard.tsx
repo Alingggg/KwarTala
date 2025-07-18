@@ -38,7 +38,7 @@ export function ExpenseCard({
       <div className="flex items-center space-x-2">
         <button
           onClick={() =>
-            openModal("EDIT_EXPENSE", {
+            openModal("UPSERT_EXPENSE", {
               id,
               category,
               amount,
