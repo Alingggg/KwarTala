@@ -3,7 +3,7 @@ import { verifyToken } from "#utils";
 function authMiddleware(req, res, next) {
   const accessToken = req.cookies.accessToken;
   if (!accessToken) {
-    const error = new Error("Unauthorized");
+    const error = new Error("Access token is required");
     error.status = 401;
     return next(error);
   }
