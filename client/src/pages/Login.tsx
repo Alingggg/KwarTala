@@ -3,6 +3,7 @@ import { FiMail, FiLock } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useLogin } from "@/hooks";
+import { AppLogo } from "@/assets/images";
 
 interface FormValues {
   email: string;
@@ -51,10 +52,12 @@ function Login() {
     <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-night-600 mx-auto mb-3 flex items-center justify-center">
-            <span className="text-xl md:text-2xl font-bold text-timberwolf-900">
-              K
-            </span>
+          <div className="w-24 h-24 md:w-28 md:h-28 rounded-full mx-auto mb-3 flex items-center justify-center">
+            <img
+              src={AppLogo}
+              alt="KwarTala Logo"
+              className="w-20 h-20 md:w-24 md:h-24 rounded-full"
+            />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-night-600 mb-1">
             KwarTala
