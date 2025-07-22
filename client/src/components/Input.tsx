@@ -5,12 +5,20 @@ interface InputProps {
   type?: "text" | "email" | "password" | "number" | "month";
   id: string;
   placeholder?: string;
-  min?: string;
-  max?: string;
+  min?: string | number;
+  max?: string | number;
   className?: string;
 }
 
-function Input({ type, className = "", ...otherProps }: InputProps) {
+function Input({
+  type,
+  id,
+  placeholder,
+  min,
+  max,
+  className = "",
+  ...otherProps
+}: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   const inputType = type === "password" && showPassword ? "text" : type;
@@ -19,6 +27,10 @@ function Input({ type, className = "", ...otherProps }: InputProps) {
     <div className="relative">
       <input
         type={inputType}
+        id={id}
+        placeholder={placeholder}
+        min={min}
+        max={max}
         {...otherProps}
         className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
           type === "number"

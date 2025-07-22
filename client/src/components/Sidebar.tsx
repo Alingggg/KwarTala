@@ -10,6 +10,7 @@ import {
 import type { ReactNode } from "react";
 import { NavLink } from "react-router";
 import { useState } from "react";
+import { useLogout } from "@/hooks";
 
 interface NavItemProps {
   to: string;
@@ -38,6 +39,7 @@ const NavItem = ({ to, icon, label, onClick }: NavItemProps) => (
 
 function Sidebar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { mutate: logout } = useLogout();
 
   const navItems = [
     { to: "/home", icon: <FiHome />, label: "Home" },
@@ -78,9 +80,12 @@ function Sidebar() {
             <NavItem key={item.label} {...item} />
           ))}
         </nav>
-
         <div className="mt-auto">
-          <button className="flex items-center px-4 py-3 text-lg font-medium text-ash-gray-500 hover:bg-night-400 rounded-lg w-full">
+          <button
+            type="button"
+            onClick={() => logout()}
+            className="flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors text-ash-gray-500 hover:bg-night-600 hover:text-timberwolf-900 w-full"
+          >
             <FiLogOut />
             <span className="ml-4">Logout</span>
           </button>
@@ -157,12 +162,14 @@ function Sidebar() {
                   <NavItem key={item.label} {...item} onClick={closeMenu} />
                 ))}
               </nav>
-
-              {/* Logout Button */}
               <div className="mt-auto">
                 <button
-                  onClick={closeMenu}
-                  className="flex items-center px-4 py-3 text-lg font-medium text-ash-gray-500 hover:bg-night-400 rounded-lg w-full"
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    closeMenu();
+                  }}
+                  className="flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors text-ash-gray-500 hover:bg-night-600 hover:text-timberwolf-900 w-full"
                 >
                   <FiLogOut />
                   <span className="ml-4">Logout</span>

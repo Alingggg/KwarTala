@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import { Analytics, Goals, Home, Login, Register, Transactions } from "@/pages";
-import { DashboardLayout } from "@/components";
+import { DashboardLayout, ProtectedRoute, PublicRoute } from "@/components";
 import { useEffect } from "react";
 import { useLocation } from "react-router";
 
@@ -20,14 +20,18 @@ function AppRouter() {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
-        <Route index element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<DashboardLayout />}>
-          <Route path="home" element={<Home />} />
-          <Route path="transactions" element={<Transactions />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="goals" element={<Goals />} />
+        <Route element={<PublicRoute />}>
+          <Route index element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/goals" element={<Goals />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
