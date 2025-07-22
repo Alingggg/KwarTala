@@ -49,7 +49,7 @@ function useApiInterceptor(queryClient: QueryClient) {
 
           try {
             await axios.post(
-              `${BASE_URL}/auth/refresh-tokens`,
+              `${BASE_URL}/auth/refresh-token`,
               {},
               { withCredentials: true }
             );
@@ -58,6 +58,9 @@ function useApiInterceptor(queryClient: QueryClient) {
             return api(originalRequest);
           } catch (refreshError) {
             processQueue(refreshError as AxiosError);
+
+            queryClient.setQueryData(["me"], null);
+
             return Promise.reject(refreshError);
           } finally {
             isRefreshing = false;
