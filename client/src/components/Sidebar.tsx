@@ -11,6 +11,7 @@ import type { ReactNode } from "react";
 import { NavLink } from "react-router";
 import { useState } from "react";
 import { useLogout } from "@/hooks";
+import { AppLogo } from "@/assets/images";
 
 interface NavItemProps {
   to: string;
@@ -62,7 +63,13 @@ function Sidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-64 bg-night-500 text-timberwolf-500 flex-col p-6">
         <div className="flex items-center mb-8">
-          <div className="w-12 h-12 rounded-full bg-ash-gray-900 mr-4"></div>
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mr-4">
+            <img
+              src={AppLogo}
+              alt="KwarTala Logo"
+              className="w-16 h-16 rounded-full"
+            />
+          </div>
           <span className="text-xl font-semibold">KwarTala</span>
         </div>
 
@@ -102,7 +109,13 @@ function Sidebar() {
             >
               <FiMenu size={24} />
             </button>
-            <div className="w-8 h-8 rounded-full bg-ash-gray-900 mr-3"></div>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center mr-3">
+              <img
+                src={AppLogo}
+                alt="KwarTala Logo"
+                className="w-12 h-12 rounded-full"
+              />
+            </div>
             <span className="text-lg font-semibold">KwarTala</span>
           </div>
 
@@ -135,7 +148,13 @@ function Sidebar() {
               {/* Header */}
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-ash-gray-900 mr-4"></div>
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mr-4">
+                    <img
+                      src={AppLogo}
+                      alt="KwarTala Logo"
+                      className="w-13 h-13 rounded-full"
+                    />
+                  </div>
                   <span className="text-xl font-semibold">KwarTala</span>
                 </div>
                 <button
