@@ -11,3 +11,5 @@ export { default as ExpenseCard } from "./ExpenseCard";
 export { default as ExpenseChart } from "./ExpenseChart";
 export { default as Input } from "./Input";
 export { default as ExpenseDescriptionModal } from "./modal/ExpenseDescriptionModal";
+export { default as PublicRoute } from "./PublicRoute";
+export { default as ProtectedRoute } from "./ProtectedRoute";
