@@ -166,6 +166,28 @@ const authController = {
       next(error);
     }
   },
+
+  async getCurrentUser(req, res, next) {
+    try {
+      const { userId } = req.user;
+
+      const user = await userModel.getUserById(userId);
+      if (!user) {
+        const error = new Error("User not found");
+        error.status = 404;
+        return next(error);
+      }
+
+      res.status(200).json({
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default authController;
