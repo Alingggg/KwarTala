@@ -73,7 +73,10 @@ function useUser() {
   });
 
   if (isError) {
-    console.error("Failed to fetch user data:", error?.message);
+    console.error(
+      "Failed to fetch user data:",
+      (error as any)?.response?.data?.message
+    );
   }
 
   return {
