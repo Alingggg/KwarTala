@@ -1,5 +1,5 @@
 import { Button, Input } from "@/components";
-import { FiUser, FiLock } from "@/assets/icons";
+import { FiMail, FiLock } from "@/assets/icons";
 import { useNavigate } from "react-router";
 
 function Login() {
@@ -35,19 +35,19 @@ function Login() {
           <form className="space-y-4">
             <div>
               <label
-                htmlFor="username"
+                htmlFor="email"
                 className="block text-sm font-semibold text-night-600 mb-1"
               >
-                Username
+                Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <FiUser className="h-4 w-4 text-night-500" />
+                  <FiMail className="h-4 w-4 text-night-500" />
                 </div>
                 <Input
-                  id="username"
+                  id="email"
                   type="text"
-                  placeholder="Enter your username"
+                  placeholder="Enter your email"
                   className="pl-10"
                 />
               </div>

@@ -33,19 +33,39 @@ function Register() {
           <form className="space-y-4">
             <div>
               <label
-                htmlFor="username"
+                htmlFor="firstName"
                 className="block text-sm font-semibold text-night-600 mb-1"
               >
-                Username
+                First Name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                   <FiUser className="h-4 w-4 text-night-500" />
                 </div>
                 <Input
-                  id="username"
+                  id="firstName"
                   type="text"
-                  placeholder="Enter your username"
+                  placeholder="Enter your first name"
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-semibold text-night-600 mb-1"
+              >
+                Last Name
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <FiUser className="h-4 w-4 text-night-500" />
+                </div>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder="Enter your last name"
                   className="pl-10"
                 />
               </div>
