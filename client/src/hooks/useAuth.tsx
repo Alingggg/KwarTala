@@ -51,7 +51,7 @@ function useLogout() {
       await api.post("/auth/logout");
     },
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.setQueryData(["me"], null);
     },
     onError: (error: any) => {
       console.error("Logout failed:", error?.response?.data?.message);

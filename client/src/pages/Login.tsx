@@ -1,9 +1,51 @@
 import { Button, Input } from "@/components";
 import { FiMail, FiLock } from "@/assets/icons";
 import { useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import { useLogin } from "@/hooks";
+
+interface FormValues {
+  email: string;
+  password: string;
+}
+
+const validation = {
+  email: {
+    required: "Email is required",
+    pattern: {
+      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: "Invalid email format",
+    },
+  },
+  password: {
+    required: "Password is required",
+    minLength: {
+      value: 8,
+      message: "Password must be at least 8 characters",
+    },
+    maxLength: {
+      value: 64,
+      message: "Password must be under 64 characters",
+    },
+    pattern: {
+      value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/,
+      message: "Must include upper & lowercase letters, a number, and a symbol",
+    },
+  },
+};
 
 function Login() {
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
+  const { mutate: login } = useLogin();
+
+  function onSubmit(data: FormValues) {
+    login(data);
+  }
 
   return (
     <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
@@ -32,11 +74,15 @@ function Login() {
             </p>
           </div>
 
-          <form className="space-y-4">
-            <div>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            <div className="flex flex-col gap-1">
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-night-600 mb-1"
+                className="block text-sm font-semibold text-night-600"
               >
                 Email
               </label>
@@ -49,14 +95,20 @@ function Login() {
                   type="text"
                   placeholder="Enter your email"
                   className="pl-10"
+                  {...register("email", validation.email)}
                 />
               </div>
+              {errors.email && (
+                <p className="text-xs text-auburn-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
-            <div>
+            <div className="flex flex-col gap-1">
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold text-night-600 mb-1"
+                className="block text-sm font-semibold text-night-600"
               >
                 Password
               </label>
@@ -69,8 +121,14 @@ function Login() {
                   type="password"
                   placeholder="Enter your password"
                   className="pl-10"
+                  {...register("password", validation.password)}
                 />
               </div>
+              {errors.password && (
+                <p className="text-xs text-auburn-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <Button
