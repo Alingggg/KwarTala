@@ -1,7 +1,7 @@
 import { pool } from "#config";
 
-const expenseModel = {
-  async createExpense({ category, description, amount, date }) {
+const expenseRepository = {
+  async create({ category, description, amount, date }) {
     const { rows } = await pool.query(
       "INSERT INTO expenses (category, description, amount, date) VALUES ($1, $2, $3, $4) RETURNING *",
       [category, description, amount, date]
@@ -9,7 +9,7 @@ const expenseModel = {
     return rows[0];
   },
 
-  async getExpensesByDate(date) {
+  async findByDate(date) {
     const { rows } = await pool.query(
       "SELECT * FROM expenses WHERE date = $1",
       [date]
@@ -17,7 +17,7 @@ const expenseModel = {
     return rows;
   },
 
-  async getExpensesByDateAndCategory(date, category) {
+  async findByDateAndCategory(date, category) {
     const { rows } = await pool.query(
       "SELECT * FROM expenses WHERE date = $1 AND category = $2",
       [date, category]
@@ -25,7 +25,7 @@ const expenseModel = {
     return rows;
   },
 
-  async updateExpense({ id, category, description, amount, date }) {
+  async update(id, { category, description, amount, date }) {
     const { rows } = await pool.query(
       "UPDATE expenses SET category = $1, description = $2, amount = $3, date = $4 WHERE id = $5 RETURNING *",
       [category, description, amount, date, id]
@@ -33,7 +33,7 @@ const expenseModel = {
     return rows[0];
   },
 
-  async deleteExpense(id) {
+  async delete(id) {
     const { rowCount } = await pool.query(
       "DELETE FROM expenses WHERE id = $1 RETURNING *",
       [id]
@@ -42,4 +42,4 @@ const expenseModel = {
   },
 };
 
-export default expenseModel;
+export default expenseRepository;

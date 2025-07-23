@@ -11,8 +11,9 @@
     "#config": "./src/config/index.js",
     "#controllers": "./src/controllers/index.js",
     "#middlewares": "./src/middlewares/index.js",
-    "#models": "./src/models/index.js",
+    "#repositories": "./src/repositories/index.js",
     "#routers": "./src/routers/index.js",
+    "#services": "./src/services/index.js",
     "#utils": "./src/utils/index.js"
   },
   "keywords": [],
