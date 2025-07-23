@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { sessionModel, userModel } from "#models";
+import { sessionService, userService } from "#services";
 import { generateToken, verifyToken } from "#utils";
 
 const authController = {
@@ -13,7 +13,7 @@ const authController = {
         return next(error);
       }
 
-      const existingUser = await userModel.getUserByEmail(email);
+      const existingUser = await userService.findUserByEmail(email);
       if (existingUser) {
         const error = new Error("User already exists");
         error.status = 409;
@@ -22,7 +22,7 @@ const authController = {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await userModel.createUser({
+      await userService.createUser({
         firstName,
         lastName,
         email,
@@ -52,7 +52,7 @@ const authController = {
         return next(error);
       }
 
-      const user = await userModel.getUserByEmail(email);
+      const user = await userService.findUserByEmail(email);
       if (!user) {
         const error = new Error("Invalid email or password");
         error.status = 401;
@@ -76,7 +76,7 @@ const authController = {
       const accessToken = generateToken(payload, "access-token");
       const refreshToken = generateToken(payload, "refresh-token");
 
-      await sessionModel.createSession({
+      await sessionService.createSession({
         userId: user.id,
         refreshToken,
       });
@@ -123,15 +123,15 @@ const authController = {
       } catch (error) {
         const err = new Error("Invalid or expired refresh token");
         err.status = 401;
-        await sessionModel.deleteSessionByToken(refreshToken);
+        await sessionService.deleteSessionByToken(refreshToken);
         return next(err);
       }
 
-      const session = await sessionModel.getSessionByToken(refreshToken);
+      const session = await sessionService.findSessionByToken(refreshToken);
       if (!session) {
         const error = new Error("Invalid or expired refresh token");
         error.status = 401;
-        await sessionModel.deleteSessionByToken(refreshToken);
+        await sessionService.deleteSessionByToken(refreshToken);
         return next(error);
       }
 
@@ -149,7 +149,7 @@ const authController = {
       error.status = 401;
       const refreshToken = req.cookies.refreshToken;
       if (refreshToken) {
-        await sessionModel.deleteSessionByToken(refreshToken);
+        await sessionService.deleteSessionByToken(refreshToken);
       }
       next(error);
     }
@@ -158,7 +158,7 @@ const authController = {
   async logout(req, res, next) {
     try {
       const refreshToken = req.cookies.refreshToken;
-      await sessionModel.deleteSessionByToken(refreshToken);
+      await sessionService.deleteSessionByToken(refreshToken);
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
       res.status(200).json({ message: "Logout successful" });
@@ -171,7 +171,7 @@ const authController = {
     try {
       const { userId } = req.user;
 
-      const user = await userModel.getUserById(userId);
+      const user = await userService.findUserById(userId);
       if (!user) {
         const error = new Error("User not found");
         error.status = 404;
