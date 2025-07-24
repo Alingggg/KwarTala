@@ -1,10 +1,10 @@
 import { pool } from "#config";
 
 const expenseRepository = {
-  async create({ category, description, amount, date }) {
+  async create({ userId, category, description, amount, date }) {
     const { rows } = await pool.query(
-      "INSERT INTO expenses (category, description, amount, date) VALUES ($1, $2, $3, $4) RETURNING *",
-      [category, description, amount, date]
+      "INSERT INTO expenses (user_id, category, description, amount, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [userId, category, description, amount, date]
     );
     return rows[0];
   },
@@ -25,7 +25,7 @@ const expenseRepository = {
     return rows;
   },
 
-  async update(id, { category, description, amount, date }) {
+  async update({ id, category, description, amount, date }) {
     const { rows } = await pool.query(
       "UPDATE expenses SET category = $1, description = $2, amount = $3, date = $4 WHERE id = $5 RETURNING *",
       [category, description, amount, date, id]

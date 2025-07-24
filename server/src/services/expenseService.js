@@ -1,8 +1,14 @@
 import { expenseRepository } from "#repositories";
 
 const expenseService = {
-  async createExpense({ category, description, amount, date }) {
-    return expenseRepository.create({ category, description, amount, date });
+  async createExpense({ userId, category, description, amount, date }) {
+    return expenseRepository.create({
+      userId,
+      category,
+      description,
+      amount,
+      date,
+    });
   },
 
   async findExpensesByDate(date) {
@@ -13,8 +19,9 @@ const expenseService = {
     return expenseRepository.findByDateAndCategory(date, category);
   },
 
-  async updateExpense(id, { category, description, amount, date }) {
-    return expenseRepository.update(id, {
+  async updateExpense({ id, category, description, amount, date }) {
+    return expenseRepository.update({
+      id,
       category,
       description,
       amount,
