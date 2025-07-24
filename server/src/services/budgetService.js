@@ -1,14 +1,14 @@
 import { budgetRepository } from "#repositories";
 
 const budgetService = {
-  async createBudget({ date, amount }) {
-    return budgetRepository.create({ date, amount });
+  async createBudget({ month, year, amount }) {
+    return budgetRepository.create({ month, year, amount });
   },
-  async findBudgetByDate(date) {
-    return budgetRepository.findByDate(date);
+  async findBudgetByMonth({ month, year }) {
+    return budgetRepository.findByMonth({ month, year });
   },
-  async updateBudgetByDate({ date, amount }) {
-    return budgetRepository.updateByDate({ date, amount });
+  async updateBudgetByMonth({ month, year, amount }) {
+    return budgetRepository.updateByMonth({ month, year, amount });
   },
 };
 
