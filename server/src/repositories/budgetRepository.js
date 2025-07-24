@@ -15,10 +15,10 @@ const budgetRepository = {
     );
     return rows[0];
   },
-  async updateByMonth({ month, year, amount }) {
+  async updateByUserIdAndDate({ userId, month, year, amount }) {
     const { rows } = await pool.query(
-      "UPDATE budgets SET amount = $1 WHERE month = $2 AND year = $3 RETURNING *",
-      [amount, month, year]
+      "UPDATE budgets SET amount = $1 WHERE user_id = $2 AND month = $3 AND year = $4 RETURNING *",
+      [amount, userId, month, year]
     );
     return rows[0];
   },
