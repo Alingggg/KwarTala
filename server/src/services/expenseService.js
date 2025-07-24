@@ -1,20 +1,37 @@
 import { expenseRepository } from "#repositories";
 
 const expenseService = {
-  async createExpense({ category, description, amount, date }) {
-    return expenseRepository.create({ category, description, amount, date });
+  async createExpense({ userId, category, description, amount, date }) {
+    return expenseRepository.create({
+      userId,
+      category,
+      description,
+      amount,
+      date,
+    });
   },
 
-  async findExpensesByDate(date) {
-    return expenseRepository.findByDate(date);
+  async getTodaysTransactions(userId) {
+    const date = new Date();
+    return expenseRepository.findByUserIdAndDateRange({
+      userId,
+      startDate: date,
+      endDate: date,
+    });
   },
 
-  async findExpensesByDateAndCategory(date, category) {
-    return expenseRepository.findByDateAndCategory(date, category);
+  async getTotalSpentToday(userId) {
+    const date = new Date();
+    return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
+      userId,
+      startDate: date,
+      endDate: date,
+    });
   },
 
-  async updateExpense(id, { category, description, amount, date }) {
-    return expenseRepository.update(id, {
+  async updateExpense({ id, category, description, amount, date }) {
+    return expenseRepository.update({
+      id,
       category,
       description,
       amount,

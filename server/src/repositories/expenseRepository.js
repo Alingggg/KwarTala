@@ -1,31 +1,35 @@
 import { pool } from "#config";
 
 const expenseRepository = {
-  async create({ category, description, amount, date }) {
+  async create({ userId, category, description, amount, date }) {
     const { rows } = await pool.query(
-      "INSERT INTO expenses (category, description, amount, date) VALUES ($1, $2, $3, $4) RETURNING *",
-      [category, description, amount, date]
+      "INSERT INTO expenses (user_id, category, description, amount, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [userId, category, description, amount, date]
     );
     return rows[0];
   },
 
-  async findByDate(date) {
+  async findByUserIdAndDateRange({ userId, startDate, endDate }) {
     const { rows } = await pool.query(
-      "SELECT * FROM expenses WHERE date = $1",
-      [date]
+      "SELECT * FROM expenses WHERE date BETWEEN $1 AND $2 AND user_id = $3",
+      [startDate, endDate, userId]
     );
     return rows;
   },
 
-  async findByDateAndCategory(date, category) {
+  async getTotalExpensesAmountByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+  }) {
     const { rows } = await pool.query(
-      "SELECT * FROM expenses WHERE date = $1 AND category = $2",
-      [date, category]
+      "SELECT SUM(amount) AS total FROM expenses WHERE user_id = $1 AND date BETWEEN $2 AND $3",
+      [userId, startDate, endDate]
     );
-    return rows;
+    return rows[0]?.total || 0;
   },
 
-  async update(id, { category, description, amount, date }) {
+  async update({ id, category, description, amount, date }) {
     const { rows } = await pool.query(
       "UPDATE expenses SET category = $1, description = $2, amount = $3, date = $4 WHERE id = $5 RETURNING *",
       [category, description, amount, date, id]

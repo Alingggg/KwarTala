@@ -1,23 +1,24 @@
 import { pool } from "#config";
 
 const budgetRepository = {
-  async create({ date, amount }) {
+  async create({ month, year, amount }) {
     const { rows } = await pool.query(
-      "INSERT INTO budgets (date, amount) VALUES ($1, $2) RETURNING *",
-      [date, amount]
+      "INSERT INTO budgets (month, year, amount) VALUES ($1, $2, $3) RETURNING *",
+      [month, year, amount]
     );
     return rows[0];
   },
-  async findByDate(date) {
-    const { rows } = await pool.query("SELECT * FROM budgets WHERE date = $1", [
-      date,
-    ]);
+  async findByUserIdAndDate({ userId, month, year }) {
+    const { rows } = await pool.query(
+      "SELECT * FROM budgets WHERE user_id = $1 AND month = $2 AND year = $3",
+      [userId, month, year]
+    );
     return rows[0];
   },
-  async updateByDate({ date, amount }) {
+  async updateByUserIdAndDate({ userId, month, year, amount }) {
     const { rows } = await pool.query(
-      "UPDATE budgets SET amount = $1 WHERE date = $2 RETURNING *",
-      [amount, date]
+      "UPDATE budgets SET amount = $1 WHERE user_id = $2 AND month = $3 AND year = $4 RETURNING *",
+      [amount, userId, month, year]
     );
     return rows[0];
   },
