@@ -1,7 +1,7 @@
 import { pool } from "#config";
 
-const sessionModel = {
-  async createSession({ userId, refreshToken }) {
+const sessionRepository = {
+  async create({ userId, refreshToken }) {
     const { rows } = await pool.query(
       "INSERT INTO sessions (user_id, refresh_token) VALUES ($1, $2) RETURNING *",
       [userId, refreshToken]
@@ -9,7 +9,7 @@ const sessionModel = {
     return rows[0];
   },
 
-  async getSessionByUserId(userId) {
+  async findByUserId(userId) {
     const { rows } = await pool.query(
       "SELECT * FROM sessions WHERE user_id = $1",
       [userId]
@@ -17,7 +17,7 @@ const sessionModel = {
     return rows[0];
   },
 
-  async getSessionByToken(refreshToken) {
+  async findByToken(refreshToken) {
     const { rows } = await pool.query(
       "SELECT * FROM sessions WHERE refresh_token = $1",
       [refreshToken]
@@ -25,7 +25,7 @@ const sessionModel = {
     return rows[0];
   },
 
-  async deleteSessionByUserId(userId) {
+  async deleteByUserId(userId) {
     const { rowCount } = await pool.query(
       "DELETE FROM sessions WHERE user_id = $1",
       [userId]
@@ -33,7 +33,7 @@ const sessionModel = {
     return rowCount > 0;
   },
 
-  async deleteSessionByToken(refreshToken) {
+  async deleteByToken(refreshToken) {
     const { rowCount } = await pool.query(
       "DELETE FROM sessions WHERE refresh_token = $1",
       [refreshToken]
@@ -42,4 +42,4 @@ const sessionModel = {
   },
 };
 
-export default sessionModel;
+export default sessionRepository;
