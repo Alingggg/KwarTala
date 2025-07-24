@@ -4,7 +4,7 @@ function authMiddleware(req, res, next) {
   const accessToken = req.cookies.accessToken;
   if (!accessToken) {
     const error = new Error("Access token is required");
-    error.status = 401;
+    error.statusCode = 401;
     return next(error);
   }
 
@@ -14,7 +14,7 @@ function authMiddleware(req, res, next) {
     next();
   } catch (err) {
     const error = new Error("Invalid or expired token");
-    error.status = 401;
+    error.statusCode = 401;
     return next(error);
   }
 }
