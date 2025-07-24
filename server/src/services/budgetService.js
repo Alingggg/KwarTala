@@ -4,8 +4,8 @@ const budgetService = {
   async createBudget({ month, year, amount }) {
     return budgetRepository.create({ month, year, amount });
   },
-  async findBudgetByMonth({ month, year }) {
-    return budgetRepository.findByMonth({ month, year });
+  async findCurrentMonthBudgetByUserId({ userId, month, year }) {
+    return budgetRepository.findByUserIdAndDate({ userId, month, year });
   },
   async updateBudgetByUserIdAndDate({ userId, month, year, amount }) {
     return budgetRepository.updateByUserIdAndDate({

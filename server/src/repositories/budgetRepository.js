@@ -8,10 +8,10 @@ const budgetRepository = {
     );
     return rows[0];
   },
-  async findByMonth({ month, year }) {
+  async findByUserIdAndDate({ userId, month, year }) {
     const { rows } = await pool.query(
-      "SELECT * FROM budgets WHERE month = $1 AND year = $2",
-      [month, year]
+      "SELECT * FROM budgets WHERE user_id = $1 AND month = $2 AND year = $3",
+      [userId, month, year]
     );
     return rows[0];
   },

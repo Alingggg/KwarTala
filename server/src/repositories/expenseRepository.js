@@ -9,20 +9,24 @@ const expenseRepository = {
     return rows[0];
   },
 
-  async findByDate(date) {
+  async findByUserIdAndDateRange({ userId, startDate, endDate }) {
     const { rows } = await pool.query(
-      "SELECT * FROM expenses WHERE date = $1",
-      [date]
+      "SELECT * FROM expenses WHERE date BETWEEN $1 AND $2 AND user_id = $3",
+      [startDate, endDate, userId]
     );
     return rows;
   },
 
-  async findByDateAndCategory(date, category) {
+  async getTotalExpensesAmountByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+  }) {
     const { rows } = await pool.query(
-      "SELECT * FROM expenses WHERE date = $1 AND category = $2",
-      [date, category]
+      "SELECT SUM(amount) AS total FROM expenses WHERE user_id = $1 AND date BETWEEN $2 AND $3",
+      [userId, startDate, endDate]
     );
-    return rows;
+    return rows[0]?.total || 0;
   },
 
   async update({ id, category, description, amount, date }) {

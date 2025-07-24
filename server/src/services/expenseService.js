@@ -11,12 +11,22 @@ const expenseService = {
     });
   },
 
-  async findExpensesByDate(date) {
-    return expenseRepository.findByDate(date);
+  async getTodaysTransactions(userId) {
+    const date = new Date();
+    return expenseRepository.findByUserIdAndDateRange({
+      userId,
+      startDate: date,
+      endDate: date,
+    });
   },
 
-  async findExpensesByDateAndCategory(date, category) {
-    return expenseRepository.findByDateAndCategory(date, category);
+  async getTotalSpentToday(userId) {
+    const date = new Date();
+    return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
+      userId,
+      startDate: date,
+      endDate: date,
+    });
   },
 
   async updateExpense({ id, category, description, amount, date }) {
