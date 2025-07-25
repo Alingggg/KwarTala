@@ -12,6 +12,16 @@ const homeDataService = {
     const monthNumber = today.getMonth() + 1;
     const year = today.getFullYear();
 
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    const startOfMonth = formatDate(new Date(year, today.getMonth(), 1));
+    const endOfMonth = formatDate(new Date(year, today.getMonth() + 1, 0));
+
     let budget = await budgetService.findCurrentMonthBudgetByUserId({
       userId,
       month: monthNumber,
@@ -28,11 +38,17 @@ const homeDataService = {
 
     const spentToday = (await expenseService.getTotalSpentToday(userId)) ?? 0;
 
-    const remainingBudget = budget.amount - spentToday;
+    const totalMonthlySpent = await expenseService.getTotalMonthlySpent({
+      userId,
+      startDate: startOfMonth,
+      endDate: endOfMonth,
+    });
+
+    const remainingBudget = budget.amount - totalMonthlySpent;
 
     const budgetUsedPercentage =
       budget.amount > 0
-        ? Math.round((spentToday / budget.amount) * 100 * 100) / 100
+        ? Math.round((totalMonthlySpent / budget.amount) * 100 * 100) / 100
         : 0;
 
     const todaysTransactions = await expenseService.getTodaysTransactions(
