@@ -1,4 +1,5 @@
 import { api } from "@/api";
+import type { ExpenseNoId, ExpenseWithId } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function useAddExpense() {
@@ -6,12 +7,7 @@ function useAddExpense() {
 
   return useMutation({
     mutationKey: ["addExpense"],
-    mutationFn: async (expenseData: {
-      category: string;
-      description: string;
-      amount: number;
-      date: string;
-    }) => {
+    mutationFn: async (expenseData: ExpenseNoId) => {
       const response = await api.post("/expenses", expenseData);
       return response.data.data;
     },
@@ -29,13 +25,7 @@ function useEditExpense() {
 
   return useMutation({
     mutationKey: ["editExpense"],
-    mutationFn: async (expenseData: {
-      id: number;
-      category: string;
-      description: string;
-      amount: number;
-      date: string;
-    }) => {
+    mutationFn: async (expenseData: ExpenseWithId) => {
       const response = await api.put(
         `/expenses/${expenseData.id}`,
         expenseData
