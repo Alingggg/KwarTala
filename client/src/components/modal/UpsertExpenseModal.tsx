@@ -21,7 +21,12 @@ function UpsertExpenseModal({
   description,
   date,
 }: UpsertExpenseModalProps) {
-  const { register, setValue, handleSubmit } = useForm<ExpenseNoId>();
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ExpenseNoId>();
   const { mutate: addExpense } = useAddExpense();
   const { mutate: editExpense } = useEditExpense();
 
@@ -65,7 +70,19 @@ function UpsertExpenseModal({
             >
               Amount
             </label>
-            <Input id="amount" type="number" {...register("amount")} />
+            <Input
+              id="amount"
+              type="number"
+              {...register("amount", { required: "Amount is required" })}
+              className={
+                errors.amount ? "border-auburn-600 focus:border-auburn-600" : ""
+              }
+            />
+            {errors.amount && (
+              <p className="text-xs text-auburn-600 mt-1 font-semibold">
+                {errors.amount.message}
+              </p>
+            )}
           </div>
           <div>
             <label
@@ -74,7 +91,19 @@ function UpsertExpenseModal({
             >
               Date
             </label>
-            <Input id="date" type="date" {...register("date")} />
+            <Input
+              id="date"
+              type="date"
+              {...register("date", { required: "Date is required" })}
+              className={
+                errors.date ? "border-auburn-600 focus:border-auburn-600" : ""
+              }
+            />
+            {errors.date && (
+              <p className="text-xs text-auburn-600 mt-1 font-semibold">
+                {errors.date.message}
+              </p>
+            )}
           </div>
           <div>
             <label
@@ -83,7 +112,21 @@ function UpsertExpenseModal({
             >
               Category
             </label>
-            <Input id="category" type="text" {...register("category")} />
+            <Input
+              id="category"
+              type="text"
+              {...register("category", { required: "Category is required" })}
+              className={
+                errors.category
+                  ? "border-auburn-600 focus:border-auburn-600"
+                  : ""
+              }
+            />
+            {errors.category && (
+              <p className="text-xs text-auburn-600 mt-1 font-semibold">
+                {errors.category.message}
+              </p>
+            )}
           </div>
           <div>
             <label

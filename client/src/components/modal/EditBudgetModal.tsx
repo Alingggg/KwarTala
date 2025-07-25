@@ -120,8 +120,15 @@ function EditBudgetModal({
               type="month"
               min={minDate}
               max={maxDate}
-              {...register("budgetPeriod", { required: true })}
+              {...register("budgetPeriod", {
+                required: "Budget period is required",
+              })}
             />
+            {errors.budgetPeriod && (
+              <p className="text-xs text-auburn-600 mt-1 font-semibold">
+                {errors.budgetPeriod.message}
+              </p>
+            )}
             <p className="text-xs text-night-700 mt-1">
               You can edit budgets up to 1 year in the past
             </p>
