@@ -6,8 +6,8 @@ const expenseController = {
       const { userId } = req.user;
       const { category, description, amount, date } = req.body;
 
-      if (!category || !description || !amount || !date) {
-        const error = new Error("All fields are required");
+      if (!category || !amount || !date) {
+        const error = new Error("Category, amount, and date are required");
         error.statusCode = 400;
         return next(error);
       }
@@ -33,8 +33,8 @@ const expenseController = {
       const { id } = req.params;
       const { category, description, amount, date } = req.body;
 
-      if (!category || !description || !amount || !date) {
-        const error = new Error("All fields are required");
+      if (!category || !amount || !date) {
+        const error = new Error("Category, amount, and date are required");
         error.statusCode = 400;
         return next(error);
       }
