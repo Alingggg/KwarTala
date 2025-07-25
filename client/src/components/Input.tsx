@@ -23,6 +23,8 @@ function Input({
 
   const inputType = type === "password" && showPassword ? "text" : type;
 
+  const step = type === "number" ? "any" : undefined;
+
   return (
     <div className="relative">
       <input
@@ -31,6 +33,7 @@ function Input({
         placeholder={placeholder}
         min={min}
         max={max}
+        step={step}
         {...otherProps}
         className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
           type === "number"
