@@ -2,27 +2,29 @@ import { FiEdit, FiTrash2, FiInfo } from "@/assets/icons";
 import { ExpenseDescriptionModal } from "@/components";
 import { useModalContext, useCurrencyContext } from "@/hooks";
 import { useState } from "react";
+import type { ExpenseWithId } from "@/types";
+import { formatDate } from "@/utils";
 
-interface ExpenseCardProps {
-  id: string;
-  category: string;
-  amount: number;
-  description: string;
-  iconColor: string;
-  date: string;
+interface ExpenseCardProps extends ExpenseWithId {
+  iconColor?: string;
 }
 
 export function ExpenseCard({
   id,
   category,
-  amount,
   description,
-  iconColor,
+  amount,
   date,
+  iconColor = "bg-night-500",
 }: ExpenseCardProps) {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
   const [showDescription, setShowDescription] = useState(false);
+
+  const formattedDate = formatDate(date, {
+    includeMonth: true,
+    includeDay: true,
+  });
 
   return (
     <>
@@ -40,7 +42,7 @@ export function ExpenseCard({
 
           {/* Mobile: Show date and info button. Desktop: Show description */}
           <div className="text-xs md:text-sm text-night-700 flex items-center gap-2 mt-1">
-            <span className="md:hidden truncate">{date || "No date"}</span>
+            <span className="md:hidden truncate">{formattedDate}</span>
             <span className="hidden md:inline truncate">{description}</span>
 
             {/* Info button (mobile only) */}
@@ -56,7 +58,7 @@ export function ExpenseCard({
           {/* Desktop: Show date below description */}
           {date && (
             <div className="text-xs text-night-600 mt-1 hidden md:block">
-              {date}
+              {formattedDate}
             </div>
           )}
         </div>
@@ -108,7 +110,7 @@ export function ExpenseCard({
         <ExpenseDescriptionModal
           category={category}
           description={description}
-          date={date}
+          date={formattedDate}
           amount={amount}
           setShowDescription={setShowDescription}
         />

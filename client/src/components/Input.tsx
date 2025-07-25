@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FiEye, FiEyeOff } from "@/assets/icons";
 
 interface InputProps {
-  type?: "text" | "email" | "password" | "number" | "month";
+  type?: string;
   id: string;
   placeholder?: string;
   min?: string | number;

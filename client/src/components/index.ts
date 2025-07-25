@@ -13,3 +13,4 @@ export { default as Input } from "./Input";
 export { default as ExpenseDescriptionModal } from "./modal/ExpenseDescriptionModal";
 export { default as PublicRoute } from "./PublicRoute";
 export { default as ProtectedRoute } from "./ProtectedRoute";
+export { default as LoadingSpinner } from "./LoadingSpinner";
