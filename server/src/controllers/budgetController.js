@@ -14,7 +14,7 @@ const budgetController = {
         return next(error);
       }
 
-      const budget = await budgetService.updateBudgetByUserIdAndDate({
+      let budget = await budgetService.updateBudgetByUserIdAndDate({
         userId,
         month,
         year,
@@ -22,7 +22,12 @@ const budgetController = {
       });
 
       if (!budget) {
-        return res.status(404).json({ message: "Budget not found" });
+        budget = await budgetService.createBudget({
+          userId,
+          month,
+          year,
+          amount,
+        });
       }
 
       res

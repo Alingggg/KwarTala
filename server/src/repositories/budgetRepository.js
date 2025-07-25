@@ -1,10 +1,10 @@
 import { pool } from "#config";
 
 const budgetRepository = {
-  async create({ month, year, amount }) {
+  async create({ userId, month, year, amount }) {
     const { rows } = await pool.query(
-      "INSERT INTO budgets (month, year, amount) VALUES ($1, $2, $3) RETURNING *",
-      [month, year, amount]
+      "INSERT INTO budgets (user_id, month, year, amount) VALUES ($1, $2, $3, $4) RETURNING *",
+      [userId, month, year, amount]
     );
     return rows[0];
   },

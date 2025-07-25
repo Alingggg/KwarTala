@@ -1,10 +1,7 @@
 import { useCurrencyContext } from "@/hooks";
+import type { ExpenseNoId } from "@/types";
 
-interface ExpenseDescriptionModalProps {
-  category: string;
-  description: string;
-  date: string;
-  amount: number;
+interface ExpenseDescriptionModalProps extends ExpenseNoId {
   setShowDescription: (show: boolean) => void;
 }
 

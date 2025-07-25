@@ -1,24 +1,30 @@
 import { Button } from "@/components";
 import { FiX, FiAlertTriangle } from "@/assets/icons";
-import { useCurrencyContext } from "@/hooks";
+import { useCurrencyContext, useDeleteExpense } from "@/hooks";
+import type { ExpenseWithId } from "@/types";
+import { formatDate } from "@/utils";
 
-interface DeleteExpenseModalProps {
+interface DeleteExpenseModalProps extends ExpenseWithId {
   onClose: () => void;
-  category: string;
-  amount: number;
-  description: string;
-  date?: string;
 }
 
 function DeleteExpenseModal({
   onClose,
+  id,
   category,
   amount,
   description,
   date,
 }: DeleteExpenseModalProps) {
+  const { mutate: deleteExpense } = useDeleteExpense();
+
+  const formattedDate = formatDate(date, {
+    includeMonth: true,
+    includeDay: true,
+  });
+
   const handleDelete = () => {
-    console.log("Deleting");
+    deleteExpense(id);
     onClose();
   };
 
@@ -54,7 +60,7 @@ function DeleteExpenseModal({
           </p>
           {date && (
             <p>
-              <span className="font-semibold">Date:</span> {date}
+              <span className="font-semibold">Date:</span> {formattedDate}
             </p>
           )}
         </div>

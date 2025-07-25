@@ -29,6 +29,14 @@ const expenseService = {
     });
   },
 
+  async getTotalMonthlySpent({ userId, startDate, endDate }) {
+    return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
+      userId,
+      startDate,
+      endDate,
+    });
+  },
+
   async updateExpense({ id, category, description, amount, date }) {
     return expenseRepository.update({
       id,
