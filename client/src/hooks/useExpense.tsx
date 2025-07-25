@@ -1,7 +1,9 @@
 import { api } from "@/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function useAddExpense() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["addExpense"],
     mutationFn: async (expenseData: {
@@ -13,6 +15,9 @@ function useAddExpense() {
       const response = await api.post("/expenses", expenseData);
       return response.data.data;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["homeData"] });
+    },
     onError: (error: any) => {
       console.error("Failed to add expense:", error?.response?.data?.message);
     },
@@ -20,6 +25,8 @@ function useAddExpense() {
 }
 
 function useEditExpense() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["editExpense"],
     mutationFn: async (expenseData: {
@@ -35,6 +42,9 @@ function useEditExpense() {
       );
       return response.data.data;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["homeData"] });
+    },
     onError: (error: any) => {
       console.error("Failed to edit expense:", error?.response?.data?.message);
     },
@@ -42,11 +52,16 @@ function useEditExpense() {
 }
 
 function useDeleteExpense() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["deleteExpense"],
     mutationFn: async (id: number) => {
       const response = await api.delete(`/expenses/${id}`);
       return response.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["homeData"] });
     },
     onError: (error: any) => {
       console.error(
