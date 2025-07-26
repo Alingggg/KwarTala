@@ -1,12 +1,19 @@
-interface ExpenseNoId {
+interface Expense {
+  id: number;
+  userId: number;
   category: string;
   description: string;
   amount: number;
   date: string;
 }
 
-interface ExpenseWithId extends ExpenseNoId {
-  id: number;
-}
+type ExpenseWithoutId = Omit<Expense, "id">;
+type ExpenseWithoutUserId = Omit<Expense, "userId">;
+type ExpenseWithoutIdAndUserId = Omit<Expense, "id" | "userId">;
 
-export type { ExpenseNoId, ExpenseWithId };
+export type {
+  Expense,
+  ExpenseWithoutId,
+  ExpenseWithoutUserId,
+  ExpenseWithoutIdAndUserId,
+};

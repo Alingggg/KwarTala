@@ -10,11 +10,8 @@ import {
   useUser,
   useHomeData,
 } from "@/hooks";
-import type { ExpenseWithId } from "@/types";
-
-interface Transaction extends ExpenseWithId {
-  user_id: number;
-}
+import type { Expense } from "@/types";
+import { FiCalendar } from "react-icons/fi";
 
 function Home() {
   const { openModal } = useModalContext();
@@ -136,20 +133,35 @@ function Home() {
         </div>
       </div>
 
-      {/* Recent Transactions */}
+      {/* Today's Transactions */}
       <div className="mb-4 md:mb-6">
         <div className="flex items-center mb-4 md:mb-6">
           <span className="text-lg md:text-xl font-bold text-night-600">
-            Recent Transactions
+            Today's Transactions
           </span>
           <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
         </div>
         <div className="space-y-3 md:space-y-4">
           {homeData.todaysTransactions &&
-            homeData.todaysTransactions.map((transaction: Transaction) => (
+            homeData.todaysTransactions.map((transaction: Expense) => (
               <ExpenseCard key={transaction.id} {...transaction} />
             ))}
         </div>
+
+        {/* No Transactions Message */}
+        {(!homeData.todaysTransactions ||
+          homeData.todaysTransactions.length === 0) && (
+          <div className="text-center py-12 md:py-16 text-ash-gray-500">
+            <FiCalendar
+              size={48}
+              className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
+            />
+            <p className="text-lg md:text-xl font-semibold mb-2">
+              No transactions found
+            </p>
+            <p className="text-sm">No expenses recorded for today.</p>
+          </div>
+        )}
       </div>
     </div>
   );

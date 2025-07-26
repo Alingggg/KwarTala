@@ -1,10 +1,10 @@
 import { Button } from "@/components";
 import { FiX, FiAlertTriangle } from "@/assets/icons";
 import { useCurrencyContext, useDeleteExpense } from "@/hooks";
-import type { ExpenseWithId } from "@/types";
+import type { ExpenseWithoutUserId } from "@/types";
 import { formatDate } from "@/utils";
 
-interface DeleteExpenseModalProps extends ExpenseWithId {
+interface DeleteExpenseModalProps extends ExpenseWithoutUserId {
   onClose: () => void;
 }
 
@@ -23,10 +23,10 @@ function DeleteExpenseModal({
     includeDay: true,
   });
 
-  const handleDelete = () => {
+  function handleDelete() {
     deleteExpense(id);
     onClose();
-  };
+  }
 
   const { currency } = useCurrencyContext();
 

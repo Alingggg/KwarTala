@@ -2,10 +2,10 @@ import { FiEdit, FiTrash2, FiInfo } from "@/assets/icons";
 import { ExpenseDescriptionModal } from "@/components";
 import { useModalContext, useCurrencyContext } from "@/hooks";
 import { useState } from "react";
-import type { ExpenseWithId } from "@/types";
+import type { ExpenseWithoutUserId } from "@/types";
 import { formatDate } from "@/utils";
 
-interface ExpenseCardProps extends ExpenseWithId {
+interface ExpenseCardProps extends ExpenseWithoutUserId {
   iconColor?: string;
 }
 

@@ -1,1 +1,6 @@
-export type { ExpenseNoId, ExpenseWithId } from "./Expense";
+export type {
+  Expense,
+  ExpenseWithoutId,
+  ExpenseWithoutUserId,
+  ExpenseWithoutIdAndUserId,
+} from "./Expense";

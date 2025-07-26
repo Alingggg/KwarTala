@@ -2,15 +2,10 @@ import { Button, Input } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useEditExpense } from "@/hooks";
-import type { ExpenseNoId } from "@/types";
+import type { ExpenseWithoutId, ExpenseWithoutUserId } from "@/types";
 
-interface UpsertExpenseModalProps {
+interface UpsertExpenseModalProps extends Partial<ExpenseWithoutUserId> {
   onClose: () => void;
-  id?: number;
-  category?: string;
-  amount?: number;
-  description?: string;
-  date?: string;
 }
 
 function UpsertExpenseModal({
@@ -26,7 +21,7 @@ function UpsertExpenseModal({
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm<ExpenseNoId>();
+  } = useForm<ExpenseWithoutId>();
   const { mutate: addExpense } = useAddExpense();
   const { mutate: editExpense } = useEditExpense();
 
@@ -37,7 +32,7 @@ function UpsertExpenseModal({
     setValue("date", date || "");
   }
 
-  function onSubmit(data: ExpenseNoId) {
+  function onSubmit(data: ExpenseWithoutId) {
     if (id) {
       editExpense({ id, ...data });
       onClose();
