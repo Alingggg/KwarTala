@@ -1,12 +1,18 @@
 import { pool } from "#config";
 
+function formatExpense(row) {
+  if (!row) return null;
+  const { user_id, ...rest } = row;
+  return { ...rest, userId: user_id };
+}
+
 const expenseRepository = {
   async create({ userId, category, description, amount, date }) {
     const { rows } = await pool.query(
       "INSERT INTO expenses (user_id, category, description, amount, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [userId, category, description, amount, date]
     );
-    return rows[0];
+    return formatExpense(rows[0]);
   },
 
   async findByUserIdAndDateRange({ userId, startDate, endDate }) {
@@ -14,7 +20,7 @@ const expenseRepository = {
       "SELECT * FROM expenses WHERE date BETWEEN $1 AND $2 AND user_id = $3",
       [startDate, endDate, userId]
     );
-    return rows;
+    return rows.map(formatExpense);
   },
 
   async getTotalExpensesAmountByUserIdAndDateRange({
@@ -34,7 +40,7 @@ const expenseRepository = {
       "UPDATE expenses SET category = $1, description = $2, amount = $3, date = $4 WHERE id = $5 RETURNING *",
       [category, description, amount, date, id]
     );
-    return rows[0];
+    return formatExpense(rows[0]);
   },
 
   async delete(id) {

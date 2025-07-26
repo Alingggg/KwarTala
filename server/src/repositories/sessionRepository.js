@@ -1,12 +1,18 @@
 import { pool } from "#config";
 
+function formatSession(row) {
+  if (!row) return null;
+  const { user_id, ...rest } = row;
+  return { ...rest, userId: user_id };
+}
+
 const sessionRepository = {
   async create({ userId, refreshToken }) {
     const { rows } = await pool.query(
       "INSERT INTO sessions (user_id, refresh_token) VALUES ($1, $2) RETURNING *",
       [userId, refreshToken]
     );
-    return rows[0];
+    return formatSession(rows[0]);
   },
 
   async findByUserId(userId) {
@@ -14,7 +20,7 @@ const sessionRepository = {
       "SELECT * FROM sessions WHERE user_id = $1",
       [userId]
     );
-    return rows[0];
+    return formatSession(rows[0]);
   },
 
   async findByToken(refreshToken) {
@@ -22,7 +28,7 @@ const sessionRepository = {
       "SELECT * FROM sessions WHERE refresh_token = $1",
       [refreshToken]
     );
-    return rows[0];
+    return formatSession(rows[0]);
   },
 
   async deleteByUserId(userId) {
