@@ -11,124 +11,46 @@ import {
   Cell,
   CartesianGrid,
 } from "recharts";
-import { mockData as allMonthsData } from "@/assets/mockData";
 import { useCurrencyContext } from "@/hooks";
 
-// Returns daily chart data for the given month index
-const getDailyChartData = (monthIndex: number) => {
-  const month = allMonthsData[monthIndex];
-  if (!month) return [];
+type ChartView = "weekly" | "daily";
 
-  const monthIndexMap: { [key: string]: number } = {
-    January: 0,
-    February: 1,
-    March: 2,
-    April: 3,
-    May: 4,
-    June: 5,
-    July: 6,
-    August: 7,
-    September: 8,
-    October: 9,
-    November: 10,
-    December: 11,
-  };
+interface DailyChartDatum {
+  date: string;
+  total: number;
+}
 
-  const monthIndex2 = monthIndexMap[month.month];
-  const year = month.year;
-  const daysInMonth = new Date(year, monthIndex2 + 1, 0).getDate();
+interface WeeklyChartDatum {
+  name: string;
+  dateRange: string;
+  total: number;
+  days: number;
+  dailyAverage: number;
+}
 
-  // Build an array with an entry for each day of the month
-  const dailyData = Array.from({ length: daysInMonth }, (_, index) => {
-    const day = index + 1;
-    let dayTotal = 0;
+interface ExpenseChartProps {
+  dailyChartsData: DailyChartDatum[];
+  weeklyChartsData: WeeklyChartDatum[];
+}
 
-    // Sum all transactions for this day
-    month.weeks.forEach((week) => {
-      week.transactions.forEach((transaction) => {
-        // Extract day from transaction date (e.g., "Mar. 15" -> 15)
-        const transactionDay = parseInt(transaction.date.split(". ")[1]);
-        if (transactionDay === day) {
-          dayTotal += transaction.amount;
-        }
-      });
-    });
-
-    // Format display name with month abbreviation
-    const monthAbbr = month.month.slice(0, 3);
-
-    return {
-      name: `${monthAbbr} ${day}`,
-      day: day,
-      total: dayTotal,
-      days: 1,
-    };
-  });
-
-  return dailyData;
-};
-
-// Returns weekly chart data for the given month index
-const getWeeklyChartData = (monthIndex: number) => {
-  const month = allMonthsData[monthIndex];
-  if (!month) return [];
-
-  const monthIndexMap: { [key: string]: number } = {
-    January: 0,
-    February: 1,
-    March: 2,
-    April: 3,
-    May: 4,
-    June: 5,
-    July: 6,
-    August: 7,
-    September: 8,
-    October: 9,
-    November: 10,
-    December: 11,
-  };
-
-  const monthIndex2 = monthIndexMap[month.month];
-  const year = month.year;
-
-  return month.weeks.map((week) => {
-    // Calculate the date range for each week
-    const startDay = (week.weekNumber - 1) * 7 + 1;
-    const endDay = Math.min(
-      startDay + week.daysInWeek - 1,
-      new Date(year, monthIndex2 + 1, 0).getDate()
-    );
-
-    // Format the date range with month abbreviation
-    const monthAbbr = month.month.slice(0, 3);
-    const dateRange =
-      startDay === endDay
-        ? `${monthAbbr}. ${startDay}`
-        : `${monthAbbr}. ${startDay}-${endDay}`;
-
-    return {
-      name: `Week ${week.weekNumber}`,
-      dateRange: dateRange,
-      total: week.weeklyTotal,
-      days: week.daysInWeek,
-      dailyAverage: week.dailyAverage,
-    };
-  });
-};
-
-// Formats Y-axis ticks (e.g., 1000 -> 1k)
 function tickFormatter(value: any): string {
   const numValue = Number(value);
   if (isNaN(numValue)) return String(value);
 
   if (numValue >= 1000) {
-    return `${numValue / 1000}k`;
+    const kValue = numValue / 1000;
+    // Only show decimal if it's not a whole number and less than 10k
+    if (kValue % 1 === 0 || kValue >= 10) {
+      return `${Math.round(kValue)}k`;
+    } else {
+      return `${kValue.toFixed(1)}k`;
+    }
   }
   return String(numValue);
 }
 
 // Custom tooltip for the chart
-const CustomTooltip = ({ active, payload, label }: any) => {
+function CustomTooltip({ active, payload, label }: any) {
   const { currency } = useCurrencyContext();
   if (active && payload && payload.length) {
     const data = payload[0].payload;
@@ -139,7 +61,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return (
       <div className="bg-timberwolf-900 border border-night-700 p-2 md:p-3 rounded-lg shadow-lg max-w-xs">
         <p className="text-night-600 font-semibold mb-1 md:mb-2 text-sm md:text-base">
-          {data.name || label}
+          {data.name || data.date || label}
         </p>
         {data.dateRange && (
           <p className="text-night-500 text-xs mb-1 md:mb-2">
@@ -151,7 +73,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <span className="font-medium">Total:</span> {currency}
             {total.toLocaleString()}
           </p>
-          {days > 1 && (
+          {days && days > 1 && (
             <p className="text-night-500 text-xs md:text-sm">
               <span className="font-medium">Daily Average:</span> {currency}
               {dailyAverage.toLocaleString(undefined, {
@@ -165,63 +87,65 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     );
   }
   return null;
-};
-
-type ChartView = "weekly" | "daily";
-
-interface ExpenseChartProps {
-  // Optionally specify which month's data to show (defaults to first month)
-  monthIndex?: number;
 }
 
-function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
-  const [chartView, setChartView] = useState<ChartView>("daily");
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+// Custom tick for weekly X axis (shows week and date range)
+function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
+  const weekData = weeklyData.find((w: any) => w.name === payload.value);
 
-  const weeklyData = getWeeklyChartData(monthIndex);
-  const allDailyData = getDailyChartData(monthIndex);
-
-  const currentData = chartView === "weekly" ? weeklyData : allDailyData;
-
-  // Find the max value for Y-axis scaling in daily view
-  const maxDailyValue = Math.max(...allDailyData.map((d) => d.total));
-
-  // Chart width: wider for daily view to allow horizontal scrolling
-  const chartWidth =
-    chartView === "daily" ? Math.max(600, allDailyData.length * 35) : "100%";
-
-  // Custom tick for weekly X axis (shows week and date range)
-  const WeeklyXAxisTick = ({ x, y, payload }: any) => {
-    const weekData = weeklyData.find((w) => w.name === payload.value);
-
-    return (
-      <g transform={`translate(${x},${y})`}>
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dy={16}
+        textAnchor="middle"
+        fill="#999b7a"
+        fontSize="10"
+        fontWeight="500"
+      >
+        {payload.value}
+      </text>
+      {weekData && (
         <text
           x={0}
           y={0}
-          dy={16}
+          dy={28}
           textAnchor="middle"
           fill="#999b7a"
-          fontSize="10"
-          fontWeight="500"
+          fontSize="8"
         >
-          {payload.value}
+          {weekData.dateRange}
         </text>
-        {weekData && (
-          <text
-            x={0}
-            y={0}
-            dy={28}
-            textAnchor="middle"
-            fill="#999b7a"
-            fontSize="8"
-          >
-            {weekData.dateRange}
-          </text>
-        )}
-      </g>
-    );
-  };
+      )}
+    </g>
+  );
+}
+
+function monthAbbrevTick(dateStr: string): string {
+  const date = new Date(dateStr);
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = date.getDate();
+  return `${month}. ${day}`;
+}
+
+function ExpenseChart({
+  dailyChartsData = [],
+  weeklyChartsData = [],
+}: ExpenseChartProps) {
+  const [chartView, setChartView] = useState<ChartView>("daily");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const currentData =
+    chartView === "weekly" ? weeklyChartsData : dailyChartsData;
+
+  // Find the max value for Y-axis scaling
+  const maxDailyValue = Math.max(...dailyChartsData.map((d) => d.total), 0);
+  const maxWeeklyValue = Math.max(...weeklyChartsData.map((d) => d.total), 0);
+
+  // Chart width: wider for daily view to allow horizontal scrolling
+  const chartWidth =
+    chartView === "daily" ? Math.max(600, dailyChartsData.length * 35) : "100%";
 
   // Auto-scroll to end when daily view is active
   useEffect(() => {
@@ -229,7 +153,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
       scrollContainerRef.current.scrollLeft =
         scrollContainerRef.current.scrollWidth;
     }
-  }, [chartView, allDailyData.length]);
+  }, [chartView, dailyChartsData.length]);
 
   return (
     <div className="h-full flex flex-col bg-timberwolf-900">
@@ -282,7 +206,9 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
                   dataKey="name"
                   tickLine={false}
                   axisLine={false}
-                  tick={WeeklyXAxisTick}
+                  tick={(props) => (
+                    <WeeklyXAxisTick {...props} weeklyData={weeklyChartsData} />
+                  )}
                   textAnchor="middle"
                   height={45}
                 />
@@ -291,7 +217,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
                   axisLine={false}
                   tickFormatter={tickFormatter}
                   tickCount={5}
-                  domain={[0, "dataMax + 1000"]}
+                  domain={[0, Math.max(maxWeeklyValue + 100, 500)]}
                   tick={{ fontSize: 9, fill: "#999b7a" }}
                   width={35}
                 />
@@ -306,21 +232,22 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
               <LineChart data={currentData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2f4b3d" />
                 <XAxis
-                  dataKey="name"
+                  dataKey="date"
                   tickLine={false}
                   axisLine={false}
                   tick={{ fontSize: 8, fill: "#999b7a" }}
-                  interval={0} // Show all labels
+                  interval={0}
                   angle={-45}
                   textAnchor="end"
                   height={50}
+                  tickFormatter={monthAbbrevTick}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={tickFormatter}
                   tickCount={5}
-                  domain={[0, Math.max(maxDailyValue + 500, 1000)]}
+                  domain={[0, Math.max(maxDailyValue + 100, 500)]}
                   tick={{ fontSize: 9, fill: "#999b7a" }}
                   width={35}
                 />
@@ -343,7 +270,7 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
       {chartView === "daily" && (
         <div className="mt-2 text-center">
           <span className="text-xs text-night-600">
-            ← Scroll horizontally to view all {allDailyData.length} days →
+            ← Scroll horizontally to view all {dailyChartsData.length} days →
           </span>
         </div>
       )}

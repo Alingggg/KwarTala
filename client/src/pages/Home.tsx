@@ -9,6 +9,8 @@ import {
   useCurrencyContext,
   useUser,
   useHomeData,
+  useWeeklyChartsData,
+  useDailyChartsData,
 } from "@/hooks";
 import type { Expense } from "@/types";
 import { FiCalendar } from "react-icons/fi";
@@ -17,10 +19,28 @@ function Home() {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
 
-  const { firstName } = useUser();
-  const { data: homeData, isLoading } = useHomeData();
+  const currentMonthNumber = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
 
-  if (isLoading) {
+  const { firstName } = useUser();
+  const { data: homeData, isLoading: isHomeLoading } = useHomeData();
+
+  const { data: dailyChartsData, isLoading: isDailyLoading } =
+    useDailyChartsData({
+      month: currentMonthNumber,
+      year: currentYear,
+    });
+
+  const { data: weeklyChartsData, isLoading: isWeeklyLoading } =
+    useWeeklyChartsData({
+      month: currentMonthNumber,
+      year: currentYear,
+    });
+
+  console.log("dailyChartsData", dailyChartsData);
+  console.log("weeklyChartsData", weeklyChartsData);
+
+  if (isHomeLoading || isDailyLoading || isWeeklyLoading) {
     return <LoadingSpinner message="Loading home data..." />;
   }
 
@@ -88,7 +108,7 @@ function Home() {
                       : "bg-auburn-500"
                   }`}
                   style={{
-                    width: `${homeData.budgetUsedPercentage}%`,
+                    width: `${Math.min(homeData.budgetUsedPercentage, 100)}%`,
                   }}
                 ></div>
               </div>
@@ -128,8 +148,10 @@ function Home() {
 
         {/* Expense Chart */}
         <div className="col-span-1 bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
-          {/* You may need to update ExpenseChart to accept real data */}
-          <ExpenseChart />
+          <ExpenseChart
+            dailyChartsData={dailyChartsData}
+            weeklyChartsData={weeklyChartsData}
+          />
         </div>
       </div>
 
