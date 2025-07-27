@@ -81,10 +81,7 @@ const expenseRepository = {
       [startDate, endDate, userId]
     );
 
-    return rows.map((row: any) => ({
-      date: row.date,
-      total: parseFloat(row.total) || 0,
-    }));
+    return rows;
   },
 
   async update({

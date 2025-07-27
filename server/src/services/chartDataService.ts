@@ -23,11 +23,20 @@ const chartDataService = {
       endDate = new Date(year, month, 0); // Last day of requested month
     }
 
-    return expenseService.getTotalDailyExpenseInDateRange({
+    const data = await expenseService.getTotalDailyExpenseInDateRange({
       userId,
       startDate,
       endDate,
     });
+
+    // Format date as "Month Day" (e.g., "March 1")
+    return data.map((item: any) => ({
+      ...item,
+      date: new Date(item.date).toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+      }),
+    }));
   },
 };
 
