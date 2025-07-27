@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -222,6 +222,14 @@ function ExpenseChart({ monthIndex = 0 }: ExpenseChartProps) {
       </g>
     );
   };
+
+  // Auto-scroll to end when daily view is active
+  useEffect(() => {
+    if (chartView === "daily" && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft =
+        scrollContainerRef.current.scrollWidth;
+    }
+  }, [chartView, allDailyData.length]);
 
   return (
     <div className="h-full flex flex-col bg-timberwolf-900">
