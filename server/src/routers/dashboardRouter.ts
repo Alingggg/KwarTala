@@ -5,5 +5,10 @@ import { authMiddleware } from "@/middlewares";
 const router = express.Router();
 
 router.get("/home", authMiddleware, dashboardController.getHomeData);
+router.get(
+  "/charts/daily",
+  authMiddleware,
+  dashboardController.getDailyChartData
+);
 
 export default router;

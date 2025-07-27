@@ -52,6 +52,22 @@ const expenseService = {
     });
   },
 
+  async getTotalDailyExpenseInDateRange({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    return expenseRepository.getTotalDailyExpensesByUserIdAndDateRange({
+      userId,
+      startDate,
+      endDate,
+    });
+  },
+
   async updateExpense({
     id,
     category,

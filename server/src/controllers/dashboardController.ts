@@ -1,4 +1,4 @@
-import { homeDataService } from "@/services";
+import { chartDataService, homeDataService } from "@/services";
 import type { CustomError } from "@/types";
 import type { NextFunction, Request, Response } from "express";
 
@@ -17,6 +17,40 @@ const dashboardController = {
       res
         .status(200)
         .json({ data: homeData, message: "Home data retrieved successfully" });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getDailyChartData(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        return next(error);
+      }
+
+      const { userId } = req.user;
+
+      const month = Number(req.query.month);
+      const year = Number(req.query.year);
+
+      if (!month || !year) {
+        const error: CustomError = new Error("Month and year are required");
+        error.statusCode = 400;
+        return next(error);
+      }
+
+      const dailyExpenses = await chartDataService.getDailyChartData({
+        userId,
+        month,
+        year,
+      });
+
+      res.status(200).json({
+        data: dailyExpenses,
+        message: "Daily expenses retrieved successfully",
+      });
     } catch (error) {
       next(error);
     }

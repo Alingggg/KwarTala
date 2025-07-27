@@ -54,6 +54,39 @@ const expenseRepository = {
     return rows[0]?.total || 0;
   },
 
+  async getTotalDailyExpensesByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    const { rows } = await pool.query(
+      `WITH date_range AS (
+      SELECT generate_series(
+        DATE($1), 
+        DATE($2), 
+        '1 day'::interval
+      )::date AS date
+    )
+    SELECT 
+      dr.date, 
+      COALESCE(SUM(e.amount), 0) AS total
+    FROM date_range dr
+    LEFT JOIN expenses e ON dr.date = e.date AND e.user_id = $3
+    GROUP BY dr.date
+    ORDER BY dr.date`,
+      [startDate, endDate, userId]
+    );
+
+    return rows.map((row: any) => ({
+      date: row.date,
+      total: parseFloat(row.total) || 0,
+    }));
+  },
+
   async update({
     id,
     category,
