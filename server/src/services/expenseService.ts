@@ -1,0 +1,76 @@
+import { expenseRepository } from "@/repositories";
+import type { Expense } from "@/types";
+
+const expenseService = {
+  async createExpense({
+    userId,
+    category,
+    description,
+    amount,
+    date,
+  }: Omit<Expense, "id">) {
+    return expenseRepository.create({
+      userId,
+      category,
+      description,
+      amount,
+      date,
+    });
+  },
+
+  async getTodaysTransactions(userId: number) {
+    const date = new Date();
+    return expenseRepository.findByUserIdAndDateRange({
+      userId,
+      startDate: date,
+      endDate: date,
+    });
+  },
+
+  async getTotalSpentToday(userId: number) {
+    const date = new Date();
+    return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
+      userId,
+      startDate: date,
+      endDate: date,
+    });
+  },
+
+  async getTotalMonthlySpent({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
+      userId,
+      startDate,
+      endDate,
+    });
+  },
+
+  async updateExpense({
+    id,
+    category,
+    description,
+    amount,
+    date,
+  }: Omit<Expense, "userId">) {
+    return expenseRepository.update({
+      id,
+      category,
+      description,
+      amount,
+      date,
+    });
+  },
+
+  async deleteExpense(id: number) {
+    return expenseRepository.delete(id);
+  },
+};
+
+export default expenseService;

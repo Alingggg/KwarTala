@@ -1,20 +1,11 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "imports": {
-    "#config": "./src/config/index.js",
-    "#controllers": "./src/controllers/index.js",
-    "#middlewares": "./src/middlewares/index.js",
-    "#repositories": "./src/repositories/index.js",
-    "#routers": "./src/routers/index.js",
-    "#services": "./src/services/index.js",
-    "#utils": "./src/utils/index.js"
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "start": "node --env-file=.env --import ./register-paths.js dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -24,12 +15,21 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.0",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.1.0",
+    "@types/pg": "^8.15.4",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }
