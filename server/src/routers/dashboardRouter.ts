@@ -10,5 +10,10 @@ router.get(
   authMiddleware,
   dashboardController.getDailyChartData
 );
+router.get(
+  "/charts/weekly",
+  authMiddleware,
+  dashboardController.getWeeklyChartData
+);
 
 export default router;

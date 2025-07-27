@@ -15,12 +15,10 @@ const chartDataService = {
     const startDate = requestedMonthStart;
     let endDate;
 
-    // If requested month/year is current month/year
     if (today.getFullYear() === year && today.getMonth() === month - 1) {
       endDate = today;
     } else {
-      // Previous month/year
-      endDate = new Date(year, month, 0); // Last day of requested month
+      endDate = new Date(year, month, 0);
     }
 
     const data = await expenseService.getTotalDailyExpenseInDateRange({
@@ -29,14 +27,59 @@ const chartDataService = {
       endDate,
     });
 
-    // Format date as "Month Day" (e.g., "March 1")
-    return data.map((item: any) => ({
+    const formattedData = data.map((item: any) => ({
       ...item,
       date: new Date(item.date).toLocaleDateString(undefined, {
         month: "long",
         day: "numeric",
       }),
     }));
+
+    return formattedData;
+  },
+
+  async getWeeklyChartData({
+    userId,
+    month,
+    year,
+  }: {
+    userId: number;
+    month: number;
+    year: number;
+  }) {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    const data = await expenseService.getTotalWeeklyExpenseInDateRange({
+      userId,
+      startDate,
+      endDate,
+    });
+
+    const formattedData = data.map((item: any, idx: number, arr: any[]) => {
+      const weekStart = new Date(item.date);
+      const weekEnd =
+        idx < arr.length - 1 ? new Date(arr[idx + 1].date) : endDate;
+
+      const days =
+        Math.ceil(
+          (weekEnd.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24)
+        ) || 1;
+
+      const dateRange = `${weekStart.toLocaleString(undefined, {
+        month: "short",
+      })}. ${weekStart.getDate()}-${weekEnd.getDate()}`;
+
+      return {
+        name: `Week ${idx + 1}`,
+        dateRange,
+        total: item.total,
+        days,
+        dailyAverage: days > 0 ? Number((item.total / days).toFixed(2)) : 0,
+      };
+    });
+
+    return formattedData;
   },
 };
 

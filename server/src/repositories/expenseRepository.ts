@@ -84,6 +84,39 @@ const expenseRepository = {
     return rows;
   },
 
+  async getTotalWeeklyExpensesByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    const { rows } = await pool.query(
+      `WITH date_range AS (
+      SELECT generate_series(
+        DATE($1), 
+        DATE($2), 
+        '1 week'::interval
+      )::date AS week_start
+    )
+    SELECT 
+      dr.week_start AS date,
+      COALESCE(SUM(e.amount), 0) AS total
+    FROM date_range dr
+    LEFT JOIN expenses e ON 
+      e.date >= dr.week_start 
+      AND e.date < dr.week_start + '1 week'::interval
+      AND e.user_id = $3
+    GROUP BY dr.week_start
+    ORDER BY dr.week_start`,
+      [startDate, endDate, userId]
+    );
+
+    return rows;
+  },
+
   async update({
     id,
     category,

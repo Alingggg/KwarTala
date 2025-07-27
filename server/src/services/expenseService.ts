@@ -68,6 +68,22 @@ const expenseService = {
     });
   },
 
+  async getTotalWeeklyExpenseInDateRange({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    return expenseRepository.getTotalWeeklyExpensesByUserIdAndDateRange({
+      userId,
+      startDate,
+      endDate,
+    });
+  },
+
   async updateExpense({
     id,
     category,
