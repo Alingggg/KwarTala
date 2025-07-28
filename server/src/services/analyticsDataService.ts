@@ -52,6 +52,12 @@ const analyticsDataService = {
       endDate: endOfMonth,
     });
 
+    const finalExpenseByCategory = expenseByCategory.map((category) => ({
+      ...category,
+      percentageOfTotal:
+        Math.round((category.total / totalMonthlySpent) * 100 * 100) / 100,
+    }));
+
     const highestExpenses = await expenseService.getHighestExpenses({
       userId,
       startDate: startOfMonth,
@@ -71,7 +77,7 @@ const analyticsDataService = {
       averageDailySpending: Math.round(averageDailySpending * 100) / 100,
       recommendedDailyLimit: Math.round(recommendedDailyLimit * 100) / 100,
       remainingDays,
-      expenseByCategory,
+      expenseByCategory: finalExpenseByCategory,
       highestExpenses,
     };
   },
