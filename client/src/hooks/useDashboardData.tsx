@@ -11,4 +11,16 @@ function useHomeData() {
   });
 }
 
-export { useHomeData };
+function useTransactionsData({ month, year }: { month: number; year: number }) {
+  return useQuery({
+    queryKey: ["transactionsData", month, year],
+    queryFn: async () => {
+      const response = await api("/dashboard/transactions", {
+        params: { month, year },
+      });
+      return response.data.data;
+    },
+  });
+}
+
+export { useHomeData, useTransactionsData };

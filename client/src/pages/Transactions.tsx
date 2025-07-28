@@ -8,8 +8,11 @@ import {
   FiChevronUp,
   FiChevronDown,
 } from "@/assets/icons";
-import { useModalContext, useCurrencyContext } from "@/hooks";
-import { mockData, type Transaction } from "@/assets/mockData";
+import {
+  useModalContext,
+  useCurrencyContext,
+  useTransactionsData,
+} from "@/hooks";
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -18,52 +21,71 @@ function Transactions() {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
 
-  const currentMonth = mockData[currentMonthIndex];
+  const today = new Date();
 
-  const navigateMonth = (direction: "prev" | "next") => {
-    if (direction === "prev" && currentMonthIndex > 0) {
-      setCurrentMonthIndex(currentMonthIndex - 1);
-    } else if (
-      direction === "next" &&
-      currentMonthIndex < mockData.length - 1
-    ) {
+  // Calculate the month and year for the selected index
+  function getMonthYear(index: number) {
+    const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
+    return { month: date.getMonth() + 1, year: date.getFullYear() };
+  }
+
+  const { month, year } = getMonthYear(currentMonthIndex);
+
+  const { data: currentMonth, isLoading } = useTransactionsData({
+    month,
+    year,
+  });
+
+  const maxMonths = 12;
+
+  function navigateMonth(direction: "prev" | "next") {
+    if (direction === "prev" && currentMonthIndex < maxMonths - 1) {
       setCurrentMonthIndex(currentMonthIndex + 1);
+    } else if (direction === "next" && currentMonthIndex > 0) {
+      setCurrentMonthIndex(currentMonthIndex - 1);
     }
     setSelectedWeek(null);
-  };
+  }
 
-  const getStatusColor = (remaining: number) => {
+  function getStatusColor(remaining: number) {
     if (remaining > 0) return "text-night-700";
     return "text-auburn-500";
-  };
+  }
 
-  const allWeeks = currentMonth.weeks;
+  const allWeeks = currentMonth?.weeks || [];
 
-  // Sort transactions by date
-  const sortTransactions = (transactions: Transaction[]) => {
+  function sortTransactions(transactions: any[]) {
     return [...transactions].sort((a, b) => {
-      const dateA = new Date(a.date.replace(".", "") + " " + currentMonth.year);
-      const dateB = new Date(b.date.replace(".", "") + " " + currentMonth.year);
-
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
       if (sortOrder === "asc") {
         return dateA.getTime() - dateB.getTime();
       } else {
         return dateB.getTime() - dateA.getTime();
       }
     });
-  };
+  }
 
-  const getFilteredTransactions = () => {
+  function getFilteredTransactions() {
     const transactions = selectedWeek
-      ? allWeeks.find((w) => w.weekNumber === selectedWeek)?.transactions || []
-      : allWeeks.flatMap((week) => week.transactions);
+      ? allWeeks.find((w: any) => w.weekNumber === selectedWeek)
+          ?.transactions || []
+      : allWeeks.flatMap((week: any) => week.transactions);
 
     return sortTransactions(transactions);
-  };
+  }
 
   const selectedWeekData = selectedWeek
-    ? allWeeks.find((w) => w.weekNumber === selectedWeek)
+    ? allWeeks.find((w: any) => w.weekNumber === selectedWeek)
     : null;
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <span>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="p-3 md:p-8">
@@ -77,9 +99,9 @@ function Transactions() {
             variant="secondary"
             onClick={() =>
               openModal("EDIT_BUDGET", {
-                month: currentMonth.month,
-                year: currentMonth.year,
-                currentBudget: currentMonth.monthlyBudget,
+                month: currentMonth?.month,
+                year: currentMonth?.year,
+                currentBudget: currentMonth?.monthlyBudget,
               })
             }
             className="shadow-sm text-sm md:text-base"
@@ -100,7 +122,7 @@ function Transactions() {
         {/* Navigation Buttons */}
         <button
           onClick={() => navigateMonth("prev")}
-          disabled={currentMonthIndex === 0}
+          disabled={currentMonthIndex >= maxMonths - 1}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
         >
           <FiChevronLeft size={20} className="md:w-6 md:h-6" />
@@ -108,7 +130,7 @@ function Transactions() {
 
         <button
           onClick={() => navigateMonth("next")}
-          disabled={currentMonthIndex === mockData.length - 1}
+          disabled={currentMonthIndex === 0}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
         >
           <FiChevronRight size={20} className="md:w-6 md:h-6" />
@@ -119,7 +141,7 @@ function Transactions() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {currentMonth.month} {currentMonth.year}
+              {currentMonth?.month} {currentMonth?.year}
             </h2>
           </div>
         </div>
@@ -134,7 +156,7 @@ function Transactions() {
             </p>
             <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
               {currency}
-              {currentMonth.monthlyBudget.toLocaleString()}
+              {currentMonth?.monthlyBudget?.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
@@ -143,7 +165,7 @@ function Transactions() {
             </p>
             <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
               {currency}
-              {currentMonth.monthlyTotal.toLocaleString()}
+              {currentMonth?.monthlyTotalSpent?.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
@@ -152,13 +174,13 @@ function Transactions() {
             </p>
             <p
               className={`text-xl md:text-3xl font-bold ${
-                currentMonth.remaining >= 0
+                currentMonth?.monthlyRemainingBudget >= 0
                   ? "text-timberwolf-900"
                   : "text-auburn-500"
               }`}
             >
               {currency}
-              {currentMonth.remaining.toLocaleString()}
+              {currentMonth?.monthlyRemainingBudget?.toLocaleString()}
             </p>
           </div>
         </div>
@@ -183,7 +205,7 @@ function Transactions() {
           >
             <div className="text-xs md:text-sm font-semibold">All Weeks</div>
           </button>
-          {allWeeks.map((week) => (
+          {allWeeks.map((week: any) => (
             <button
               key={week.weekNumber}
               onClick={() =>
@@ -203,20 +225,20 @@ function Transactions() {
                 </div>
                 <div className="text-xs opacity-75 mt-1">
                   {currency}
-                  {week.weeklyTotal.toLocaleString()}
+                  {week.weeklyTotalSpent?.toLocaleString()}
                 </div>
                 <div
                   className={`text-xs font-medium mt-1 ${
                     selectedWeek === week.weekNumber
-                      ? week.weeklyRemaining >= 0
+                      ? week.weeklyRemainingBudget >= 0
                         ? "text-night-800"
                         : "text-auburn-700"
-                      : getStatusColor(week.weeklyRemaining)
+                      : getStatusColor(week.weeklyRemainingBudget)
                   }`}
                 >
-                  {week.weeklyRemaining >= 0
-                    ? `+${currency}${week.weeklyRemaining}`
-                    : `${currency}${week.weeklyRemaining}`}
+                  {week.weeklyRemainingBudget >= 0
+                    ? `+${currency}${week.weeklyRemainingBudget}`
+                    : `${currency}${week.weeklyRemainingBudget}`}
                 </div>
               </div>
             </button>
@@ -234,7 +256,7 @@ function Transactions() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {selectedWeekData.weeklyBudget.toLocaleString()}
+                {selectedWeekData.weeklyBudget?.toLocaleString()}
               </p>
             </div>
             <div className="text-center">
@@ -243,7 +265,7 @@ function Transactions() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {selectedWeekData.weeklyTotal.toLocaleString()}
+                {selectedWeekData.weeklyTotalSpent?.toLocaleString()}
               </p>
             </div>
             <div className="text-center">
@@ -252,13 +274,13 @@ function Transactions() {
               </p>
               <p
                 className={`text-lg md:text-2xl font-bold ${
-                  selectedWeekData.weeklyRemaining >= 0
+                  selectedWeekData.weeklyRemainingBudget >= 0
                     ? "text-timberwolf-900"
                     : "text-auburn-500"
                 }`}
               >
                 {currency}
-                {selectedWeekData.weeklyRemaining.toLocaleString()}
+                {selectedWeekData.weeklyRemainingBudget?.toLocaleString()}
               </p>
             </div>
           </div>
@@ -270,7 +292,7 @@ function Transactions() {
         <h3 className="text-lg md:text-xl font-bold text-night-600">
           {selectedWeek
             ? `Week ${selectedWeek} Transactions`
-            : `All ${currentMonth.month} Transactions`}
+            : `All ${currentMonth?.month} Transactions`}
         </h3>
 
         {/* Sort Toggle */}
@@ -303,7 +325,7 @@ function Transactions() {
 
       {/* Transactions List */}
       <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-        {getFilteredTransactions().map((transaction) => (
+        {getFilteredTransactions().map((transaction: any) => (
           <ExpenseCard
             key={transaction.id}
             id={transaction.id}
@@ -329,7 +351,7 @@ function Transactions() {
           <p className="text-sm">
             {selectedWeek
               ? `No expenses recorded for Week ${selectedWeek}`
-              : `No expenses recorded for ${currentMonth.month} ${currentMonth.year}`}
+              : `No expenses recorded for ${currentMonth?.month} ${currentMonth?.year}`}
           </p>
         </div>
       )}
