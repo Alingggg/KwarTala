@@ -18,6 +18,22 @@ const expenseService = {
     });
   },
 
+  async getExpensesByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    return expenseRepository.findByUserIdAndDateRange({
+      userId,
+      startDate,
+      endDate,
+    });
+  },
+
   async getTodaysTransactions(userId: number) {
     const date = new Date();
     return expenseRepository.findByUserIdAndDateRange({

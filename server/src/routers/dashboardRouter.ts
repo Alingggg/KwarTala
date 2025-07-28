@@ -15,5 +15,10 @@ router.get(
   authMiddleware,
   dashboardController.getWeeklyChartData
 );
+router.get(
+  "/transactions",
+  authMiddleware,
+  dashboardController.getTransactionsData
+);
 
 export default router;
