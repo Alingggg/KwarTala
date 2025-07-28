@@ -24,7 +24,7 @@ function CustomPieTooltip({ active, payload }: any) {
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
             <span className="font-medium">Amount:</span> {currency}
-            {data.amount.toLocaleString()}
+            {data.total.toLocaleString()}
           </p>
           <p className="text-night-500 text-sm">
             <span className="font-medium">Percentage:</span>{" "}
@@ -68,7 +68,6 @@ function Analytics() {
     analyticsData && assignCategoryColors(analyticsData.highestExpenses);
   const expenseByCategoryWithColors =
     analyticsData && assignCategoryColors(analyticsData.expenseByCategory);
-
 
   function navigateMonth(direction: "prev" | "next") {
     if (direction === "prev" && currentMonthIndex < MAX_MONTHS - 1) {
@@ -246,7 +245,7 @@ function Analytics() {
                     cx="50%"
                     cy="50%"
                     outerRadius={window.innerWidth < 768 ? 60 : 80}
-                    dataKey="amount"
+                    dataKey="total"
                     label={false}
                   >
                     {expenseByCategoryWithColors.map(
