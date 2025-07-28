@@ -1,7 +1,7 @@
 import { useCurrencyContext } from "@/hooks";
-import type { ExpenseWithoutIdAndUserId } from "@/types";
+import type { Expense } from "@/types";
 
-interface ExpenseDescriptionModalProps extends ExpenseWithoutIdAndUserId {
+interface ExpenseDescriptionModalProps extends Omit<Expense, "id" | "userId"> {
   setShowDescription: (show: boolean) => void;
 }
 

@@ -7,13 +7,4 @@ interface Expense {
   date: string;
 }
 
-type ExpenseWithoutId = Omit<Expense, "id">;
-type ExpenseWithoutUserId = Omit<Expense, "userId">;
-type ExpenseWithoutIdAndUserId = Omit<Expense, "id" | "userId">;
-
-export type {
-  Expense,
-  ExpenseWithoutId,
-  ExpenseWithoutUserId,
-  ExpenseWithoutIdAndUserId,
-};
+export type { Expense };

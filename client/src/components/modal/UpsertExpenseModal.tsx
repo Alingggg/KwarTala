@@ -2,9 +2,9 @@ import { Button, Input } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useEditExpense } from "@/hooks";
-import type { ExpenseWithoutId, ExpenseWithoutUserId } from "@/types";
+import type { Expense } from "@/types";
 
-interface UpsertExpenseModalProps extends Partial<ExpenseWithoutUserId> {
+interface UpsertExpenseModalProps extends Partial<Omit<Expense, "userId">> {
   onClose: () => void;
 }
 
@@ -21,7 +21,7 @@ function UpsertExpenseModal({
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm<ExpenseWithoutId>();
+  } = useForm<Omit<Expense, "id" | "userId">>();
   const { mutate: addExpense } = useAddExpense();
   const { mutate: editExpense } = useEditExpense();
 
@@ -32,7 +32,7 @@ function UpsertExpenseModal({
     setValue("date", date || "");
   }
 
-  function onSubmit(data: ExpenseWithoutId) {
+  function onSubmit(data: Omit<Expense, "id" | "userId">) {
     if (id) {
       editExpense({ id, ...data });
       onClose();
