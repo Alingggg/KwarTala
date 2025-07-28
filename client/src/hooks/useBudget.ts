@@ -14,9 +14,13 @@ function useEditBudget() {
       year: number;
       budget: number;
     }) => {
-      const response = await api.put(`/budgets?month=${month}&year=${year}`, {
-        amount: budget,
-      });
+      const response = await api.put(
+        `/budgets`,
+        {
+          amount: budget,
+        },
+        { params: { month, year } }
+      );
       return response.data.data;
     },
     onSuccess: (data) => {
