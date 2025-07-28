@@ -11,4 +11,4 @@ function useHomeData() {
   });
 }
 
-export default useHomeData;
+export { useHomeData };
