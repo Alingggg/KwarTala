@@ -22,7 +22,10 @@ function generateToken(
   return jwt.sign(payload, secret, options as jwt.SignOptions);
 }
 
-function verifyToken(token: string, type: "access-token" | "refresh-token") {
+function verifyToken(
+  token: string,
+  type: "access-token" | "refresh-token"
+): UserPayload {
   const secret =
     type === "access-token"
       ? process.env.JWT_ACCESS_TOKEN_SECRET
@@ -33,7 +36,15 @@ function verifyToken(token: string, type: "access-token" | "refresh-token") {
   }
 
   try {
-    return jwt.verify(token, secret);
+    const decoded = jwt.verify(token, secret);
+
+    if (!decoded) {
+      const error: CustomError = new Error("Invalid or expired token");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    return decoded as UserPayload;
   } catch (err) {
     const error: CustomError = new Error("Invalid or expired token");
     error.statusCode = 401;

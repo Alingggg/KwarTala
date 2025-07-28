@@ -13,7 +13,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
     const user = verifyToken(accessToken, "access-token");
 
-    if (typeof user === "string" || !user) {
+    if (!user) {
       const error: CustomError = new Error("Invalid or expired token");
       error.statusCode = 401;
       return next(error);
