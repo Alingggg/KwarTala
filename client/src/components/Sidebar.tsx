@@ -46,7 +46,7 @@ function Sidebar() {
     { to: "/home", icon: <FiHome />, label: "Home" },
     { to: "/transactions", icon: <TfiWallet />, label: "Transactions" },
     { to: "/analytics", icon: <FiBarChart2 />, label: "Analytics" },
-    { to: "/goals", icon: <FiTarget />, label: "Goals" },
+    // { to: "/goals", icon: <FiTarget />, label: "Goals" },
   ];
 
   const currentDate = new Date().toLocaleDateString("en-US", {

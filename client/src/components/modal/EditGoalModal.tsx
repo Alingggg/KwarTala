@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { FiTarget, FiDollarSign, FiX, FiTrash2 } from "@/assets/icons";
+import { FiTarget, FiX, FiTrash2 } from "@/assets/icons";
 import { Button } from "@/components";
+import { useCurrencyContext } from "@/hooks";
 
 interface Goal {
   id: string;
@@ -32,6 +33,7 @@ function EditGoalModal({ onClose, goal }: EditGoalModalProps) {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { currency } = useCurrencyContext();
 
   // Pre-populate form with existing goal data
   useEffect(() => {
@@ -136,7 +138,8 @@ function EditGoalModal({ onClose, goal }: EditGoalModalProps) {
           </h3>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-ash-gray-400">
-              P{goal.currentSpent.toLocaleString()} spent
+              {currency}
+              {goal.currentSpent.toLocaleString()} spent
             </span>
             <span className="text-sm font-medium text-night-600">
               {((goal.currentSpent / goal.targetAmount) * 100).toFixed(1)}%
@@ -198,7 +201,7 @@ function EditGoalModal({ onClose, goal }: EditGoalModalProps) {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiDollarSign className="text-ash-gray-400" size={16} />
+                <span className="text-ash-gray-400 text-base">{currency}</span>
               </div>
               <input
                 type="text"
@@ -219,7 +222,8 @@ function EditGoalModal({ onClose, goal }: EditGoalModalProps) {
             )}
             {formData.targetAmount && (
               <p className="text-ash-gray-400 text-sm mt-2">
-                P{parseInt(formData.targetAmount || "0").toLocaleString()}
+                {currency}
+                {parseInt(formData.targetAmount || "0").toLocaleString()}
               </p>
             )}
           </div>
@@ -242,7 +246,8 @@ function EditGoalModal({ onClose, goal }: EditGoalModalProps) {
                   </span>
                 </div>
                 <span className="font-bold text-night-600">
-                  P{parseInt(formData.targetAmount || "0").toLocaleString()}
+                  {currency}
+                  {parseInt(formData.targetAmount || "0").toLocaleString()}
                 </span>
               </div>
             </div>

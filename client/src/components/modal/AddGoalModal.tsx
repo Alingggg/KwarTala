@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { FiTarget, FiDollarSign, FiX } from "@/assets/icons";
+import { FiTarget, FiX } from "@/assets/icons";
 import { Button } from "@/components";
+import { useCurrencyContext } from "@/hooks";
 
 const categories = [
   { name: "Food", color: "#54876e" },
@@ -18,6 +19,7 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
     color: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { currency } = useCurrencyContext();
 
   const handleCategorySelect = (category: { name: string; color: string }) => {
     setFormData((prev) => ({
@@ -128,7 +130,7 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiDollarSign className="text-ash-gray-400" size={16} />
+                <span className="text-ash-gray-400 text-base">{currency}</span>
               </div>
               <input
                 type="text"
@@ -149,7 +151,8 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
             )}
             {formData.targetAmount && (
               <p className="text-ash-gray-400 text-sm mt-2">
-                P{parseInt(formData.targetAmount || "0").toLocaleString()}
+                {currency}
+                {parseInt(formData.targetAmount || "0").toLocaleString()}
               </p>
             )}
           </div>
@@ -171,7 +174,8 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
                   </span>
                 </div>
                 <span className="font-bold text-night-600">
-                  P{parseInt(formData.targetAmount).toLocaleString()}
+                  {currency}
+                  {parseInt(formData.targetAmount).toLocaleString()}
                 </span>
               </div>
             </div>
