@@ -20,5 +20,6 @@ router.get(
   authMiddleware,
   dashboardController.getTransactionsData
 );
+router.get("/analytics", authMiddleware, dashboardController.getAnalyticsData);
 
 export default router;

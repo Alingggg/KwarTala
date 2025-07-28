@@ -117,6 +117,46 @@ const expenseRepository = {
     return rows;
   },
 
+  async getTotalSpentPerCategory({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    const { rows } = await pool.query(
+      `SELECT category, SUM(amount) AS total
+      FROM expenses
+      WHERE user_id = $1 AND date BETWEEN $2 AND $3
+      GROUP BY category`,
+      [userId, startDate, endDate]
+    );
+    return rows;
+  },
+
+  async getHighestExpensesByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+    limit,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+    limit: number;
+  }) {
+    const { rows } = await pool.query(
+      `SELECT * FROM expenses
+      WHERE user_id = $1 AND date BETWEEN $2 AND $3
+      ORDER BY amount DESC
+      LIMIT $4`,
+      [userId, startDate, endDate, limit]
+    );
+    return rows.map(formatExpense);
+  },
+
   async update({
     id,
     category,

@@ -5,3 +5,4 @@ export { default as budgetService } from "./budgetService";
 export { default as homeDataService } from "./homeDataService";
 export { default as chartDataService } from "./chartDataService";
 export { default as transactionsDataService } from "./transactionsDataService";
+export { default as analyticsDataService } from "./analyticsDataService";

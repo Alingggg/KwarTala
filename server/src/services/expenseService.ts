@@ -100,6 +100,41 @@ const expenseService = {
     });
   },
 
+  async getHighestExpenses({
+    userId,
+    startDate,
+    endDate,
+    limit,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+    limit: number;
+  }) {
+    return expenseRepository.getHighestExpensesByUserIdAndDateRange({
+      userId,
+      startDate,
+      endDate,
+      limit,
+    });
+  },
+
+  async getTotalSpentPerCategory({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: Date | string;
+    endDate: Date | string;
+  }) {
+    return expenseRepository.getTotalSpentPerCategory({
+      userId,
+      startDate,
+      endDate,
+    });
+  },
+
   async updateExpense({
     id,
     category,

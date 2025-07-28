@@ -1,4 +1,5 @@
 import {
+  analyticsDataService,
   chartDataService,
   homeDataService,
   transactionsDataService,
@@ -123,6 +124,40 @@ const dashboardController = {
       res.status(200).json({
         data: transactionsData,
         message: "Monthly transactions data retrieved successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getAnalyticsData(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        return next(error);
+      }
+
+      const { userId } = req.user;
+
+      const month = Number(req.query.month);
+      const year = Number(req.query.year);
+
+      if (!month || !year) {
+        const error: CustomError = new Error("Month and year are required");
+        error.statusCode = 400;
+        return next(error);
+      }
+
+      const analyticsData = await analyticsDataService.getAnalyticsData({
+        userId,
+        month,
+        year,
+      });
+
+      res.status(200).json({
+        data: analyticsData,
+        message: "Analytics data retrieved successfully",
       });
     } catch (error) {
       next(error);
