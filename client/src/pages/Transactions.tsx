@@ -13,6 +13,7 @@ import {
   useCurrencyContext,
   useTransactionsData,
 } from "@/hooks";
+import { assignCategoryColors } from "@/utils";
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -72,7 +73,9 @@ function Transactions() {
           ?.transactions || []
       : allWeeks.flatMap((week: any) => week.transactions);
 
-    return sortTransactions(transactions);
+    const transactionsWithColors = assignCategoryColors(transactions);
+
+    return sortTransactions(transactionsWithColors);
   }
 
   const selectedWeekData = selectedWeek
@@ -332,7 +335,7 @@ function Transactions() {
             category={transaction.category}
             amount={transaction.amount}
             description={transaction.description}
-            iconColor={transaction.iconColor}
+            color={transaction.color}
             date={transaction.date}
           />
         ))}
