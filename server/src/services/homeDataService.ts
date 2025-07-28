@@ -23,20 +23,11 @@ const homeDataService = {
     const startOfMonth = formatDate(new Date(year, today.getMonth(), 1));
     const endOfMonth = formatDate(new Date(year, today.getMonth() + 1, 0));
 
-    let budget = await budgetService.findCurrentMonthBudgetByUserId({
+    const budget = await budgetService.findCurrentMonthBudgetByUserId({
       userId,
       month: monthNumber,
       year,
     });
-
-    if (!budget) {
-      budget = await budgetService.createBudget({
-        userId,
-        month: monthNumber,
-        year,
-        amount: 0,
-      });
-    }
 
     const spentToday = (await expenseService.getTotalSpentToday(userId)) ?? 0;
 

@@ -22,21 +22,12 @@ const budgetController = {
         return next(error);
       }
 
-      let budget = await budgetService.updateBudgetByUserIdAndDate({
+      const budget = await budgetService.updateBudgetByUserIdAndDate({
         userId,
         month,
         year,
         amount,
       });
-
-      if (!budget) {
-        budget = await budgetService.createBudget({
-          userId,
-          month,
-          year,
-          amount,
-        });
-      }
 
       res
         .status(200)
