@@ -37,9 +37,6 @@ function Home() {
       year: currentYear,
     });
 
-  console.log("dailyChartsData", dailyChartsData);
-  console.log("weeklyChartsData", weeklyChartsData);
-
   if (isHomeLoading || isDailyLoading || isWeeklyLoading) {
     return <LoadingSpinner message="Loading home data..." />;
   }

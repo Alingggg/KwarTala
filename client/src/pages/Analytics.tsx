@@ -43,7 +43,6 @@ function Analytics() {
 
   const today = new Date();
 
-  // Calculate the month and year for the selected index
   function getMonthYear(index: number) {
     const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
@@ -89,7 +88,7 @@ function Analytics() {
     <div className="p-3 md:p-8">
       {/* Page Header */}
       <div className="mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-night-600">
+        <h1 className="text-2xl md:text-3xl font-bold text-night-600 text-center md:text-left">
           Analytics
         </h1>
       </div>
@@ -180,8 +179,8 @@ function Analytics() {
           </div>
 
           {/* Key Metrics & Limits */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-night-600 p-3 md:p-4 rounded-lg text-center flex flex-col justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 justify-items-center text-center">
+            <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
                 Total Spent
               </p>
@@ -190,7 +189,7 @@ function Analytics() {
                 {analyticsData.monthlyTotalSpent.toLocaleString()}
               </p>
             </div>
-            <div className="bg-night-600 p-3 md:p-4 rounded-lg text-center">
+            <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
                 Daily Average
               </p>
@@ -202,7 +201,7 @@ function Analytics() {
                 Avg. spend per day
               </p>
             </div>
-            <div className="bg-night-600 p-3 md:p-4 rounded-lg text-center">
+            <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
                 Daily Limit
               </p>

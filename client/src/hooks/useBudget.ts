@@ -32,7 +32,7 @@ function useEditBudget() {
         queryClient.invalidateQueries({
           queryKey: ["homeData"],
         });
-      }
+      } // fix invalidation
     },
   });
 }
