@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const tsconfig = JSON.parse(
-  readFileSync(join(__dirname, "tsconfig.json"), "utf8")
+  readFileSync(join(__dirname, "../tsconfig.json"), "utf8")
 );
 
 register({
