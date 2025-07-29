@@ -2,11 +2,11 @@ import { FiEdit, FiTrash2, FiInfo } from "@/assets/icons";
 import { ExpenseDescriptionModal } from "@/components";
 import { useModalContext, useCurrencyContext } from "@/hooks";
 import { useState } from "react";
-import type { ExpenseWithoutUserId } from "@/types";
+import type { Expense } from "@/types";
 import { formatDate } from "@/utils";
 
-interface ExpenseCardProps extends ExpenseWithoutUserId {
-  iconColor?: string;
+interface ExpenseCardProps extends Omit<Expense, "userId"> {
+  color?: string;
 }
 
 export function ExpenseCard({
@@ -15,7 +15,7 @@ export function ExpenseCard({
   description,
   amount,
   date,
-  iconColor = "bg-night-500",
+  color,
 }: ExpenseCardProps) {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
@@ -31,7 +31,8 @@ export function ExpenseCard({
       <div className="bg-timberwolf-900 p-3 md:p-4 rounded-lg flex items-center text-night-500 shadow-md hover:shadow-lg transition-shadow">
         {/* Icon */}
         <div
-          className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${iconColor} mr-3 md:mr-4 flex-shrink-0`}
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3 md:mr-4 flex-shrink-0"
+          style={color ? { backgroundColor: color } : undefined}
         ></div>
 
         {/* Main Content */}

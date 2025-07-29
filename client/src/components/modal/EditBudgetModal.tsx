@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Button, Input } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
-import { monthToNumber } from "@/utils";
 import { useEditBudget } from "@/hooks";
 
 interface EditBudgetModalProps {
@@ -32,10 +31,9 @@ function EditBudgetModal({
   } = useForm<EditBudgetFormValues>();
   const { mutate: editBudget } = useEditBudget();
 
-  const initialBudgetPeriod = `${year}-${String(monthToNumber[month]).padStart(
-    2,
-    "0"
-  )}`;
+  const initialBudgetPeriod = `${year}-${String(
+    new Date(`${month} 1, ${year}`).getMonth() + 1
+  ).padStart(2, "0")}`;
 
   useEffect(() => {
     reset({
@@ -72,9 +70,10 @@ function EditBudgetModal({
     onClose();
   }
 
-  const getImpactMessage = () => {
+  function getImpactMessage() {
     const newBudget = Number(budget);
     const difference = newBudget - currentBudget;
+
     if (difference > 0) {
       return `This will increase your budget by P${difference.toLocaleString()}`;
     } else if (difference < 0) {
@@ -82,8 +81,9 @@ function EditBudgetModal({
         difference
       ).toLocaleString()}`;
     }
+
     return "No change to current budget";
-  };
+  }
 
   const selectedDate = new Date((budgetPeriod || initialBudgetPeriod) + "-01");
   const currentMonthDate = new Date(currentYear, currentMonth - 1, 1);

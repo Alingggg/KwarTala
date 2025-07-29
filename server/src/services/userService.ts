@@ -39,12 +39,9 @@ const userService = {
       throw error;
     }
 
-    return {
-      id: newUser.id,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      email: newUser.email,
-    };
+    const { password: userPassword, ...userWithoutPassword } = newUser;
+
+    return userWithoutPassword;
   },
 
   async loginUser({ email, password }: { email: string; password: string }) {
@@ -60,8 +57,9 @@ const userService = {
       error.statusCode = 401;
       throw error;
     }
+    const { password: userPassword, ...userWithoutPassword } = user;
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, userPassword);
     if (!isPasswordValid) {
       const error: CustomError = new Error("Invalid email or password.");
       error.statusCode = 401;
@@ -70,9 +68,7 @@ const userService = {
 
     const payload = {
       userId: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
+      ...userWithoutPassword,
     };
 
     const accessToken = generateToken(payload, "access-token");
@@ -86,18 +82,20 @@ const userService = {
     return {
       accessToken,
       refreshToken,
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      },
+      user: userWithoutPassword,
     };
   },
 
   async refreshAccessToken(refreshToken: string) {
     if (!refreshToken) {
       const error: CustomError = new Error("Refresh token is required.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const session = await sessionService.findSessionByToken(refreshToken);
+    if (!session) {
+      const error: CustomError = new Error("Invalid refresh token.");
       error.statusCode = 401;
       throw error;
     }
@@ -111,25 +109,13 @@ const userService = {
         throw error;
       }
 
-      cleanPayload = {
-        userId: (payload as any).userId,
-        firstName: (payload as any).firstName,
-        lastName: (payload as any).lastName,
-        email: (payload as any).email,
-      };
+      const { iat, exp, ...rest } = payload as any;
+      cleanPayload = rest;
     } catch (error) {
       const err: CustomError = new Error("Invalid or expired refresh token.");
       err.statusCode = 401;
       await sessionService.deleteSessionByToken(refreshToken);
       throw err;
-    }
-
-    const session = await sessionService.findSessionByToken(refreshToken);
-    if (!session) {
-      const error: CustomError = new Error("Invalid or expired refresh token.");
-      error.statusCode = 401;
-      await sessionService.deleteSessionByToken(refreshToken);
-      throw error;
     }
 
     const newAccessToken = generateToken(cleanPayload, "access-token");
@@ -161,30 +147,17 @@ const userService = {
       throw error;
     }
 
-    return {
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    };
+    const { password, ...userWithoutPassword } = user;
+
+    return userWithoutPassword;
   },
 
   async findUserById(id: number) {
-    const user = await userRepository.findById(id);
-    if (user && user.password) {
-      const { password, ...rest } = user;
-      return rest;
-    }
-    return user;
+    return await userRepository.findById(id);
   },
 
   async findUserByEmail(email: string) {
-    const user = await userRepository.findByEmail(email);
-    if (user && user.password) {
-      const { password, ...rest } = user;
-      return rest;
-    }
-    return user;
+    return await userRepository.findByEmail(email);
   },
 
   async updateUser(userData: User) {

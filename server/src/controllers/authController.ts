@@ -132,12 +132,7 @@ const authController = {
 
       const user = await userService.getUserProfile(userId);
 
-      res.status(200).json({
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      });
+      res.status(200).json(user);
     } catch (error) {
       next(error);
     }

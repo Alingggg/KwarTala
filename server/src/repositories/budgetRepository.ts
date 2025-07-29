@@ -15,6 +15,7 @@ const budgetRepository = {
     );
     return formatBudget(rows[0]);
   },
+
   async findByUserIdAndDate({
     userId,
     month,
@@ -26,6 +27,7 @@ const budgetRepository = {
     );
     return formatBudget(rows[0]);
   },
+
   async updateByUserIdAndDate({
     userId,
     month,

@@ -4,8 +4,8 @@ import {
   FiCalendar,
   FiChevronLeft,
   FiChevronRight,
+  FiEdit,
   FiPlus,
-  FiEdit3,
 } from "@/assets/icons";
 import { useModalContext } from "@/hooks";
 
@@ -315,7 +315,7 @@ function Goals() {
                   onClick={() => openModal("EDIT_GOAL", goal)}
                   className="p-2 text-night-700 hover:text-night-500 hover:bg-timberwolf-600 rounded-full transition-all duration-200 ml-2"
                 >
-                  <FiEdit3 size={18} />
+                  <FiEdit size={18} />
                 </button>
               </div>
 

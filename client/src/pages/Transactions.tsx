@@ -13,6 +13,7 @@ import {
   useCurrencyContext,
   useTransactionsData,
 } from "@/hooks";
+import { assignCategoryColors } from "@/utils";
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -23,7 +24,6 @@ function Transactions() {
 
   const today = new Date();
 
-  // Calculate the month and year for the selected index
   function getMonthYear(index: number) {
     const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
@@ -72,7 +72,9 @@ function Transactions() {
           ?.transactions || []
       : allWeeks.flatMap((week: any) => week.transactions);
 
-    return sortTransactions(transactions);
+    const transactionsWithColors = assignCategoryColors(transactions);
+
+    return sortTransactions(transactionsWithColors);
   }
 
   const selectedWeekData = selectedWeek
@@ -91,10 +93,10 @@ function Transactions() {
     <div className="p-3 md:p-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-night-600">
+        <h1 className="text-2xl md:text-3xl font-bold text-night-600 text-center sm:text-left w-full sm:w-auto">
           Transactions
         </h1>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+        <div className="flex flex-row items-center gap-2 sm:gap-4 justify-center sm:justify-end w-full sm:w-auto">
           <Button
             variant="secondary"
             onClick={() =>
@@ -104,13 +106,13 @@ function Transactions() {
                 currentBudget: currentMonth?.monthlyBudget,
               })
             }
-            className="shadow-sm text-sm md:text-base"
+            className="shadow-sm text-sm md:text-base w-full sm:w-auto"
           >
             Edit Budget
           </Button>
           <Button
             onClick={() => openModal("UPSERT_EXPENSE")}
-            className="shadow-sm text-sm md:text-base"
+            className="shadow-sm text-sm md:text-base w-full sm:w-auto"
           >
             Add Expense
           </Button>
@@ -246,7 +248,7 @@ function Transactions() {
         </div>
       </div>
 
-      {/* Weekly Budget Info (Visible When a Week is Selected) */}
+      {/* Weekly Budget Info */}
       {selectedWeekData && (
         <div className="bg-night-500 p-4 md:p-6 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
@@ -332,7 +334,7 @@ function Transactions() {
             category={transaction.category}
             amount={transaction.amount}
             description={transaction.description}
-            iconColor={transaction.iconColor}
+            color={transaction.color}
             date={transaction.date}
           />
         ))}

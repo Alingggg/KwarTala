@@ -1,9 +1,4 @@
-import {
-  analyticsDataService,
-  chartDataService,
-  homeDataService,
-  transactionsDataService,
-} from "@/services";
+import { dashboardService } from "@/services";
 import type { CustomError } from "@/types";
 import type { NextFunction, Request, Response } from "express";
 
@@ -17,7 +12,7 @@ const dashboardController = {
       }
 
       const { userId } = req.user;
-      const homeData = await homeDataService.getHomeData(userId);
+      const homeData = await dashboardService.getHomeData(userId);
 
       res
         .status(200)
@@ -46,7 +41,7 @@ const dashboardController = {
         return next(error);
       }
 
-      const dailyExpenses = await chartDataService.getDailyChartData({
+      const dailyExpenses = await dashboardService.getDailyChartData({
         userId,
         month,
         year,
@@ -80,7 +75,7 @@ const dashboardController = {
         return next(error);
       }
 
-      const weeklyExpenses = await chartDataService.getWeeklyChartData({
+      const weeklyExpenses = await dashboardService.getWeeklyChartData({
         userId,
         month,
         year,
@@ -114,12 +109,11 @@ const dashboardController = {
         return next(error);
       }
 
-      const transactionsData =
-        await transactionsDataService.getMonthlyTransactions({
-          userId,
-          month,
-          year,
-        });
+      const transactionsData = await dashboardService.getMonthlyTransactions({
+        userId,
+        month,
+        year,
+      });
 
       res.status(200).json({
         data: transactionsData,
@@ -149,7 +143,7 @@ const dashboardController = {
         return next(error);
       }
 
-      const analyticsData = await analyticsDataService.getAnalyticsData({
+      const analyticsData = await dashboardService.getAnalyticsData({
         userId,
         month,
         year,

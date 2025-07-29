@@ -1,10 +1,10 @@
 import { Button } from "@/components";
 import { FiX, FiAlertTriangle } from "@/assets/icons";
 import { useCurrencyContext, useDeleteExpense } from "@/hooks";
-import type { ExpenseWithoutUserId } from "@/types";
+import type { Expense } from "@/types";
 import { formatDate } from "@/utils";
 
-interface DeleteExpenseModalProps extends ExpenseWithoutUserId {
+interface DeleteExpenseModalProps extends Omit<Expense, "userId"> {
   onClose: () => void;
 }
 

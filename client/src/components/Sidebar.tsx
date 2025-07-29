@@ -46,7 +46,7 @@ function Sidebar() {
     { to: "/home", icon: <FiHome />, label: "Home" },
     { to: "/transactions", icon: <TfiWallet />, label: "Transactions" },
     { to: "/analytics", icon: <FiBarChart2 />, label: "Analytics" },
-    { to: "/goals", icon: <FiTarget />, label: "Goals" },
+    // { to: "/goals", icon: <FiTarget />, label: "Goals" },
   ];
 
   const currentDate = new Date().toLocaleDateString("en-US", {
@@ -136,13 +136,13 @@ function Sidebar() {
       {/* Mobile Side Drawer */}
       {isMenuOpen && (
         <>
-          {/* Backdrop - subtle overlay */}
+          {/* Backdrop */}
           <div
             className="md:hidden fixed inset-0 bg-black/60 z-40"
             onClick={closeMenu}
           />
 
-          {/* Side Drawer - Reduced width */}
+          {/* Side Drawer */}
           <div className="md:hidden fixed top-0 left-0 h-full w-72 max-w-[75vw] bg-night-500 text-timberwolf-500 z-50 transform translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl">
             <div className="flex flex-col h-full p-6">
               {/* Header */}
