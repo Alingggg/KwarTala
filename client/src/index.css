@@ -1,1 +1,174 @@
 @import "tailwindcss";
+
+body {
+  font-family: "Poppins", "Inter", sans-serif;
+}
+
+@theme {
+  /* night */
+  --color-night: #0a100d;
+  --color-night-100: #020303;
+  --color-night-200: #040605;
+  --color-night-300: #060908;
+  --color-night-400: #080d0a;
+  --color-night-500: #0a100d;
+  --color-night-600: #2f4b3d;
+  --color-night-700: #54876e;
+  --color-night-800: #88b49e;
+  --color-night-900: #c3dacf;
+
+  /* ash_gray */
+  --color-ash-gray: #b9baa3;
+  --color-ash-gray-100: #27281e;
+  --color-ash-gray-200: #4e4f3c;
+  --color-ash-gray-300: #757759;
+  --color-ash-gray-400: #999b7a;
+  --color-ash-gray-500: #b9baa3;
+  --color-ash-gray-600: #c6c7b5;
+  --color-ash-gray-700: #d4d5c7;
+  --color-ash-gray-800: #e2e3da;
+  --color-ash-gray-900: #f1f1ec;
+
+  /* timberwolf */
+  --color-timberwolf: #d6d5c9;
+  --color-timberwolf-100: #2f2e24;
+  --color-timberwolf-200: #5e5c47;
+  --color-timberwolf-300: #8d8a6b;
+  --color-timberwolf-400: #b2b099;
+  --color-timberwolf-500: #d6d5c9;
+  --color-timberwolf-600: #deddd3;
+  --color-timberwolf-700: #e6e5de;
+  --color-timberwolf-800: #eeeee9;
+  --color-timberwolf-900: #f7f6f4;
+
+  /* auburn */
+  --color-auburn: #a22c29;
+  --color-auburn-100: #210908;
+  --color-auburn-200: #411110;
+  --color-auburn-300: #621a18;
+  --color-auburn-400: #832221;
+  --color-auburn-500: #a22c29;
+  --color-auburn-600: #ce3e3b;
+  --color-auburn-700: #da6e6c;
+  --color-auburn-800: #e79e9d;
+  --color-auburn-900: #f3cfce;
+
+  /* burnt_umber */
+  --color-burnt-umber: #902923;
+  --color-burnt-umber-100: #1d0807;
+  --color-burnt-umber-200: #39100e;
+  --color-burnt-umber-300: #561815;
+  --color-burnt-umber-400: #73201c;
+  --color-burnt-umber-500: #902923;
+  --color-burnt-umber-600: #c53730;
+  --color-burnt-umber-700: #d8655f;
+  --color-burnt-umber-800: #e59894;
+  --color-burnt-umber-900: #f2ccca;
+
+  /* emerald - complementary to auburn */
+  --color-emerald: #2da62f;
+  --color-emerald-100: #082009;
+  --color-emerald-200: #104011;
+  --color-emerald-300: #186018;
+  --color-emerald-400: #208020;
+  --color-emerald-500: #2da62f;
+  --color-emerald-600: #3dc440;
+  --color-emerald-700: #6cd06e;
+  --color-emerald-800: #9bdc9c;
+  --color-emerald-900: #caeecb;
+
+  /* coral - warm complement */
+  --color-coral: #ff6b47;
+  --color-coral-100: #330e09;
+  --color-coral-200: #661c12;
+  --color-coral-300: #99291b;
+  --color-coral-400: #cc3724;
+  --color-coral-500: #ff6b47;
+  --color-coral-600: #ff8869;
+  --color-coral-700: #ffa694;
+  --color-coral-800: #ffc4bf;
+  --color-coral-900: #ffe2df;
+
+  /* teal - cool complement */
+  --color-teal: #2d9596;
+  --color-teal-100: #081e1e;
+  --color-teal-200: #113c3c;
+  --color-teal-300: #195a5a;
+  --color-teal-400: #227878;
+  --color-teal-500: #2d9596;
+  --color-teal-600: #3eb0b1;
+  --color-teal-700: #6bc2c3;
+  --color-teal-800: #98d4d5;
+  --color-teal-900: #c6e6e7;
+
+  /* amber - warm accent */
+  --color-amber: #f59e0b;
+  --color-amber-100: #311f02;
+  --color-amber-200: #623e05;
+  --color-amber-300: #935d07;
+  --color-amber-400: #c47c0a;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #f7b83c;
+  --color-amber-700: #f9ca6d;
+  --color-amber-800: #fbdc9e;
+  --color-amber-900: #fdeecf;
+
+  /* indigo - cool accent */
+  --color-indigo: #4f46e5;
+  --color-indigo-100: #100e2e;
+  --color-indigo-200: #201c5c;
+  --color-indigo-300: #302a8a;
+  --color-indigo-400: #4038b8;
+  --color-indigo-500: #4f46e5;
+  --color-indigo-600: #726bea;
+  --color-indigo-700: #9590ef;
+  --color-indigo-800: #b8b5f4;
+  --color-indigo-900: #dbdafa;
+
+  /* violet - purple accent */
+  --color-violet: #7c3aed;
+  --color-violet-100: #190c2f;
+  --color-violet-200: #32175e;
+  --color-violet-300: #4b238d;
+  --color-violet-400: #642ebc;
+  --color-violet-500: #7c3aed;
+  --color-violet-600: #9561f1;
+  --color-violet-700: #ae88f5;
+  --color-violet-800: #c7aff8;
+  --color-violet-900: #e0d7fc;
+
+  /* rose - pink accent */
+  --color-rose: #e11d48;
+  --color-rose-100: #2d060e;
+  --color-rose-200: #5a0c1c;
+  --color-rose-300: #87122a;
+  --color-rose-400: #b41838;
+  --color-rose-500: #e11d48;
+  --color-rose-600: #e7446d;
+  --color-rose-700: #ed7192;
+  --color-rose-800: #f39eb7;
+  --color-rose-900: #f9cbdb;
+}
+
+html ::-webkit-scrollbar-button {
+  display: none;
+}
+
+html ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+html ::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+html ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
