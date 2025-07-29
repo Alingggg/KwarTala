@@ -6,5 +6,5 @@
     "rootDir": "./src",
     "allowImportingTsExtensions": false
   },
-  "include": ["src/register-paths.ts"]
+  "include": ["register.path.ts", "src"]
 }
