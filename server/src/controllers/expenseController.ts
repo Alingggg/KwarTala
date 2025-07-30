@@ -1,5 +1,5 @@
-import { expenseService } from "@/services";
-import type { CustomError } from "@/types";
+import { expenseService } from "@/services/index";
+import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const expenseController = {

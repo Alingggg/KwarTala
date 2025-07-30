@@ -1,4 +1,4 @@
-import { pool } from "@/config";
+import { pool } from "@/config/index";
 
 function formatSession(row: any) {
   if (!row) return null;

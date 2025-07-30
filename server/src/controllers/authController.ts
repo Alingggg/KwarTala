@@ -1,5 +1,5 @@
-import { sessionService, userService } from "@/services";
-import type { CustomError } from "@/types";
+import { sessionService, userService } from "@/services/index";
+import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const authController = {

@@ -1,5 +1,5 @@
-import type { CustomError, UserPayload } from "@/types";
-import { verifyToken } from "@/utils";
+import type { CustomError, UserPayload } from "@/types/index";
+import { verifyToken } from "@/utils/index";
 import type { NextFunction, Request, Response } from "express";
 
 function authMiddleware(req: Request, res: Response, next: NextFunction) {

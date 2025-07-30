@@ -1,5 +1,5 @@
-import { dashboardService } from "@/services";
-import type { CustomError } from "@/types";
+import { dashboardService } from "@/services/index";
+import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const dashboardController = {

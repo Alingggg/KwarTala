@@ -1,5 +1,5 @@
-import { pool } from "@/config";
-import type { User } from "@/types";
+import { pool } from "@/config/index";
+import type { User } from "@/types/index";
 
 function formatUser(row: any): User | null {
   if (!row) return null;

@@ -1,5 +1,5 @@
-import { expenseRepository } from "@/repositories";
-import type { Expense } from "@/types";
+import { expenseRepository } from "@/repositories/index";
+import type { Expense } from "@/types/index";
 
 const expenseService = {
   async createExpense({

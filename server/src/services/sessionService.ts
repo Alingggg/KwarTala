@@ -1,4 +1,4 @@
-import { sessionRepository } from "@/repositories";
+import { sessionRepository } from "@/repositories/index";
 
 const sessionService = {
   async createSession({
