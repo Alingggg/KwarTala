@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5", // Compile to ES5 for broader compatibility
+    "target": "esnext", // Compile to ES5 for broader compatibility
+    "lib": ["esnext", "dom"],
     "module": "commonjs", // Use CommonJS modules (Node.js default)
     "sourceMap": true, // Generate source maps for debugging
     "outDir": "dist", // Output compiled files to the `dist` folder
