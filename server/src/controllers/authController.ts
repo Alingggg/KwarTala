@@ -106,8 +106,14 @@ const authController = {
 
       await userService.logoutUser(refreshToken);
 
-      res.clearCookie("accessToken");
-      res.clearCookie("refreshToken");
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none" as const,
+      };
+
+      res.clearCookie("accessToken", cookieOptions);
+      res.clearCookie("refreshToken", cookieOptions);
 
       res.status(200).json({ message: "Logout successful" });
     } catch (error) {
