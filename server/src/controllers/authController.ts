@@ -86,7 +86,7 @@ const authController = {
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
 
