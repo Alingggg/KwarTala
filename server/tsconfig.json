@@ -3,7 +3,6 @@
     "target": "esnext", // Compile to ES5 for broader compatibility
     "lib": ["esnext", "dom"],
     "module": "commonjs", // Use CommonJS modules (Node.js default)
-    "moduleResolution": "node",
     "sourceMap": true, // Generate source maps for debugging
     "outDir": "dist", // Output compiled files to the `dist` folder
     "rootDir": "src", // Define the root directory for your source files
@@ -11,7 +10,6 @@
     "esModuleInterop": true, // Enable better compatibility with ES modules
     "strict": true, // Enable strict type-checking options
     "skipLibCheck": true, // Skip type-checking of library files
-    "types": ["node"],
     "paths": {
       "@/*": ["src/*"] // General alias for the `src` directory
     }
