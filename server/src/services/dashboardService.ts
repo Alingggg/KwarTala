@@ -1,5 +1,5 @@
-import { budgetService, expenseService } from "@/services";
-import type { CustomError, Expense } from "@/types";
+import { budgetService, expenseService } from "@/services/index";
+import type { CustomError, Expense } from "@/types/index";
 
 const dashboardService = {
   async getHomeData(userId: number) {
@@ -142,7 +142,7 @@ const dashboardService = {
       const weeklyBudget = Math.round(dailyBudget * daysInWeek * 100) / 100;
 
       const weekData = totalWeeklySpent.find(
-        (_, index) => index + 1 === weekNumber
+        (_: any, index: number) => index + 1 === weekNumber
       );
 
       const weeklyTotalSpent = weekData
@@ -231,7 +231,7 @@ const dashboardService = {
       endDate: endOfMonth,
     });
 
-    const finalExpenseByCategory = expenseByCategory.map((category) => ({
+    const finalExpenseByCategory = expenseByCategory.map((category: any) => ({
       ...category,
       percentageOfTotal:
         Math.round((category.total / totalMonthlySpent) * 100 * 100) / 100,

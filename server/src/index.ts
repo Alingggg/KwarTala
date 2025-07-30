@@ -1,8 +1,10 @@
+import "dotenv/config";
+import "module-alias/register";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { setupRoutes } from "@/routers";
-import { errorMiddleware } from "@/middlewares";
+import { setupRoutes } from "@/routers/index";
+import { errorMiddleware } from "@/middlewares/index";
 
 const app = express();
 

@@ -4,7 +4,7 @@ import {
   expenseRouter,
   budgetRouter,
   dashboardRouter,
-} from "@/routers";
+} from "@/routers/index";
 
 function setupRoutes(app: Express) {
   app.use("/api/auth", authRouter);

@@ -1,5 +1,5 @@
-import { budgetRepository } from "@/repositories";
-import type { Budget } from "@/types";
+import { budgetRepository } from "@/repositories/index";
+import type { Budget } from "@/types/index";
 
 const budgetService = {
   async createBudget({ userId, month, year, amount }: Omit<Budget, "id">) {

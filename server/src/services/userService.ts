@@ -1,7 +1,7 @@
-import { userRepository } from "@/repositories";
-import { sessionService } from "@/services";
-import type { CustomError, User } from "@/types";
-import { generateToken, verifyToken } from "@/utils";
+import { userRepository } from "@/repositories/index";
+import { sessionService } from "@/services/index";
+import type { CustomError, User } from "@/types/index";
+import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
 
 const userService = {

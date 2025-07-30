@@ -1,27 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
-    "noEmitOnError": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "baseUrl": "./",
+    "target": "es5", // Compile to ES5 for broader compatibility
+    "module": "commonjs", // Use CommonJS modules (Node.js default)
+    "sourceMap": true, // Generate source maps for debugging
+    "outDir": "dist", // Output compiled files to the `dist` folder
+    "rootDir": "src", // Define the root directory for your source files
+    "baseUrl": ".", // Required for path aliases
+    "esModuleInterop": true, // Enable better compatibility with ES modules
+    "strict": true, // Enable strict type-checking options
+    "skipLibCheck": true, // Skip type-checking of library files
     "paths": {
-      "@/*": ["./src/*"]
-    },
-    "lib": ["ES2022"],
-    "types": ["node"]
+      "@/*": ["src/*"] // General alias for the `src` directory
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"], // Include all files in the `src` directory
+  "exclude": ["node_modules"] // Exclude `node_modules` from compilation
 }

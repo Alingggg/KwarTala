@@ -1,5 +1,5 @@
-import { pool } from "@/config";
-import type { Expense } from "@/types";
+import { pool } from "@/config/index";
+import type { Expense } from "@/types/index";
 
 function formatExpense(row: any): Expense | null {
   if (!row) return null;

@@ -1,4 +1,4 @@
-import type { CustomError, UserPayload } from "@/types";
+import type { CustomError, UserPayload } from "@/types/index";
 import jwt from "jsonwebtoken";
 
 function generateToken(
