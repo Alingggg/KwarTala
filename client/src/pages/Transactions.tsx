@@ -48,7 +48,7 @@ function Transactions() {
   }
 
   function getStatusColor(remaining: number) {
-    if (remaining > 0) return "text-night-700";
+    if (remaining >= 0) return "text-night-700";
     return "text-auburn-500";
   }
 
@@ -305,7 +305,7 @@ function Transactions() {
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "desc"
                 ? "bg-night-600 text-timberwolf-900"
-                : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
+                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
             }`}
           >
             <span>Newest</span>
@@ -316,7 +316,7 @@ function Transactions() {
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "asc"
                 ? "bg-night-600 text-timberwolf-900"
-                : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
+                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
             }`}
           >
             <span>Oldest</span>

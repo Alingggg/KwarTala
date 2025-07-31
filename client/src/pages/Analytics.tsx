@@ -313,7 +313,9 @@ function Analytics() {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-night-600 text-sm md:text-base truncate">
-                      {expense.description}
+                      {expense.description || (
+                        <span className="italic">[No Description]</span>
+                      )}
                     </p>
                     <p className="text-xs md:text-sm text-ash-gray-400">
                       {expense.category} •{" "}

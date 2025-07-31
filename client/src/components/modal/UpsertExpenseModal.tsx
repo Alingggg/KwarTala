@@ -57,34 +57,79 @@ function UpsertExpenseModal({
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 md:space-y-5"
+          noValidate
         >
-          <div>
+          <div className="flex flex-col gap-1">
+            <label
+              htmlFor="category"
+              className="text-xs md:text-sm font-semibold text-night-600"
+            >
+              Category <span className="text-auburn-600">*</span>
+            </label>
+            <Input
+              id="category"
+              type="text"
+              placeholder="e.g. Food"
+              {...register("category", {
+                required: "Category is required",
+              })}
+              className={
+                errors.category
+                  ? "border-auburn-600 focus:border-auburn-600"
+                  : ""
+              }
+            />
+            {errors.category && (
+              <p className="text-xs text-auburn-600 font-semibold">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <label
+              htmlFor="description"
+              className="text-xs md:text-sm font-semibold text-night-600"
+            >
+              Description
+            </label>
+            <Input
+              id="description"
+              type="text"
+              placeholder="e.g. Lunch at restaurant"
+              {...register("description")}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="amount"
-              className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
+              className="text-xs md:text-sm font-semibold text-night-600"
             >
-              Amount
+              Amount <span className="text-auburn-600">*</span>
             </label>
             <Input
               id="amount"
               type="number"
-              {...register("amount", { required: "Amount is required" })}
+              placeholder="0.00"
+              {...register("amount", {
+                required: "Amount is required",
+                valueAsNumber: true,
+              })}
               className={
                 errors.amount ? "border-auburn-600 focus:border-auburn-600" : ""
               }
             />
             {errors.amount && (
-              <p className="text-xs text-auburn-600 mt-1 font-semibold">
+              <p className="text-xs text-auburn-600 font-semibold">
                 {errors.amount.message}
               </p>
             )}
           </div>
-          <div>
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="date"
-              className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
+              className="text-xs md:text-sm font-semibold text-night-600"
             >
-              Date
+              Date <span className="text-auburn-600">*</span>
             </label>
             <Input
               id="date"
@@ -95,42 +140,10 @@ function UpsertExpenseModal({
               }
             />
             {errors.date && (
-              <p className="text-xs text-auburn-600 mt-1 font-semibold">
+              <p className="text-xs text-auburn-600 font-semibold">
                 {errors.date.message}
               </p>
             )}
-          </div>
-          <div>
-            <label
-              htmlFor="category"
-              className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
-            >
-              Category
-            </label>
-            <Input
-              id="category"
-              type="text"
-              {...register("category", { required: "Category is required" })}
-              className={
-                errors.category
-                  ? "border-auburn-600 focus:border-auburn-600"
-                  : ""
-              }
-            />
-            {errors.category && (
-              <p className="text-xs text-auburn-600 mt-1 font-semibold">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
-            >
-              Description
-            </label>
-            <Input id="description" type="text" {...register("description")} />
           </div>
           <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
             <Button

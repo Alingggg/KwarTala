@@ -71,6 +71,14 @@ function EditBudgetModal({
   }
 
   function getImpactMessage() {
+    if (
+      budget === undefined ||
+      budget === null ||
+      isNaN(Number(budget)) ||
+      budget < 0
+    ) {
+      return "Please enter a valid budget amount";
+    }
     const newBudget = Number(budget);
     const difference = newBudget - currentBudget;
 
@@ -106,6 +114,7 @@ function EditBudgetModal({
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 md:space-y-5"
+          noValidate
         >
           {/* Budget Period Selection */}
           <div>
@@ -113,7 +122,7 @@ function EditBudgetModal({
               htmlFor="budgetPeriod"
               className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
             >
-              Budget Period
+              Budget Period <span className="text-auburn-600">*</span>
             </label>
             <Input
               id="budgetPeriod"
@@ -140,14 +149,20 @@ function EditBudgetModal({
               htmlFor="budget"
               className="block text-xs md:text-sm font-semibold text-night-600 mb-1"
             >
-              Budget Amount
+              Budget Amount <span className="text-auburn-600">*</span>
             </label>
             <Input
               id="budget"
               type="number"
+              min={0}
+              placeholder="0.00"
               {...register("budget", {
                 required: "Budget is required",
                 valueAsNumber: true,
+                min: {
+                  value: 0,
+                  message: "Budget must be 0 or greater",
+                },
               })}
             />
             {errors.budget && (
@@ -168,7 +183,13 @@ function EditBudgetModal({
             <div className="flex justify-between mb-2 text-xs md:text-sm">
               <span className="text-night-700">New Budget:</span>
               <span className="font-semibold">
-                P{Number(budget).toLocaleString()}
+                P
+                {budget !== undefined &&
+                budget !== null &&
+                !isNaN(Number(budget)) &&
+                Number(budget) >= 0
+                  ? Number(budget).toLocaleString()
+                  : "-"}
               </span>
             </div>
             <div className="border-t border-ash-gray-700 pt-2">

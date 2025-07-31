@@ -13,6 +13,7 @@ import {
   useDailyChartsData,
 } from "@/hooks";
 import type { Expense } from "@/types";
+import { assignCategoryColors } from "@/utils/index";
 import { FiCalendar } from "react-icons/fi";
 
 function Home() {
@@ -24,6 +25,10 @@ function Home() {
 
   const { firstName } = useUser();
   const { data: homeData, isLoading: isHomeLoading } = useHomeData();
+
+  const transactionsWithColors = assignCategoryColors(
+    homeData?.todaysTransactions
+  );
 
   const { data: dailyChartsData, isLoading: isDailyLoading } =
     useDailyChartsData({
@@ -44,12 +49,12 @@ function Home() {
   return (
     <div className="p-3 md:p-8">
       {/* Page Header */}
-      <div className="mb-5 md:mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-night-600">
+      <div className="mb-5 md:mb-8 mt-1 mb:mt-0">
+        <div className="flex items-baseline justify-between gap-2">
+          <h1 className="text-xl md:text-3xl font-bold text-night-600">
             Hello, {firstName}
           </h1>
-          <p className="text-lg md:text-2xl font-semibold text-night-600">
+          <p className="md:text-2xl font-semibold text-night-600">
             {homeData.month} {homeData.year}
           </p>
         </div>
@@ -161,15 +166,14 @@ function Home() {
           <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
         </div>
         <div className="space-y-3 md:space-y-4">
-          {homeData.todaysTransactions &&
-            homeData.todaysTransactions.map((transaction: Expense) => (
+          {transactionsWithColors &&
+            transactionsWithColors.map((transaction: Expense) => (
               <ExpenseCard key={transaction.id} {...transaction} />
             ))}
         </div>
 
         {/* No Transactions Message */}
-        {(!homeData.todaysTransactions ||
-          homeData.todaysTransactions.length === 0) && (
+        {(!transactionsWithColors || transactionsWithColors.length === 0) && (
           <div className="text-center py-12 md:py-16 text-ash-gray-500">
             <FiCalendar
               size={48}

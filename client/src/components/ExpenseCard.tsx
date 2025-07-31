@@ -28,7 +28,7 @@ export function ExpenseCard({
 
   return (
     <>
-      <div className="bg-timberwolf-900 p-3 md:p-4 rounded-lg flex items-center text-night-500 shadow-md hover:shadow-lg transition-shadow">
+      <div className="h-20 md:h-24 bg-timberwolf-900 p-3 md:p-4 rounded-lg flex items-center text-night-500 shadow-md hover:shadow-lg transition-shadow">
         {/* Icon */}
         <div
           className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3 md:mr-4 flex-shrink-0"

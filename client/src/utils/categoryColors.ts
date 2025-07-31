@@ -34,6 +34,10 @@ function hashString(str: string) {
 }
 
 function assignCategoryColors(expenses: any[]) {
+  if (!expenses || !Array.isArray(expenses)) {
+    return [];
+  }
+
   return expenses.map((expense: any) => {
     const normalizedName = expense.category.toLowerCase().trim();
 

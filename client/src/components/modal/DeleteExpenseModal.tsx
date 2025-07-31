@@ -52,7 +52,8 @@ function DeleteExpenseModal({
             <span className="font-semibold">Category:</span> {category}
           </p>
           <p className="mb-1">
-            <span className="font-semibold">Description:</span> {description}
+            <span className="font-semibold">Description:</span>{" "}
+            {description || "N/A"}
           </p>
           <p className="mb-1">
             <span className="font-semibold">Amount:</span> {currency}
