@@ -10,7 +10,7 @@ const authController = {
       if (!firstName || !lastName || !email || !password) {
         const error: CustomError = new Error("All fields are required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const newUser = await userService.registerUser({
@@ -36,14 +36,14 @@ const authController = {
       if (hasAccessToken || hasRefreshToken) {
         const error: CustomError = new Error("Already logged in");
         error.statusCode = 409;
-        return next(error);
+        throw error;
       }
 
       const { email, password } = req.body;
       if (!email || !password) {
         const error: CustomError = new Error("Email and password are required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const { user, accessToken, refreshToken } = await userService.loginUser({
@@ -78,7 +78,7 @@ const authController = {
       if (!refreshToken) {
         const error: CustomError = new Error("Refresh token is required");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const newAccessToken = await userService.refreshAccessToken(refreshToken);
@@ -126,14 +126,14 @@ const authController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
       const { userId } = req.user;
 
       if (!userId) {
         const error: CustomError = new Error("User ID is required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const user = await userService.getUserProfile(userId);

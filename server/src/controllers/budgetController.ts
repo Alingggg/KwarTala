@@ -8,7 +8,7 @@ const budgetController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const { userId } = req.user;
@@ -19,7 +19,7 @@ const budgetController = {
       if (!month || !year || !amount) {
         const error: CustomError = new Error("All fields are required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const budget = await budgetService.updateBudgetByUserIdAndDate({

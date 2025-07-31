@@ -8,7 +8,7 @@ const expenseController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const { userId } = req.user;
@@ -19,7 +19,7 @@ const expenseController = {
           "Category, amount, and date are required"
         );
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const newExpense = await expenseService.createExpense({
@@ -49,7 +49,7 @@ const expenseController = {
           "Expense ID is required and must be a number"
         );
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       if (!category || !amount || !date) {
@@ -57,7 +57,7 @@ const expenseController = {
           "Category, amount, and date are required"
         );
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const updatedExpense = await expenseService.updateExpense({
@@ -86,7 +86,7 @@ const expenseController = {
           "Expense ID is required and must be a number"
         );
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       await expenseService.deleteExpense(id);

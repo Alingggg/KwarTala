@@ -7,7 +7,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
   if (!accessToken) {
     const error: CustomError = new Error("Access token is required");
     error.statusCode = 401;
-    return next(error);
+    throw error;
   }
 
   try {
@@ -16,7 +16,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
     if (!user) {
       const error: CustomError = new Error("Invalid or expired token");
       error.statusCode = 401;
-      return next(error);
+      throw error;
     }
 
     req.user = user as UserPayload;
@@ -24,7 +24,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
   } catch (err) {
     const error: CustomError = new Error("Invalid or expired token");
     error.statusCode = 401;
-    return next(error);
+    throw error;
   }
 }
 

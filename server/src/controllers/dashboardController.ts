@@ -8,7 +8,7 @@ const dashboardController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const { userId } = req.user;
@@ -27,7 +27,7 @@ const dashboardController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const { userId } = req.user;
@@ -38,7 +38,7 @@ const dashboardController = {
       if (!month || !year) {
         const error: CustomError = new Error("Month and year are required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const dailyExpenses = await dashboardService.getDailyChartData({
@@ -61,7 +61,7 @@ const dashboardController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const { userId } = req.user;
@@ -72,7 +72,7 @@ const dashboardController = {
       if (!month || !year) {
         const error: CustomError = new Error("Month and year are required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const weeklyExpenses = await dashboardService.getWeeklyChartData({
@@ -95,7 +95,7 @@ const dashboardController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const { userId } = req.user;
@@ -106,7 +106,7 @@ const dashboardController = {
       if (!month || !year) {
         const error: CustomError = new Error("Month and year are required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const transactionsData = await dashboardService.getMonthlyTransactions({
@@ -129,7 +129,7 @@ const dashboardController = {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
         error.statusCode = 401;
-        return next(error);
+        throw error;
       }
 
       const { userId } = req.user;
@@ -140,7 +140,7 @@ const dashboardController = {
       if (!month || !year) {
         const error: CustomError = new Error("Month and year are required");
         error.statusCode = 400;
-        return next(error);
+        throw error;
       }
 
       const analyticsData = await dashboardService.getAnalyticsData({
