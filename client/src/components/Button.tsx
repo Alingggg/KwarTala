@@ -6,6 +6,7 @@ interface ButtonProps {
   className?: string;
   variant?: "primary" | "secondary" | "success" | "danger";
   size?: "default" | "sm" | "lg";
+  disabled?: boolean;
   onClick?: () => void;
 }
 
@@ -34,6 +35,7 @@ function Button({
   className,
   variant = "primary",
   size = "default",
+  disabled = false,
   onClick,
 }: ButtonProps) {
   const variantClass = buttonStyles.variants[variant];
@@ -46,6 +48,7 @@ function Button({
         className || ""
       }`}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>

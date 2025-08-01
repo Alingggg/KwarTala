@@ -1,7 +1,7 @@
 import { Button, Input } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
-import { useAddExpense, useEditExpense } from "@/hooks";
+import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
 
 interface UpsertExpenseModalProps extends Partial<Omit<Expense, "userId">> {
@@ -24,6 +24,7 @@ function UpsertExpenseModal({
   } = useForm<Omit<Expense, "id" | "userId">>();
   const { mutate: addExpense } = useAddExpense();
   const { mutate: editExpense } = useEditExpense();
+  const { currency } = useCurrencyContext();
 
   if (id) {
     setValue("category", category || "");
@@ -106,18 +107,25 @@ function UpsertExpenseModal({
             >
               Amount <span className="text-auburn-600">*</span>
             </label>
-            <Input
-              id="amount"
-              type="number"
-              placeholder="0.00"
-              {...register("amount", {
-                required: "Amount is required",
-                valueAsNumber: true,
-              })}
-              className={
-                errors.amount ? "border-auburn-600 focus:border-auburn-600" : ""
-              }
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                {currency}
+              </div>
+              <Input
+                id="amount"
+                type="number"
+                placeholder="0.00"
+                {...register("amount", {
+                  required: "Amount is required",
+                  valueAsNumber: true,
+                })}
+                className={`pl-8 ${
+                  errors.amount
+                    ? "border-auburn-600 focus:border-auburn-600"
+                    : ""
+                }`}
+              />
+            </div>
             {errors.amount && (
               <p className="text-xs text-auburn-600 font-semibold">
                 {errors.amount.message}

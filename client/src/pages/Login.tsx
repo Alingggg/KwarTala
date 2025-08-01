@@ -1,4 +1,4 @@
-import { Button, Input } from "@/components";
+import { Button, Input, LoadingOverlay } from "@/components";
 import { FiMail, FiLock } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
@@ -42,7 +42,7 @@ function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-  const { mutate: login } = useLogin();
+  const { mutate: login, isPending } = useLogin();
 
   function onSubmit(data: FormValues) {
     login(data);
@@ -67,7 +67,7 @@ function Login() {
           </p>
         </div>
 
-        <div className="bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
+        <div className="relative bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
           <div className="mb-5">
             <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-1">
               Sign In
@@ -97,12 +97,16 @@ function Login() {
                   id="email"
                   type="text"
                   placeholder="Enter your email"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.email
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("email", validation.email)}
                 />
               </div>
               {errors.email && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.email.message}
                 </p>
               )}
@@ -123,12 +127,16 @@ function Login() {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.password
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("password", validation.password)}
                 />
               </div>
               {errors.password && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.password.message}
                 </p>
               )}
@@ -138,6 +146,7 @@ function Login() {
               type="submit"
               className="w-full text-sm md:text-base font-semibold py-2.5 md:py-3"
               variant="primary"
+              disabled={isPending}
             >
               Sign In
             </Button>
@@ -154,6 +163,7 @@ function Login() {
               </button>
             </p>
           </div>
+          {isPending && <LoadingOverlay message="Signing in..." />}
         </div>
       </div>
     </div>

@@ -12,16 +12,16 @@ const PREDEFINED_COLORS: { [key: string]: string } = {
 };
 
 const FALLBACK_COLORS = [
-  "#54A0FF",
-  "#FD79A8",
-  "#6C5CE7",
-  "#74B9FF",
-  "#00CEC9",
-  "#FDCB6E",
-  "#E74C3C",
-  "#9B59B6",
-  "#3498DB",
-  "#1ABC9C",
+  "#C0392B", // red
+  "#27AE60", // green
+  "#F39C12", // orange
+  "#8E44AD", // purple
+  "#2980B9", // blue
+  "#D35400", // dark orange
+  "#16A085", // teal
+  "#2C3E50", // dark gray-blue
+  "#F1C40F", // yellow
+  "#7D3C98", // plum
 ];
 
 function hashString(str: string) {

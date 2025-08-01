@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Button, Input } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
-import { useEditBudget } from "@/hooks";
+import { useEditBudget, useCurrencyContext } from "@/hooks";
 
 interface EditBudgetModalProps {
   onClose: () => void;
@@ -30,6 +30,7 @@ function EditBudgetModal({
     formState: { errors },
   } = useForm<EditBudgetFormValues>();
   const { mutate: editBudget } = useEditBudget();
+  const { currency } = useCurrencyContext();
 
   const initialBudgetPeriod = `${year}-${String(
     new Date(`${month} 1, ${year}`).getMonth() + 1
@@ -83,9 +84,9 @@ function EditBudgetModal({
     const difference = newBudget - currentBudget;
 
     if (difference > 0) {
-      return `This will increase your budget by P${difference.toLocaleString()}`;
+      return `This will increase your budget by ${currency}${difference.toLocaleString()}`;
     } else if (difference < 0) {
-      return `This will decrease your budget by P${Math.abs(
+      return `This will decrease your budget by ${currency}${Math.abs(
         difference
       ).toLocaleString()}`;
     }
@@ -151,20 +152,30 @@ function EditBudgetModal({
             >
               Budget Amount <span className="text-auburn-600">*</span>
             </label>
-            <Input
-              id="budget"
-              type="number"
-              min={0}
-              placeholder="0.00"
-              {...register("budget", {
-                required: "Budget is required",
-                valueAsNumber: true,
-                min: {
-                  value: 0,
-                  message: "Budget must be 0 or greater",
-                },
-              })}
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                {currency}
+              </div>
+              <Input
+                id="budget"
+                type="number"
+                min={0}
+                placeholder="0.00"
+                className={`pl-8 ${
+                  errors.budget
+                    ? "border-auburn-600 focus:border-auburn-600"
+                    : ""
+                }`}
+                {...register("budget", {
+                  required: "Budget is required",
+                  valueAsNumber: true,
+                  min: {
+                    value: 0,
+                    message: "Budget must be 0 or greater",
+                  },
+                })}
+              />
+            </div>
             {errors.budget && (
               <p className="text-xs text-auburn-600 mt-1 font-semibold">
                 {errors.budget.message}
@@ -177,13 +188,14 @@ function EditBudgetModal({
             <div className="flex justify-between mb-2 text-xs md:text-sm">
               <span className="text-night-700">Current Budget:</span>
               <span className="font-semibold">
-                P{currentBudget.toLocaleString()}
+                {currency}
+                {currentBudget.toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between mb-2 text-xs md:text-sm">
               <span className="text-night-700">New Budget:</span>
               <span className="font-semibold">
-                P
+                {currency}
                 {budget !== undefined &&
                 budget !== null &&
                 !isNaN(Number(budget)) &&

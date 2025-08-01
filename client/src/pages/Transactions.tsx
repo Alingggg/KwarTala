@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, ExpenseCard } from "@/components";
+import { Button, ExpenseCard, LoadingSpinner } from "@/components";
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -14,6 +14,8 @@ import {
   useTransactionsData,
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
+
+const MAX_MONTHS = 12;
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -36,10 +38,8 @@ function Transactions() {
     year,
   });
 
-  const maxMonths = 12;
-
   function navigateMonth(direction: "prev" | "next") {
-    if (direction === "prev" && currentMonthIndex < maxMonths - 1) {
+    if (direction === "prev" && currentMonthIndex < MAX_MONTHS - 1) {
       setCurrentMonthIndex(currentMonthIndex + 1);
     } else if (direction === "next" && currentMonthIndex > 0) {
       setCurrentMonthIndex(currentMonthIndex - 1);
@@ -82,11 +82,7 @@ function Transactions() {
     : null;
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <span>Loading...</span>
-      </div>
-    );
+    return <LoadingSpinner message="Loading transactions..." />;
   }
 
   return (
@@ -124,7 +120,7 @@ function Transactions() {
         {/* Navigation Buttons */}
         <button
           onClick={() => navigateMonth("prev")}
-          disabled={currentMonthIndex >= maxMonths - 1}
+          disabled={currentMonthIndex >= MAX_MONTHS - 1}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
         >
           <FiChevronLeft size={20} className="md:w-6 md:h-6" />

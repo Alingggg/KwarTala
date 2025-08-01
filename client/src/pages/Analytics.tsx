@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ExpenseChart } from "@/components";
+import { ExpenseChart, LoadingSpinner } from "@/components";
 import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
@@ -41,9 +41,8 @@ function Analytics() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const { currency } = useCurrencyContext();
 
-  const today = new Date();
-
   function getMonthYear(index: number) {
+    const today = new Date();
     const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
   }
@@ -77,11 +76,7 @@ function Analytics() {
   }
 
   if (isAnalyticsLoading || isDailyLoading || isWeeklyLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <span>Loading...</span>
-      </div>
-    );
+    return <LoadingSpinner message="Loading analytics data..." />;
   }
 
   return (
@@ -234,67 +229,80 @@ function Analytics() {
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Expenses by Category
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {/* Pie Chart */}
-            <div className="h-48 md:h-52 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={expenseByCategoryWithColors}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={window.innerWidth < 768 ? 60 : 80}
-                    dataKey="total"
-                    label={false}
-                  >
-                    {expenseByCategoryWithColors.map(
-                      (entry: any, index: number) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={entry.color}
-                          stroke="var(--color-ash-gray-900)"
-                          strokeWidth={2}
-                          style={{ cursor: "pointer" }}
-                        />
-                      )
-                    )}
-                  </Pie>
-                  <Tooltip content={<CustomPieTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Category List */}
-            <div className="space-y-1">
-              {expenseByCategoryWithColors.map(
-                (category: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between text-xs md:text-sm hover:bg-timberwolf-900 p-2 rounded-lg transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center overflow-hidden min-w-0">
-                      <div
-                        className="w-3 h-3 rounded-full mr-2 md:mr-3 flex-shrink-0"
-                        style={{ backgroundColor: category.color }}
-                      ></div>
-                      <span className="font-medium text-night-600 truncate">
-                        {category.category}
-                      </span>
+          {expenseByCategoryWithColors &&
+          expenseByCategoryWithColors.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Pie Chart */}
+              <div className="h-48 md:h-52 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={expenseByCategoryWithColors}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={window.innerWidth < 768 ? 60 : 80}
+                      dataKey="total"
+                      label={false}
+                    >
+                      {expenseByCategoryWithColors.map(
+                        (entry: any, index: number) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.color}
+                            stroke="var(--color-ash-gray-900)"
+                            strokeWidth={2}
+                            style={{ cursor: "pointer" }}
+                          />
+                        )
+                      )}
+                    </Pie>
+                    <Tooltip content={<CustomPieTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              {/* Category List */}
+              <div className="space-y-1">
+                {expenseByCategoryWithColors.map(
+                  (category: any, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-xs md:text-sm hover:bg-timberwolf-900 p-2 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center overflow-hidden min-w-0">
+                        <div
+                          className="w-3 h-3 rounded-full mr-2 md:mr-3 flex-shrink-0"
+                          style={{ backgroundColor: category.color }}
+                        ></div>
+                        <span className="font-medium text-night-600 truncate">
+                          {category.category}
+                        </span>
+                      </div>
+                      <div className="text-right ml-2 flex-shrink-0">
+                        <p className="font-semibold text-night-600">
+                          {currency}
+                          {category.total.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-ash-gray-400 font-medium">
+                          {category.percentageOfTotal}%
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right ml-2 flex-shrink-0">
-                      <p className="font-semibold text-night-600">
-                        {currency}
-                        {category.total.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-ash-gray-400 font-medium">
-                        {category.percentageOfTotal}%
-                      </p>
-                    </div>
-                  </div>
-                )
-              )}
+                  )
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-12 md:py-16 text-ash-gray-500">
+              <FiCalendar
+                size={48}
+                className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
+              />
+              <p className="text-lg md:text-xl font-semibold mb-2">
+                No category data found
+              </p>
+              <p className="text-sm">No expenses recorded for this month.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -304,35 +312,48 @@ function Analytics() {
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Top Expenses
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3 md:gap-y-4">
-            {highestExpensesWithColors.map(
-              (expense: Expense & { color: string }, index: number) => (
-                <div
-                  key={expense.id || index}
-                  className="flex items-center justify-between py-2 md:py-3 border-b border-ash-gray-700"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-night-600 text-sm md:text-base truncate">
-                      {expense.description || (
-                        <span className="italic">[No Description]</span>
-                      )}
-                    </p>
-                    <p className="text-xs md:text-sm text-ash-gray-400">
-                      {expense.category} •{" "}
-                      {new Date(expense.date).toLocaleDateString(undefined, {
-                        month: "long",
-                        day: "numeric",
-                      })}
+          {highestExpensesWithColors && highestExpensesWithColors.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3 md:gap-y-4">
+              {highestExpensesWithColors.map(
+                (expense: Expense & { color: string }, index: number) => (
+                  <div
+                    key={expense.id || index}
+                    className="flex items-center justify-between py-2 md:py-3 border-b border-ash-gray-700"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-night-600 text-sm md:text-base truncate">
+                        {expense.description || (
+                          <span className="italic">[No Description]</span>
+                        )}
+                      </p>
+                      <p className="text-xs md:text-sm text-ash-gray-400">
+                        {expense.category} •{" "}
+                        {new Date(expense.date).toLocaleDateString(undefined, {
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                    <p className="font-semibold text-auburn-500 text-sm md:text-base ml-2 flex-shrink-0">
+                      {currency}
+                      {expense.amount.toLocaleString()}
                     </p>
                   </div>
-                  <p className="font-semibold text-auburn-500 text-sm md:text-base ml-2 flex-shrink-0">
-                    {currency}
-                    {expense.amount.toLocaleString()}
-                  </p>
-                </div>
-              )
-            )}
-          </div>
+                )
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-ash-gray-500">
+              <FiCalendar
+                size={48}
+                className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
+              />
+              <p className="text-lg md:text-xl font-semibold mb-2">
+                No top expenses found
+              </p>
+              <p className="text-sm">No expenses recorded for this month.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

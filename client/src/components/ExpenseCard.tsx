@@ -29,22 +29,25 @@ export function ExpenseCard({
   return (
     <>
       <div className="h-20 md:h-24 bg-timberwolf-900 p-3 md:p-4 rounded-lg flex items-center text-night-500 shadow-md hover:shadow-lg transition-shadow">
-        {/* Icon */}
+        {/* Category Icon */}
         <div
           className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3 md:mr-4 flex-shrink-0"
           style={color ? { backgroundColor: color } : undefined}
         ></div>
 
-        {/* Main Content */}
+        {/* Expense Details */}
         <div className="flex-grow min-w-0">
           <div className="font-semibold text-sm md:text-base truncate">
             {category}
           </div>
 
-          {/* Mobile: Show date and info button. Desktop: Show description */}
           <div className="text-xs md:text-sm text-night-700 flex items-center gap-2 mt-1">
+            {/* Mobile: Show date */}
             <span className="md:hidden truncate">{formattedDate}</span>
-            <span className="hidden md:inline truncate">{description}</span>
+            {/* Desktop: Show description */}
+            <span className="hidden md:inline truncate">
+              {description || <span className="italic">[No Description]</span>}
+            </span>
 
             {/* Info button (mobile only) */}
             <button
@@ -70,8 +73,9 @@ export function ExpenseCard({
           {amount.toFixed(2)}
         </div>
 
-        {/* Edit/Delete Actions */}
+        {/* Edit & Delete Actions */}
         <div className="flex items-center space-x-2 md:space-x-2 flex-shrink-0">
+          {/* Edit button */}
           <button
             onClick={() =>
               openModal("UPSERT_EXPENSE", {
@@ -88,6 +92,7 @@ export function ExpenseCard({
             <FiEdit size={16} className="md:w-[18px] md:h-[18px]" />
           </button>
 
+          {/* Delete button */}
           <button
             onClick={() =>
               openModal("DELETE_EXPENSE", {
@@ -106,13 +111,14 @@ export function ExpenseCard({
         </div>
       </div>
 
-      {/* Mobile Description Modal */}
+      {/* Mobile: Expense Description Modal */}
       {showDescription && (
         <ExpenseDescriptionModal
           category={category}
           description={description}
           date={formattedDate}
           amount={amount}
+          color={color}
           setShowDescription={setShowDescription}
         />
       )}

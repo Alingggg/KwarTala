@@ -1,4 +1,4 @@
-import { Button, Input } from "@/components";
+import { Button, Input, LoadingOverlay } from "@/components";
 import { FiUser, FiLock, FiMail } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
@@ -76,7 +76,7 @@ function Register() {
     formState: { errors },
     watch,
   } = useForm<FormValues>();
-  const { mutate: registerUser } = useRegister();
+  const { mutate: registerUser, isPending } = useRegister();
 
   const password = watch("password");
 
@@ -103,7 +103,7 @@ function Register() {
           </p>
         </div>
 
-        <div className="bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
+        <div className="relative bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
           <div className="mb-5">
             <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-1">
               Create Account
@@ -131,12 +131,16 @@ function Register() {
                   id="firstName"
                   type="text"
                   placeholder="Enter your first name"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.firstName
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("firstName", validation.firstName)}
                 />
               </div>
               {errors.firstName && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.firstName.message}
                 </p>
               )}
@@ -157,12 +161,16 @@ function Register() {
                   id="lastName"
                   type="text"
                   placeholder="Enter your last name"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.lastName
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("lastName", validation.lastName)}
                 />
               </div>
               {errors.lastName && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.lastName.message}
                 </p>
               )}
@@ -183,12 +191,16 @@ function Register() {
                   id="email"
                   type="email"
                   placeholder="Enter your email"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.email
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("email", validation.email)}
                 />
               </div>
               {errors.email && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.email.message}
                 </p>
               )}
@@ -209,12 +221,16 @@ function Register() {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.password
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("password", validation.password)}
                 />
               </div>
               {errors.password && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.password.message}
                 </p>
               )}
@@ -235,7 +251,11 @@ function Register() {
                   id="confirmPassword"
                   type="password"
                   placeholder="Confirm your password"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.confirmPassword
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
                     validate: (value) =>
@@ -244,7 +264,7 @@ function Register() {
                 />
               </div>
               {errors.confirmPassword && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.confirmPassword.message}
                 </p>
               )}
@@ -254,6 +274,7 @@ function Register() {
               type="submit"
               className="w-full text-sm md:text-base font-semibold py-2.5 md:py-3"
               variant="primary"
+              disabled={isPending}
             >
               Create Account
             </Button>
@@ -270,6 +291,7 @@ function Register() {
               </button>
             </p>
           </div>
+          {isPending && <LoadingOverlay message="Creating account..." />}
         </div>
       </div>
     </div>

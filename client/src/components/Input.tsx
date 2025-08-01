@@ -39,7 +39,7 @@ function Input({
           type === "number"
             ? "appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             : ""
-        } ${type === "password" ? "pr-10" : ""} ${className}`}
+        } ${type === "password" ? "pr-11" : ""} ${className}`}
         style={type === "number" ? { MozAppearance: "textfield" } : undefined}
       />
 
@@ -47,7 +47,7 @@ function Input({
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          className="absolute inset-y-0 right-0 px-3 flex items-center"
         >
           {showPassword ? (
             <FiEyeOff className="h-5 w-5 text-night-500 hover:text-night-600" />

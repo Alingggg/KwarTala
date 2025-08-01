@@ -13,7 +13,7 @@ import {
   useDailyChartsData,
 } from "@/hooks";
 import type { Expense } from "@/types";
-import { assignCategoryColors } from "@/utils/index";
+import { assignCategoryColors } from "@/utils";
 import { FiCalendar } from "react-icons/fi";
 
 function Home() {
