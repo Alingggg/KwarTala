@@ -22,5 +22,6 @@ export {
   FiMenu,
   FiInfo,
   FiAlertCircle,
+  FiMoreHorizontal,
 } from "react-icons/fi";
 export { TfiWallet } from "react-icons/tfi";

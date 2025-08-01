@@ -1,7 +1,7 @@
-import { FiEdit, FiTrash2, FiInfo } from "@/assets/icons";
+import { FiEdit, FiTrash2, FiInfo, FiMoreHorizontal } from "@/assets/icons";
 import { ExpenseDescriptionModal } from "@/components";
 import { useModalContext, useCurrencyContext } from "@/hooks";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Expense } from "@/types";
 import { formatDate } from "@/utils";
 
@@ -20,15 +20,31 @@ export function ExpenseCard({
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
   const [showDescription, setShowDescription] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const optionsRef = useRef<HTMLDivElement>(null);
 
   const formattedDate = formatDate(date, {
     includeMonth: true,
     includeDay: true,
   });
 
+  useEffect(() => {
+    if (!showOptions) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        optionsRef.current &&
+        !optionsRef.current.contains(event.target as Node)
+      ) {
+        setShowOptions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showOptions]);
+
   return (
     <>
-      <div className="h-20 md:h-24 bg-timberwolf-900 p-3 md:p-4 rounded-lg flex items-center text-night-500 shadow-md hover:shadow-lg transition-shadow">
+      <div className="h-20 md:h-24 bg-timberwolf-900 p-3 md:p-4 rounded-2xl flex items-center text-night-500 shadow-md hover:shadow-lg transition-shadow relative">
         {/* Category Icon */}
         <div
           className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3 md:mr-4 flex-shrink-0"
@@ -73,9 +89,8 @@ export function ExpenseCard({
           {amount.toFixed(2)}
         </div>
 
-        {/* Edit & Delete Actions */}
-        <div className="flex items-center space-x-2 md:space-x-2 flex-shrink-0">
-          {/* Edit button */}
+        {/* Desktop: Edit & Delete Actions */}
+        <div className="hidden md:flex items-center space-x-2 flex-shrink-0">
           <button
             onClick={() =>
               openModal("UPSERT_EXPENSE", {
@@ -86,13 +101,11 @@ export function ExpenseCard({
                 date,
               })
             }
-            className="p-2 md:p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors"
+            className="p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors"
             title="Edit expense"
           >
             <FiEdit size={16} className="md:w-[18px] md:h-[18px]" />
           </button>
-
-          {/* Delete button */}
           <button
             onClick={() =>
               openModal("DELETE_EXPENSE", {
@@ -103,11 +116,58 @@ export function ExpenseCard({
                 date,
               })
             }
-            className="p-2 md:p-2 text-auburn-600 hover:text-white hover:bg-auburn-500 rounded-full transition-colors"
+            className="p-2 text-auburn-600 hover:text-white hover:bg-auburn-500 rounded-full transition-colors"
             title="Delete expense"
           >
             <FiTrash2 size={16} className="md:w-[18px] md:h-[18px]" />
           </button>
+        </div>
+        {/* Mobile: Options button */}
+        <div
+          className="md:hidden flex items-center flex-shrink-0 relative"
+          ref={optionsRef}
+        >
+          <button
+            onClick={() => setShowOptions((prev) => !prev)}
+            className="p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors"
+            title="Options"
+          >
+            <FiMoreHorizontal size={18} />
+          </button>
+          {showOptions && (
+            <div className="absolute right-0 bottom-14 bg-white rounded-lg shadow-lg z-20 flex flex-col min-w-[120px] py-2">
+              <button
+                onClick={() => {
+                  setShowOptions(false);
+                  openModal("UPSERT_EXPENSE", {
+                    id,
+                    category,
+                    amount,
+                    description,
+                    date,
+                  });
+                }}
+                className="flex items-center gap-2 px-4 py-2 text-left hover:bg-timberwolf-900 text-night-700 rounded-md"
+              >
+                <FiEdit size={16} /> <span>Edit</span>
+              </button>
+              <button
+                onClick={() => {
+                  setShowOptions(false);
+                  openModal("DELETE_EXPENSE", {
+                    id,
+                    category,
+                    amount,
+                    description,
+                    date,
+                  });
+                }}
+                className="flex items-center gap-2 px-4 py-2 text-left hover:bg-auburn-100 text-auburn-600 rounded-md"
+              >
+                <FiTrash2 size={16} /> <span>Delete</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
