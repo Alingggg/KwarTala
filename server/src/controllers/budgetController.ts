@@ -16,8 +16,16 @@ const budgetController = {
       const year = Number(req.query.year);
       const { amount } = req.body;
 
-      if (!month || !year || !amount) {
+      if (!month || !year || amount === undefined || amount === null) {
         const error: CustomError = new Error("All fields are required");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (amount < 0) {
+        const error: CustomError = new Error(
+          "Budget amount cannot be negative"
+        );
         error.statusCode = 400;
         throw error;
       }

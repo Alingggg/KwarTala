@@ -35,23 +35,18 @@ const budgetService = {
     year,
     amount,
   }: Omit<Budget, "id">) {
-    let budget = await budgetRepository.findByUserIdAndDate({
-      userId,
-      month,
-      year,
-    });
-
-    if (!budget) {
-      budget = await budgetRepository.create({ userId, month, year, amount });
-      return budget;
-    }
-
-    return budgetRepository.updateByUserIdAndDate({
+    let budget = await budgetRepository.updateByUserIdAndDate({
       userId,
       month,
       year,
       amount,
     });
+
+    if (!budget) {
+      budget = await budgetRepository.create({ userId, month, year, amount });
+    }
+
+    return budget;
   },
 };
 
