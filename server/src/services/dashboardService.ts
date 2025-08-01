@@ -13,15 +13,8 @@ const dashboardService = {
     const monthNumber = today.getMonth() + 1;
     const year = today.getFullYear();
 
-    function formatDate(date: Date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
-
-    const startOfMonth = formatDate(new Date(year, today.getMonth(), 1));
-    const endOfMonth = formatDate(new Date(year, today.getMonth() + 1, 0));
+    const startOfMonth = new Date(Date.UTC(year, today.getMonth(), 1));
+    const endOfMonth = new Date(Date.UTC(year, today.getMonth() + 1, 0));
 
     const budget = await budgetService.findCurrentMonthBudgetByUserId({
       userId,
@@ -50,7 +43,7 @@ const dashboardService = {
     );
 
     return {
-      month: today.toLocaleString("en-US", { month: "long" }),
+      monthNumber,
       year,
       budget: budget?.amount ?? 0,
       remainingBudget,
@@ -75,8 +68,8 @@ const dashboardService = {
       year,
     });
 
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0);
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0));
 
     const monthlyTotalSpent = await expenseService.getTotalMonthlySpent({
       userId,
@@ -169,9 +162,7 @@ const dashboardService = {
     }
 
     return {
-      month: new Date(year, month - 1).toLocaleString("en-US", {
-        month: "long",
-      }),
+      monthNumber: month,
       year,
       monthlyBudget: Math.round((budget?.amount ?? 0) * 100) / 100,
       monthlyTotalSpent: Math.round(monthlyTotalSpent * 100) / 100,
@@ -195,8 +186,8 @@ const dashboardService = {
       year,
     });
 
-    const startOfMonth = new Date(year, month - 1, 1);
-    const endOfMonth = new Date(year, month, 0);
+    const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
+    const endOfMonth = new Date(Date.UTC(year, month, 0));
 
     const totalMonthlySpent = await expenseService.getTotalMonthlySpent({
       userId,
@@ -245,9 +236,7 @@ const dashboardService = {
     });
 
     return {
-      month: new Date(year, month - 1).toLocaleString("en-US", {
-        month: "long",
-      }),
+      monthNumber: month,
       year,
       monthlyBudget: Math.round((budget?.amount ?? 0) * 100) / 100,
       monthlyTotalSpent: Math.round(totalMonthlySpent * 100) / 100,
@@ -271,14 +260,13 @@ const dashboardService = {
     year: number;
   }) {
     const today = new Date();
-    const requestedMonthStart = new Date(year, month - 1, 1);
-    const startDate = requestedMonthStart;
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
     let endDate;
 
     if (today.getFullYear() === year && today.getMonth() === month - 1) {
       endDate = today;
     } else {
-      endDate = new Date(year, month, 0);
+      endDate = new Date(Date.UTC(year, month, 0));
     }
 
     const data = await expenseService.getTotalDailyExpenseInDateRange({
@@ -287,15 +275,7 @@ const dashboardService = {
       endDate,
     });
 
-    const formattedData = data.map((item: any) => ({
-      ...item,
-      date: new Date(item.date).toLocaleDateString(undefined, {
-        month: "long",
-        day: "numeric",
-      }),
-    }));
-
-    return formattedData;
+    return data;
   },
 
   async getWeeklyChartData({
@@ -307,8 +287,8 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0);
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0));
 
     const data = await expenseService.getTotalWeeklyExpenseInDateRange({
       userId,
@@ -317,25 +297,32 @@ const dashboardService = {
     });
 
     const formattedData = data.map((item: any, idx: number, arr: any[]) => {
-      const weekStart = new Date(item.date);
-      const weekEnd =
-        idx < arr.length - 1 ? new Date(arr[idx + 1].date) : endDate;
+      const weekStartDate = new Date(item.date);
+      let weekEndDate = new Date(weekStartDate);
+      weekEndDate.setUTCDate(weekStartDate.getUTCDate() + 6);
+      if (weekEndDate > endDate) {
+        weekEndDate = endDate;
+      }
+
+      console.log("weekStartDate", weekStartDate);
+      console.log("weekEndDate", weekEndDate);
 
       const days =
         Math.ceil(
-          (weekEnd.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24)
-        ) || 1;
+          (weekEndDate.getTime() - weekStartDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+        ) + 1;
 
-      const dateRange = `${weekStart.toLocaleString(undefined, {
-        month: "short",
-      })}. ${weekStart.getDate()}-${weekEnd.getDate()}`;
+      const dailyAverage =
+        days > 0 ? Number((item.total / days).toFixed(2)) : 0;
 
       return {
-        name: `Week ${idx + 1}`,
-        dateRange,
+        weekNumber: idx + 1,
+        weekStartDate: weekStartDate.toISOString().split("T")[0],
+        weekEndDate: weekEndDate.toISOString().split("T")[0],
         total: item.total,
         days,
-        dailyAverage: days > 0 ? Number((item.total / days).toFixed(2)) : 0,
+        dailyAverage,
       };
     });
 
