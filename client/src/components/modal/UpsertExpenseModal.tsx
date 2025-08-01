@@ -4,6 +4,34 @@ import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
 
+const validation = {
+  category: {
+    required: "Category is required",
+    maxLength: {
+      value: 25,
+      message: "Category must be at most 25 characters",
+    },
+  },
+  description: {
+    maxLength: {
+      value: 50,
+      message: "Description must be at most 50 characters",
+    },
+  },
+  amount: {
+    valueAsNumber: true,
+    required: "Amount is required",
+    min: {
+      value: 0,
+      message: "Amount cannot be negative",
+    },
+    max: 10000000,
+  },
+  date: {
+    required: "Date is required",
+  },
+};
+
 interface UpsertExpenseModalProps extends Partial<Omit<Expense, "userId">> {
   onClose: () => void;
 }
@@ -70,9 +98,7 @@ function UpsertExpenseModal({
               id="category"
               type="text"
               placeholder="e.g. Food"
-              {...register("category", {
-                required: "Category is required",
-              })}
+              {...register("category", validation.category)}
               className={
                 errors.category
                   ? "border-auburn-600 focus:border-auburn-600"
@@ -96,7 +122,7 @@ function UpsertExpenseModal({
               id="description"
               type="text"
               placeholder="e.g. Lunch at restaurant"
-              {...register("description")}
+              {...register("description", validation.description)}
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -114,10 +140,8 @@ function UpsertExpenseModal({
                 id="amount"
                 type="number"
                 placeholder="0.00"
-                {...register("amount", {
-                  required: "Amount is required",
-                  valueAsNumber: true,
-                })}
+                max={10000000}
+                {...register("amount", validation.amount)}
                 className={`pl-8 ${
                   errors.amount
                     ? "border-auburn-600 focus:border-auburn-600"
@@ -141,7 +165,7 @@ function UpsertExpenseModal({
             <Input
               id="date"
               type="date"
-              {...register("date", { required: "Date is required" })}
+              {...register("date", validation.date)}
               className={
                 errors.date ? "border-auburn-600 focus:border-auburn-600" : ""
               }

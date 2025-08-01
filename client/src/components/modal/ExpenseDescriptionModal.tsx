@@ -1,5 +1,6 @@
 import { useCurrencyContext } from "@/hooks";
 import type { Expense } from "@/types";
+import { FiX } from "@/assets/icons";
 
 interface ExpenseDescriptionModalProps extends Omit<Expense, "id" | "userId"> {
   color?: string;
@@ -31,13 +32,13 @@ function ExpenseDescriptionModal({
           className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-night-400 hover:text-night-600 hover:bg-ash-gray-200 rounded-full text-lg transition-colors duration-200"
           aria-label="Close"
         >
-          ×
+          <FiX size={18} className="md:w-5 md:h-5" />
         </button>
 
         {/* Content */}
         <div className="p-5 space-y-3">
           {/* Category with color indicator */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 max-w-9/10">
             <div
               className="w-3 h-7 rounded-full"
               style={{ backgroundColor: color || "#a22c29" }}

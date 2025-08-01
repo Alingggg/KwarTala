@@ -4,6 +4,21 @@ import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useEditBudget, useCurrencyContext } from "@/hooks";
 
+const validation = {
+  budgetPeriod: {
+    required: "Budget Period is required",
+  },
+  budget: {
+    valueAsNumber: true,
+    required: "Budget is required",
+    min: {
+      value: 0,
+      message: "Budget cannot be negative",
+    },
+    max: 100000000,
+  },
+};
+
 interface EditBudgetModalProps {
   onClose: () => void;
   monthNumber: number;
@@ -132,9 +147,7 @@ function EditBudgetModal({
               type="month"
               min={minDate}
               max={maxDate}
-              {...register("budgetPeriod", {
-                required: "Budget period is required",
-              })}
+              {...register("budgetPeriod", validation.budgetPeriod)}
             />
             {errors.budgetPeriod && (
               <p className="text-xs text-auburn-600 mt-1 font-semibold">
@@ -163,19 +176,13 @@ function EditBudgetModal({
                 type="number"
                 min={0}
                 placeholder="0.00"
+                max={100000000}
                 className={`pl-8 ${
                   errors.budget
                     ? "border-auburn-600 focus:border-auburn-600"
                     : ""
                 }`}
-                {...register("budget", {
-                  required: "Budget is required",
-                  valueAsNumber: true,
-                  min: {
-                    value: 0,
-                    message: "Budget must be 0 or greater",
-                  },
-                })}
+                {...register("budget", validation.budget)}
               />
             </div>
             {errors.budget && (
