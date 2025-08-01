@@ -41,8 +41,9 @@ function Analytics() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const { currency } = useCurrencyContext();
 
+  const today = new Date();
+
   function getMonthYear(index: number) {
-    const today = new Date();
     const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
   }
@@ -174,7 +175,10 @@ function Analytics() {
               </div>
               <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
                 <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
-                <span>{monthData.remainingDays} Days Remaining</span>
+                {today.getMonth() === monthData.monthNumber - 1 &&
+                  today.getFullYear() === monthData.year && (
+                    <span>{monthData.remainingDays} Days Remaining</span>
+                  )}
               </div>
             </div>
           </div>

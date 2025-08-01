@@ -1,9 +1,10 @@
 import { Button, Input, LoadingOverlay } from "@/components";
-import { FiUser, FiLock, FiMail } from "@/assets/icons";
+import { FiUser, FiLock, FiMail, FiAlertCircle } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useRegister } from "@/hooks";
 import { AppLogo } from "@/assets/images";
+import { useState } from "react";
 
 interface FormValues {
   firstName: string;
@@ -69,6 +70,7 @@ const validation = {
 };
 
 function Register() {
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const {
     register,
@@ -81,7 +83,15 @@ function Register() {
   const password = watch("password");
 
   function onSubmit(data: FormValues) {
-    registerUser(data);
+    setError(null);
+    registerUser(data, {
+      onError: (err: any) => {
+        setError(
+          err?.response?.data?.message ||
+            "Internal server error. Please try again."
+        );
+      },
+    });
   }
 
   return (
@@ -110,6 +120,17 @@ function Register() {
             </h2>
             <p className="text-night-500 text-sm">Sign up to get started</p>
           </div>
+
+          {error && (
+            <div className="mb-4 text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
+                <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+                <span className="text-base text-auburn-100 font-semibold">
+                  {error}
+                </span>
+              </div>
+            </div>
+          )}
 
           <form
             className="flex flex-col gap-4"

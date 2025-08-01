@@ -1,9 +1,10 @@
 import { Button, Input, LoadingOverlay } from "@/components";
-import { FiMail, FiLock } from "@/assets/icons";
+import { FiMail, FiLock, FiAlertCircle } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useLogin } from "@/hooks";
 import { AppLogo } from "@/assets/images";
+import { useState } from "react";
 
 interface FormValues {
   email: string;
@@ -36,6 +37,7 @@ const validation = {
 };
 
 function Login() {
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const {
     register,
@@ -45,7 +47,15 @@ function Login() {
   const { mutate: login, isPending } = useLogin();
 
   function onSubmit(data: FormValues) {
-    login(data);
+    setError(null);
+    login(data, {
+      onError: (err: any) => {
+        setError(
+          err?.response?.data?.message ||
+            "Internal server error. Please try again."
+        );
+      },
+    });
   }
 
   return (
@@ -76,6 +86,17 @@ function Login() {
               Enter your credentials to access your account
             </p>
           </div>
+
+          {error && (
+            <div className="mb-4 text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
+                <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+                <span className="text-base text-auburn-100 font-semibold">
+                  {error}
+                </span>
+              </div>
+            </div>
+          )}
 
           <form
             className="flex flex-col gap-4"
