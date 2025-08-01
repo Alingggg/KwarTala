@@ -33,7 +33,7 @@ function Transactions() {
 
   const { month, year } = getMonthYear(currentMonthIndex);
 
-  const { data: currentMonth, isLoading } = useTransactionsData({
+  const { data: monthData, isLoading } = useTransactionsData({
     month,
     year,
   });
@@ -52,7 +52,7 @@ function Transactions() {
     return "text-auburn-500";
   }
 
-  const allWeeks = currentMonth?.weeks || [];
+  const allWeeks = monthData?.weeks || [];
 
   function sortTransactions(transactions: any[]) {
     return [...transactions].sort((a, b) => {
@@ -97,9 +97,9 @@ function Transactions() {
             variant="secondary"
             onClick={() =>
               openModal("EDIT_BUDGET", {
-                month: currentMonth?.month,
-                year: currentMonth?.year,
-                currentBudget: currentMonth?.monthlyBudget,
+                monthNumber: monthData?.monthNumber,
+                year: monthData?.year,
+                currentBudget: monthData?.monthlyBudget,
               })
             }
             className="shadow-sm text-sm md:text-base w-full sm:w-auto"
@@ -139,7 +139,11 @@ function Transactions() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {currentMonth?.month} {currentMonth?.year}
+              {new Date(
+                monthData.year,
+                monthData.monthNumber - 1
+              ).toLocaleString("default", { month: "long" })}{" "}
+              {monthData?.year}
             </h2>
           </div>
         </div>
@@ -154,7 +158,7 @@ function Transactions() {
             </p>
             <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
               {currency}
-              {currentMonth?.monthlyBudget?.toLocaleString()}
+              {monthData?.monthlyBudget?.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
@@ -163,7 +167,7 @@ function Transactions() {
             </p>
             <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
               {currency}
-              {currentMonth?.monthlyTotalSpent?.toLocaleString()}
+              {monthData?.monthlyTotalSpent?.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
@@ -172,13 +176,13 @@ function Transactions() {
             </p>
             <p
               className={`text-xl md:text-3xl font-bold ${
-                currentMonth?.monthlyRemainingBudget >= 0
+                monthData?.monthlyRemainingBudget >= 0
                   ? "text-timberwolf-900"
                   : "text-auburn-500"
               }`}
             >
               {currency}
-              {currentMonth?.monthlyRemainingBudget?.toLocaleString()}
+              {monthData?.monthlyRemainingBudget?.toLocaleString()}
             </p>
           </div>
         </div>
@@ -290,12 +294,15 @@ function Transactions() {
         <h3 className="text-lg md:text-xl font-bold text-night-600">
           {selectedWeek
             ? `Week ${selectedWeek} Transactions`
-            : `All ${currentMonth?.month} Transactions`}
+            : `All ${new Date(
+                monthData.year,
+                monthData.monthNumber - 1
+              ).toLocaleString("default", { month: "long" })} Transactions`}
         </h3>
 
         {/* Sort Toggle */}
         <div className="flex items-center space-x-2">
-          <span className="text-xs md:text-sm text-ash-gray-400">Sort:</span>
+          <span className="text-xs md:text-sm text-ash-gray-300">Sort:</span>
           <button
             onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
@@ -349,7 +356,7 @@ function Transactions() {
           <p className="text-sm">
             {selectedWeek
               ? `No expenses recorded for Week ${selectedWeek}`
-              : `No expenses recorded for ${currentMonth?.month} ${currentMonth?.year}`}
+              : `No expenses recorded for ${monthData?.month} ${monthData?.year}`}
           </p>
         </div>
       )}

@@ -16,13 +16,14 @@ import { useCurrencyContext } from "@/hooks";
 type ChartView = "weekly" | "daily";
 
 interface DailyChartDatum {
-  date: string;
+  date: string | Date;
   total: number;
 }
 
 interface WeeklyChartDatum {
-  name: string;
-  dateRange: string;
+  weekNumber: number;
+  weekStartDate: string | Date;
+  weekEndDate: string | Date;
   total: number;
   days: number;
   dailyAverage: number;
@@ -57,16 +58,30 @@ function CustomTooltip({ active, payload, label }: any) {
     const total = data.total;
     const days = data.days;
     const dailyAverage = data.dailyAverage;
+    const title =
+      (data.weekNumber && `Week ${data.weekNumber}`) ||
+      (data.date &&
+        new Date(data.date).toLocaleDateString("default", {
+          month: "long",
+          day: "numeric",
+        })) ||
+      label;
+    const dateRange = `${new Date(data.weekStartDate).toLocaleString(
+      "default",
+      {
+        month: "short",
+      }
+    )}. ${new Date(data.weekStartDate).getDate()}-${new Date(
+      data.weekEndDate
+    ).getDate()}`;
 
     return (
       <div className="bg-timberwolf-900 border border-night-700 p-2 md:p-3 rounded-lg shadow-lg max-w-xs">
         <p className="text-night-600 font-semibold mb-1 md:mb-2 text-sm md:text-base">
-          {data.name || data.date || label}
+          {title}
         </p>
-        {data.dateRange && (
-          <p className="text-night-500 text-xs mb-1 md:mb-2">
-            {data.dateRange}
-          </p>
+        {dateRange && (
+          <p className="text-night-500 text-xs mb-1 md:mb-2">{dateRange}</p>
         )}
         <div className="space-y-1">
           <p className="text-night-500 text-xs md:text-sm">
@@ -91,7 +106,14 @@ function CustomTooltip({ active, payload, label }: any) {
 
 // Custom tick for weekly X axis (shows week and date range)
 function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
-  const weekData = weeklyData.find((w: any) => w.name === payload.value);
+  const weekData = weeklyData.find((w: any) => w.weekNumber === payload.value);
+  const dateRange = weekData
+    ? `${new Date(weekData.weekStartDate).toLocaleString("default", {
+        month: "short",
+      })}. ${new Date(weekData.weekStartDate).getDate()}-${new Date(
+        weekData.weekEndDate
+      ).getDate()}`
+    : "";
 
   return (
     <g transform={`translate(${x},${y})`}>
@@ -104,7 +126,7 @@ function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
         fontSize="10"
         fontWeight="500"
       >
-        {payload.value}
+        {`Week ${payload.value}`}
       </text>
       {weekData && (
         <text
@@ -115,7 +137,7 @@ function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
           fill="#999b7a"
           fontSize="8"
         >
-          {weekData.dateRange}
+          {dateRange}
         </text>
       )}
     </g>
@@ -203,7 +225,7 @@ function ExpenseChart({
                   stroke="#2f4b3d"
                 />
                 <XAxis
-                  dataKey="name"
+                  dataKey="weekNumber"
                   tickLine={false}
                   axisLine={false}
                   tick={(props) => (

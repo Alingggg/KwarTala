@@ -49,8 +49,10 @@ function Analytics() {
 
   const { month, year } = getMonthYear(currentMonthIndex);
 
-  const { data: analyticsData, isLoading: isAnalyticsLoading } =
-    useAnalyticsData({ month, year });
+  const { data: monthData, isLoading: isAnalyticsLoading } = useAnalyticsData({
+    month,
+    year,
+  });
   const { data: dailyChartsData, isLoading: isDailyLoading } =
     useDailyChartsData({
       month,
@@ -63,9 +65,9 @@ function Analytics() {
     });
 
   const highestExpensesWithColors =
-    analyticsData && assignCategoryColors(analyticsData.highestExpenses);
+    monthData && assignCategoryColors(monthData.highestExpenses);
   const expenseByCategoryWithColors =
-    analyticsData && assignCategoryColors(analyticsData.expenseByCategory);
+    monthData && assignCategoryColors(monthData.expenseByCategory);
 
   function navigateMonth(direction: "prev" | "next") {
     if (direction === "prev" && currentMonthIndex < MAX_MONTHS - 1) {
@@ -112,7 +114,11 @@ function Analytics() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {analyticsData.month} {analyticsData.year}
+              {new Date(
+                monthData.year,
+                monthData.monthNumber - 1
+              ).toLocaleString("default", { month: "long" })}{" "}
+              {monthData.year}
             </h2>
           </div>
         </div>
@@ -130,13 +136,13 @@ function Analytics() {
                 </p>
                 <p
                   className={`text-xl md:text-3xl font-bold ${
-                    analyticsData.monthlyRemainingBudget >= 0
+                    monthData.monthlyRemainingBudget >= 0
                       ? "text-timberwolf-900"
                       : "text-auburn-500"
                   }`}
                 >
                   {currency}
-                  {analyticsData.monthlyRemainingBudget.toLocaleString()}
+                  {monthData.monthlyRemainingBudget.toLocaleString()}
                 </p>
               </div>
               <div>
@@ -145,7 +151,7 @@ function Analytics() {
                 </p>
                 <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
                   {currency}
-                  {analyticsData.monthlyBudget.toLocaleString()}
+                  {monthData.monthlyBudget.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -154,21 +160,21 @@ function Analytics() {
               <div className="w-full bg-night-600 rounded-full h-2 md:h-3 shadow-inner">
                 <div
                   className={`${
-                    analyticsData.monthlyRemainingBudget >= 0
+                    monthData.monthlyRemainingBudget >= 0
                       ? "bg-night-700"
                       : "bg-auburn-500"
                   } h-2 md:h-3 rounded-full shadow-sm`}
                   style={{
                     width: `${Math.min(
-                      analyticsData.monthlyBudgetUsedPercentage,
+                      monthData.monthlyBudgetUsedPercentage,
                       100
                     )}%`,
                   }}
                 ></div>
               </div>
               <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
-                <span>{analyticsData.monthlyBudgetUsedPercentage}% Used</span>
-                <span>{analyticsData.remainingDays} Days Remaining</span>
+                <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
+                <span>{monthData.remainingDays} Days Remaining</span>
               </div>
             </div>
           </div>
@@ -181,7 +187,7 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {analyticsData.monthlyTotalSpent.toLocaleString()}
+                {monthData.monthlyTotalSpent.toLocaleString()}
               </p>
             </div>
             <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
@@ -190,7 +196,7 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {analyticsData.averageDailySpending.toLocaleString()}
+                {monthData.averageDailySpending.toLocaleString()}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
                 Avg. spend per day
@@ -202,8 +208,8 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {analyticsData.recommendedDailyLimit > 0
-                  ? analyticsData.recommendedDailyLimit.toLocaleString()
+                {monthData.recommendedDailyLimit > 0
+                  ? monthData.recommendedDailyLimit.toLocaleString()
                   : "0"}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">

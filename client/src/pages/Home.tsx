@@ -55,7 +55,11 @@ function Home() {
             Hello, {firstName}
           </h1>
           <p className="md:text-2xl font-semibold text-night-600">
-            {homeData.month} {homeData.year}
+            {new Date(homeData.year, homeData.monthNumber - 1).toLocaleString(
+              "default",
+              { month: "long" }
+            )}{" "}
+            {homeData.year}
           </p>
         </div>
       </div>
@@ -82,7 +86,7 @@ function Home() {
             <Button
               onClick={() =>
                 openModal("EDIT_BUDGET", {
-                  month: homeData.month,
+                  monthNumber: homeData.monthNumber,
                   year: homeData.year,
                   currentBudget: homeData.budget,
                 })

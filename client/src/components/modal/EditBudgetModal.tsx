@@ -6,7 +6,7 @@ import { useEditBudget, useCurrencyContext } from "@/hooks";
 
 interface EditBudgetModalProps {
   onClose: () => void;
-  month: string;
+  monthNumber: number;
   year: number;
   currentBudget: number;
 }
@@ -18,7 +18,7 @@ interface EditBudgetFormValues {
 
 function EditBudgetModal({
   onClose,
-  month,
+  monthNumber,
   year,
   currentBudget,
 }: EditBudgetModalProps) {
@@ -32,9 +32,7 @@ function EditBudgetModal({
   const { mutate: editBudget } = useEditBudget();
   const { currency } = useCurrencyContext();
 
-  const initialBudgetPeriod = `${year}-${String(
-    new Date(`${month} 1, ${year}`).getMonth() + 1
-  ).padStart(2, "0")}`;
+  const initialBudgetPeriod = `${year}-${String(monthNumber).padStart(2, "0")}`;
 
   useEffect(() => {
     reset({
