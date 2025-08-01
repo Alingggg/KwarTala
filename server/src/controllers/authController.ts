@@ -13,6 +13,65 @@ const authController = {
         throw error;
       }
 
+      if (firstName.length < 2 || firstName.length > 50) {
+        const error: CustomError = new Error(
+          "First name must be between 2 and 50 characters"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+      if (!/^[A-Za-z\s'-]+$/.test(firstName)) {
+        const error: CustomError = new Error(
+          "Only letters, spaces, apostrophes, and hyphens allowed"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (lastName.length < 2 || lastName.length > 50) {
+        const error: CustomError = new Error(
+          "Last name must be between 2 and 50 characters"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+      if (!/^[A-Za-z\s'-]+$/.test(lastName)) {
+        const error: CustomError = new Error(
+          "Only letters, spaces, apostrophes, and hyphens allowed"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        const error: CustomError = new Error("Invalid email format");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (password.length < 8 || password.length > 64) {
+        const error: CustomError = new Error(
+          "Password must be between 8 and 64 characters"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+      if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/.test(password)) {
+        const error: CustomError = new Error(
+          "Must include upper & lowercase letters, a number, and a symbol"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const existingUser = await userService.findUserByEmail(email);
+
+      if (existingUser) {
+        const error: CustomError = new Error("User already exists");
+        error.statusCode = 409;
+        throw error;
+      }
+
       const newUser = await userService.registerUser({
         firstName,
         lastName,
@@ -42,6 +101,27 @@ const authController = {
       const { email, password } = req.body;
       if (!email || !password) {
         const error: CustomError = new Error("Email and password are required");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        const error: CustomError = new Error("Invalid email format");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (password.length < 8 || password.length > 64) {
+        const error: CustomError = new Error(
+          "Password must be between 8 and 64 characters"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+      if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/.test(password)) {
+        const error: CustomError = new Error(
+          "Must include upper & lowercase letters, a number, and a symbol"
+        );
         error.statusCode = 400;
         throw error;
       }
