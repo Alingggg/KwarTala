@@ -1,4 +1,4 @@
-import { Button } from "@/components";
+import { Button, LoadingOverlay } from "@/components";
 import { FiX, FiAlertTriangle } from "@/assets/icons";
 import { useCurrencyContext, useDeleteExpense } from "@/hooks";
 import type { Expense } from "@/types";
@@ -16,7 +16,7 @@ function DeleteExpenseModal({
   description,
   date,
 }: DeleteExpenseModalProps) {
-  const { mutate: deleteExpense } = useDeleteExpense();
+  const { mutate: deleteExpense, isPending } = useDeleteExpense();
 
   const formattedDate = formatDate(date, {
     includeMonth: true,
@@ -24,8 +24,7 @@ function DeleteExpenseModal({
   });
 
   function handleDelete() {
-    deleteExpense(id);
-    onClose();
+    deleteExpense(id, { onSuccess: () => onClose() });
   }
 
   const { currency } = useCurrencyContext();
@@ -36,6 +35,7 @@ function DeleteExpenseModal({
         <button
           onClick={onClose}
           className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500"
+          disabled={isPending}
         >
           <FiX size={20} className="md:w-6 md:h-6" />
         </button>
@@ -71,6 +71,7 @@ function DeleteExpenseModal({
             variant="secondary"
             onClick={onClose}
             className="w-full text-sm md:text-base"
+            disabled={isPending}
           >
             Cancel
           </Button>
@@ -79,10 +80,12 @@ function DeleteExpenseModal({
             onClick={handleDelete}
             variant="danger"
             className="w-full text-sm md:text-base"
+            disabled={isPending}
           >
             Delete
           </Button>
         </div>
+        {isPending && <LoadingOverlay message="Deleting expense..." />}
       </div>
     </div>
   );

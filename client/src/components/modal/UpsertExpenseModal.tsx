@@ -1,4 +1,4 @@
-import { Button, Input } from "@/components";
+import { Button, Input, LoadingOverlay } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
@@ -22,8 +22,8 @@ function UpsertExpenseModal({
     handleSubmit,
     formState: { errors },
   } = useForm<Omit<Expense, "id" | "userId">>();
-  const { mutate: addExpense } = useAddExpense();
-  const { mutate: editExpense } = useEditExpense();
+  const { mutate: addExpense, isPending: isAdding } = useAddExpense();
+  const { mutate: editExpense, isPending: isEditing } = useEditExpense();
   const { currency } = useCurrencyContext();
 
   if (id) {
@@ -35,11 +35,9 @@ function UpsertExpenseModal({
 
   function onSubmit(data: Omit<Expense, "id" | "userId">) {
     if (id) {
-      editExpense({ id, ...data });
-      onClose();
+      editExpense({ id, ...data }, { onSuccess: () => onClose() });
     } else {
-      addExpense(data);
-      onClose();
+      addExpense(data, { onSuccess: () => onClose() });
     }
   }
 
@@ -49,6 +47,7 @@ function UpsertExpenseModal({
         <button
           onClick={onClose}
           className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 z-10"
+          disabled={isAdding || isEditing}
         >
           <FiX size={18} className="md:w-5 md:h-5" />
         </button>
@@ -159,6 +158,7 @@ function UpsertExpenseModal({
               variant="secondary"
               onClick={onClose}
               className="w-full sm:w-auto text-xs md:text-sm px-3 py-2"
+              disabled={isAdding || isEditing}
             >
               Cancel
             </Button>
@@ -166,11 +166,14 @@ function UpsertExpenseModal({
               type="submit"
               variant="success"
               className="w-full sm:w-auto text-xs md:text-sm px-3 py-2"
+              disabled={isAdding || isEditing}
             >
               {id ? "Save Changes" : "Add Expense"}
             </Button>
           </div>
         </form>
+        {isAdding ||
+          (isEditing && <LoadingOverlay message="Saving expense..." />)}
       </div>
     </div>
   );

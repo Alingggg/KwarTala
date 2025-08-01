@@ -47,11 +47,6 @@ function Transactions() {
     setSelectedWeek(null);
   }
 
-  function getStatusColor(remaining: number) {
-    if (remaining >= 0) return "text-night-700";
-    return "text-auburn-500";
-  }
-
   const allWeeks = monthData?.weeks || [];
 
   function sortTransactions(transactions: any[]) {
@@ -80,6 +75,14 @@ function Transactions() {
   const selectedWeekData = selectedWeek
     ? allWeeks.find((w: any) => w.weekNumber === selectedWeek)
     : null;
+
+  function isPreviousMonthYear(month: number, year: number) {
+    const now = new Date();
+    const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const prevYear =
+      now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    return month === prevMonth + 1 && year === prevYear;
+  }
 
   if (isLoading) {
     return <LoadingSpinner message="Loading transactions..." />;
@@ -165,19 +168,27 @@ function Transactions() {
             <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
               Total Spent
             </p>
-            <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
+            <p
+              className={`text-xl md:text-3xl font-bold ${
+                monthData?.monthlyTotalSpent > monthData?.monthlyBudget
+                  ? "text-auburn-500"
+                  : "text-timberwolf-900"
+              }`}
+            >
               {currency}
               {monthData?.monthlyTotalSpent?.toLocaleString()}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              Remaining
+              {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
+                ? "Remaining"
+                : "Savings/Deficit"}
             </p>
             <p
               className={`text-xl md:text-3xl font-bold ${
                 monthData?.monthlyRemainingBudget >= 0
-                  ? "text-timberwolf-900"
+                  ? "text-emerald-500"
                   : "text-auburn-500"
               }`}
             >
@@ -231,11 +242,9 @@ function Transactions() {
                 </div>
                 <div
                   className={`text-xs font-medium mt-1 ${
-                    selectedWeek === week.weekNumber
-                      ? week.weeklyRemainingBudget >= 0
-                        ? "text-night-800"
-                        : "text-auburn-700"
-                      : getStatusColor(week.weeklyRemainingBudget)
+                    week.weeklyRemainingBudget >= 0
+                      ? "text-emerald-500"
+                      : "text-auburn-500"
                   }`}
                 >
                   {week.weeklyRemainingBudget >= 0
@@ -265,19 +274,28 @@ function Transactions() {
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
                 Week {selectedWeek} Spent
               </p>
-              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
+              <p
+                className={`text-lg md:text-2xl font-bold ${
+                  selectedWeekData.weeklyTotalSpent >
+                  selectedWeekData.weeklyBudget
+                    ? "text-auburn-500"
+                    : "text-timberwolf-900"
+                }`}
+              >
                 {currency}
                 {selectedWeekData.weeklyTotalSpent?.toLocaleString()}
               </p>
             </div>
             <div className="text-center">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-                Remaining
+                {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
+                  ? "Remaining"
+                  : "Savings/Deficit"}
               </p>
               <p
                 className={`text-lg md:text-2xl font-bold ${
                   selectedWeekData.weeklyRemainingBudget >= 0
-                    ? "text-timberwolf-900"
+                    ? "text-emerald-500"
                     : "text-auburn-500"
                 }`}
               >

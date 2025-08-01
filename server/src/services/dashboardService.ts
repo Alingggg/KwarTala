@@ -304,9 +304,6 @@ const dashboardService = {
         weekEndDate = endDate;
       }
 
-      console.log("weekStartDate", weekStartDate);
-      console.log("weekEndDate", weekEndDate);
-
       const days =
         Math.ceil(
           (weekEndDate.getTime() - weekStartDate.getTime()) /

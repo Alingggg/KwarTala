@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button, Input } from "@/components";
+import { Button, Input, LoadingOverlay } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useEditBudget, useCurrencyContext } from "@/hooks";
@@ -29,7 +29,7 @@ function EditBudgetModal({
     reset,
     formState: { errors },
   } = useForm<EditBudgetFormValues>();
-  const { mutate: editBudget } = useEditBudget();
+  const { mutate: editBudget, isPending } = useEditBudget();
   const { currency } = useCurrencyContext();
 
   const initialBudgetPeriod = `${year}-${String(monthNumber).padStart(2, "0")}`;
@@ -60,13 +60,16 @@ function EditBudgetModal({
   function onSubmit({ budgetPeriod, budget }: EditBudgetFormValues) {
     const [selectedYear, selectedMonth] = budgetPeriod.split("-").map(Number);
 
-    editBudget({
-      year: selectedYear,
-      month: selectedMonth,
-      budget: Number(budget),
-    });
-
-    onClose();
+    editBudget(
+      {
+        year: selectedYear,
+        month: selectedMonth,
+        budget: Number(budget),
+      },
+      {
+        onSuccess: () => onClose(),
+      }
+    );
   }
 
   function getImpactMessage() {
@@ -102,6 +105,7 @@ function EditBudgetModal({
         <button
           onClick={onClose}
           className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 z-10"
+          disabled={isPending}
         >
           <FiX size={18} className="md:w-5 md:h-5" />
         </button>
@@ -224,6 +228,7 @@ function EditBudgetModal({
               variant="secondary"
               onClick={onClose}
               className="w-full sm:w-auto text-xs md:text-sm px-3 py-2"
+              disabled={isPending}
             >
               Cancel
             </Button>
@@ -231,11 +236,13 @@ function EditBudgetModal({
               type="submit"
               variant="success"
               className="w-full sm:w-auto text-xs md:text-sm px-3 py-2"
+              disabled={isPending}
             >
               Update Budget
             </Button>
           </div>
         </form>
+        {isPending && <LoadingOverlay message="Updating budget..." />}
       </div>
     </div>
   );
