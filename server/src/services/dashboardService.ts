@@ -16,7 +16,7 @@ const dashboardService = {
     const startOfMonth = new Date(Date.UTC(year, today.getMonth(), 1));
     const endOfMonth = new Date(Date.UTC(year, today.getMonth() + 1, 0));
 
-    const budget = await budgetService.findCurrentMonthBudgetByUserId({
+    const budget = await budgetService.findBudgetByUserIdAndDate({
       userId,
       month: monthNumber,
       year,
@@ -62,7 +62,7 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const budget = await budgetService.findCurrentMonthBudgetByUserId({
+    const budget = await budgetService.findBudgetByUserIdAndDate({
       userId,
       month,
       year,
@@ -180,7 +180,7 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const budget = await budgetService.findCurrentMonthBudgetByUserId({
+    const budget = await budgetService.findBudgetByUserIdAndDate({
       userId,
       month,
       year,

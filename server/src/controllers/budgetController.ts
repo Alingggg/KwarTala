@@ -3,6 +3,38 @@ import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const budgetController = {
+  async getBudget(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      const { userId } = req.user;
+      const month = Number(req.query.month);
+      const year = Number(req.query.year);
+
+      if (!month || !year) {
+        const error: CustomError = new Error("Month and year are required");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const budget = await budgetService.findBudgetByUserIdAndDate({
+        userId,
+        month,
+        year,
+      });
+
+      res
+        .status(200)
+        .json({ data: budget, message: "Budget retrieved successfully" });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async updateBudget(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
