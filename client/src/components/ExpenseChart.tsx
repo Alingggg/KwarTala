@@ -40,7 +40,7 @@ function tickFormatter(value: any): string {
 
   if (numValue >= 1000) {
     const kValue = numValue / 1000;
-    // Only show decimal if it's not a whole number and less than 10k
+    // Show decimal only if not a whole number and less than 10k
     if (kValue % 1 === 0 || kValue >= 10) {
       return `${Math.round(kValue)}k`;
     } else {
@@ -50,7 +50,7 @@ function tickFormatter(value: any): string {
   return String(numValue);
 }
 
-// Custom tooltip for the chart
+// Tooltip for chart points (shows week/day details)
 function CustomTooltip({ active, payload, label }: any) {
   const { currency } = useCurrencyContext();
   if (active && payload && payload.length) {
@@ -68,9 +68,7 @@ function CustomTooltip({ active, payload, label }: any) {
       label;
     const dateRange = `${new Date(data.weekStartDate).toLocaleString(
       "default",
-      {
-        month: "short",
-      }
+      { month: "short" }
     )}. ${new Date(data.weekStartDate).getDate()}-${new Date(
       data.weekEndDate
     ).getDate()}`;
@@ -80,7 +78,7 @@ function CustomTooltip({ active, payload, label }: any) {
         <p className="text-night-600 font-semibold mb-1 md:mb-2 text-sm md:text-base">
           {title}
         </p>
-        {dateRange && (
+        {data.weekStartDate && data.weekEndDate && (
           <p className="text-night-500 text-xs mb-1 md:mb-2">{dateRange}</p>
         )}
         <div className="space-y-1">
@@ -104,7 +102,7 @@ function CustomTooltip({ active, payload, label }: any) {
   return null;
 }
 
-// Custom tick for weekly X axis (shows week and date range)
+// Custom tick for weekly X axis (shows week number and date range)
 function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
   const weekData = weeklyData.find((w: any) => w.weekNumber === payload.value);
   const dateRange = weekData
@@ -144,6 +142,7 @@ function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
   );
 }
 
+// Formats date as "Mon. 1"
 function monthAbbrevTick(dateStr: string): string {
   const date = new Date(dateStr);
   const month = date.toLocaleDateString("en-US", { month: "short" });
@@ -165,9 +164,15 @@ function ExpenseChart({
   const maxDailyValue = Math.max(...dailyChartsData.map((d) => d.total), 0);
   const maxWeeklyValue = Math.max(...weeklyChartsData.map((d) => d.total), 0);
 
-  // Chart width: wider for daily view to allow horizontal scrolling
+  // Fixed spacing for daily chart - ensures consistent spacing regardless of data length
+  const DAILY_POINT_SPACING = 50; // pixels between each day
+  const MIN_CHART_WIDTH = 400;
+
+  // Chart width: use consistent spacing for daily view
   const chartWidth =
-    chartView === "daily" ? Math.max(600, dailyChartsData.length * 35) : "100%";
+    chartView === "daily"
+      ? Math.max(MIN_CHART_WIDTH, dailyChartsData.length * DAILY_POINT_SPACING)
+      : "100%";
 
   // Auto-scroll to end when daily view is active
   useEffect(() => {
@@ -289,13 +294,14 @@ function ExpenseChart({
       </div>
 
       {/* Scroll Indicator for Daily View */}
-      {chartView === "daily" && (
-        <div className="mt-2 text-center">
-          <span className="text-xs text-night-600">
-            ← Scroll horizontally to view all {dailyChartsData.length} days →
-          </span>
-        </div>
-      )}
+      {chartView === "daily" &&
+        dailyChartsData.length * DAILY_POINT_SPACING > MIN_CHART_WIDTH && (
+          <div className="mt-2 text-center">
+            <span className="text-xs text-night-600">
+              ← Scroll horizontally to view all {dailyChartsData.length} days →
+            </span>
+          </div>
+        )}
     </div>
   );
 }
