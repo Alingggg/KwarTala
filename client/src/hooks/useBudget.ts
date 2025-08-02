@@ -23,16 +23,27 @@ function useEditBudget() {
       );
       return response.data.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (_, variables) => {
       const today = new Date();
-      const currentMonth = today.getMonth() + 1;
+      const currentMonthNumber = today.getMonth() + 1;
       const currentYear = today.getFullYear();
 
-      if (data.month === currentMonth && data.year === currentYear) {
+      if (
+        variables.month === currentMonthNumber &&
+        variables.year === currentYear
+      ) {
         queryClient.invalidateQueries({
           queryKey: ["homeData"],
         });
-      } // fix invalidation
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["transactionsData", variables.month, variables.year],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["analyticsData", variables.month, variables.year],
+      });
     },
   });
 }

@@ -24,7 +24,7 @@ function DeleteExpenseModal({
   });
 
   function handleDelete() {
-    deleteExpense(id, { onSuccess: () => onClose() });
+    deleteExpense({ id, date }, { onSuccess: () => onClose() });
   }
 
   const { currency } = useCurrencyContext();
