@@ -8,5 +8,5 @@ export {
   useAnalyticsData,
 } from "./useDashboardData";
 export { useAddExpense, useEditExpense, useDeleteExpense } from "./useExpense";
-export { default as useEditBudget } from "./useBudget";
+export { useEditBudget, useGetBudget } from "./useBudget";
 export { useDailyChartsData, useWeeklyChartsData } from "./useChartData";

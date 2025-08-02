@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Button, Input, LoadingOverlay } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
-import { useEditBudget, useCurrencyContext } from "@/hooks";
+import { useEditBudget, useCurrencyContext, useGetBudget } from "@/hooks";
 
 const validation = {
   budgetPeriod: {
@@ -31,46 +31,81 @@ interface EditBudgetFormValues {
   budget: number;
 }
 
+const formatDate = (year: number, month: number): string =>
+  `${year}-${String(month).padStart(2, "0")}`;
+
 function EditBudgetModal({
   onClose,
   monthNumber,
   year,
   currentBudget,
 }: EditBudgetModalProps) {
+  const initialPeriod = formatDate(year, monthNumber);
+
   const {
     register,
     watch,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<EditBudgetFormValues>();
+    setValue,
+  } = useForm<EditBudgetFormValues>({
+    defaultValues: {
+      budgetPeriod: initialPeriod,
+      budget: currentBudget,
+    },
+  });
   const { mutate: editBudget, isPending } = useEditBudget();
   const { currency } = useCurrencyContext();
 
-  const initialBudgetPeriod = `${year}-${String(monthNumber).padStart(2, "0")}`;
-
-  useEffect(() => {
-    reset({
-      budgetPeriod: initialBudgetPeriod,
-      budget: currentBudget,
-    });
-  }, [initialBudgetPeriod, currentBudget, reset]);
-
   const budget = watch("budget");
   const budgetPeriod = watch("budgetPeriod");
-
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-
-  let minYear = currentYear - 1;
-  let minMonth = currentMonth + 1;
-  if (minMonth > 12) {
-    minMonth = 1;
-    minYear = currentYear;
+  if (!budgetPeriod) {
+    setValue("budgetPeriod", initialPeriod);
   }
-  const minDate = `${minYear}-${String(minMonth).padStart(2, "0")}`;
-  const maxDate = `${currentYear}-${String(currentMonth).padStart(2, "0")}`;
+
+  const [selectedYear, selectedMonth] = budgetPeriod.split("-").map(Number);
+
+  const { data: fetchedBudget, isLoading: isBudgetLoading } = useGetBudget({
+    month: selectedMonth,
+    year: selectedYear,
+  });
+
+  useEffect(() => {
+    if (budgetPeriod === initialPeriod) {
+      reset({ budgetPeriod, budget: currentBudget });
+      return;
+    }
+
+    if (fetchedBudget && !isBudgetLoading) {
+      reset({
+        budgetPeriod: formatDate(fetchedBudget.year, fetchedBudget.month),
+        budget: fetchedBudget.amount || 0,
+      });
+    }
+  }, [initialPeriod, budgetPeriod, fetchedBudget, isBudgetLoading, reset]);
+
+  const dateInfo = useMemo(() => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+
+    let minYear = currentYear - 1;
+    let minMonth = currentMonth + 1;
+    if (minMonth > 12) {
+      minMonth = 1;
+      minYear = currentYear;
+    }
+
+    const selectedDate = new Date(budgetPeriod + "-01");
+    const currentMonthDate = new Date(currentYear, currentMonth - 1, 1);
+
+    return {
+      minDate: formatDate(minYear, minMonth),
+      maxDate: formatDate(currentYear, currentMonth),
+      isEditingPastMonth: selectedDate < currentMonthDate,
+    };
+  }, [budgetPeriod]);
 
   function onSubmit({ budgetPeriod, budget }: EditBudgetFormValues) {
     const [selectedYear, selectedMonth] = budgetPeriod.split("-").map(Number);
@@ -96,23 +131,23 @@ function EditBudgetModal({
     ) {
       return "Please enter a valid budget amount";
     }
+
+    const initialBudget = fetchedBudget?.amount || 0;
     const newBudget = Number(budget);
-    const difference = newBudget - currentBudget;
+    const difference = newBudget - initialBudget;
 
     if (difference > 0) {
-      return `This will increase your budget by ${currency}${difference.toLocaleString()}`;
+      return `This will increase your budget by ${currency}${difference}`;
     } else if (difference < 0) {
       return `This will decrease your budget by ${currency}${Math.abs(
         difference
-      ).toLocaleString()}`;
+      )}`;
     }
 
     return "No change to current budget";
   }
 
-  const selectedDate = new Date((budgetPeriod || initialBudgetPeriod) + "-01");
-  const currentMonthDate = new Date(currentYear, currentMonth - 1, 1);
-  const isEditingPastMonth = selectedDate < currentMonthDate;
+  const isLoading = isPending || isBudgetLoading;
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-6 md:p-8">
@@ -124,11 +159,9 @@ function EditBudgetModal({
         >
           <FiX size={18} className="md:w-5 md:h-5" />
         </button>
-
         <div className="flex items-center mb-5 md:mb-6">
           <h2 className="text-lg md:text-xl font-bold">Edit Budget</h2>
         </div>
-
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 md:space-y-5"
@@ -145,8 +178,8 @@ function EditBudgetModal({
             <Input
               id="budgetPeriod"
               type="month"
-              min={minDate}
-              max={maxDate}
+              min={dateInfo.minDate}
+              max={dateInfo.maxDate}
               {...register("budgetPeriod", validation.budgetPeriod)}
             />
             {errors.budgetPeriod && (
@@ -198,7 +231,7 @@ function EditBudgetModal({
               <span className="text-night-700">Current Budget:</span>
               <span className="font-semibold">
                 {currency}
-                {currentBudget.toLocaleString()}
+                {fetchedBudget?.amount}
               </span>
             </div>
             <div className="flex justify-between mb-2 text-xs md:text-sm">
@@ -209,7 +242,7 @@ function EditBudgetModal({
                 budget !== null &&
                 !isNaN(Number(budget)) &&
                 Number(budget) >= 0
-                  ? Number(budget).toLocaleString()
+                  ? Number(budget)
                   : "-"}
               </span>
             </div>
@@ -219,7 +252,7 @@ function EditBudgetModal({
           </div>
 
           {/* Warning for Editing Past Dates */}
-          {isEditingPastMonth && (
+          {dateInfo.isEditingPastMonth && (
             <div className="bg-auburn-900 border border-auburn-500 p-3 rounded-lg">
               <p className="text-auburn-600 text-xs">
                 ⚠️ You're editing a budget for a past period. This will
@@ -249,7 +282,11 @@ function EditBudgetModal({
             </Button>
           </div>
         </form>
-        {isPending && <LoadingOverlay message="Updating budget..." />}
+        {isLoading && (
+          <LoadingOverlay
+            message={isPending ? "Updating budget..." : "Loading budget..."}
+          />
+        )}
       </div>
     </div>
   );

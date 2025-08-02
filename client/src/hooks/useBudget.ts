@@ -1,5 +1,17 @@
 import { api } from "@/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+function useGetBudget({ month, year }: { month: number; year: number }) {
+  return useQuery({
+    queryKey: ["budget", month, year],
+    queryFn: async () => {
+      const response = await api.get("/budgets", {
+        params: { month, year },
+      });
+      return response.data.data;
+    },
+  });
+}
 
 function useEditBudget() {
   const queryClient = useQueryClient();
@@ -48,4 +60,4 @@ function useEditBudget() {
   });
 }
 
-export default useEditBudget;
+export { useEditBudget, useGetBudget };
