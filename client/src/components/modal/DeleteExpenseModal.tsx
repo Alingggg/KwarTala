@@ -2,7 +2,7 @@ import { Button, LoadingOverlay } from "@/components";
 import { FiX, FiAlertTriangle } from "@/assets/icons";
 import { useCurrencyContext, useDeleteExpense } from "@/hooks";
 import type { Expense } from "@/types";
-import { formatDate } from "@/utils";
+import { format } from "date-fns";
 
 interface DeleteExpenseModalProps extends Omit<Expense, "userId"> {
   onClose: () => void;
@@ -18,10 +18,7 @@ function DeleteExpenseModal({
 }: DeleteExpenseModalProps) {
   const { mutate: deleteExpense, isPending } = useDeleteExpense();
 
-  const formattedDate = formatDate(date, {
-    includeMonth: true,
-    includeDay: true,
-  });
+  const formattedDate = format(new Date(date), "MMMM d");
 
   function handleDelete() {
     deleteExpense({ id, date }, { onSuccess: () => onClose() });

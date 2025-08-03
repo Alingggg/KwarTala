@@ -15,6 +15,7 @@ import {
 import type { Expense } from "@/types";
 import { assignCategoryColors } from "@/utils";
 import { FiCalendar } from "react-icons/fi";
+import { format } from "date-fns";
 
 function Home() {
   const { openModal } = useModalContext();
@@ -55,11 +56,10 @@ function Home() {
             Hello, {firstName}
           </h1>
           <p className="md:text-2xl font-semibold text-night-600">
-            {new Date(homeData.year, homeData.monthNumber - 1).toLocaleString(
-              "default",
-              { month: "long" }
-            )}{" "}
-            {homeData.year}
+            {format(
+              new Date(homeData.year, homeData.monthNumber - 1),
+              "MMMM yyyy"
+            )}
           </p>
         </div>
       </div>
@@ -72,11 +72,11 @@ function Home() {
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
               <p className="text-2xl md:text-4xl font-bold text-timberwolf-900">
                 {currency}
-                {homeData.remainingBudget.toLocaleString()}
+                {homeData.remainingBudgets}
               </p>
               <span className="text-sm md:text-base font-normal text-ash-gray-400">
                 remaining of {currency}
-                {homeData.budget.toLocaleString()}
+                {homeData.budget}
               </span>
             </div>
           </div>
@@ -122,7 +122,7 @@ function Home() {
                 <span>{currency}0</span>
                 <span>
                   {currency}
-                  {homeData.budget.toLocaleString()}
+                  {homeData.budget}
                 </span>
               </div>
             </div>
@@ -138,7 +138,7 @@ function Home() {
                 </div>
                 <span className="text-lg md:text-xl font-bold text-timberwolf-900">
                   {currency}
-                  {homeData.spentToday.toLocaleString()}
+                  {homeData.spentToday}
                 </span>
               </div>
             </div>

@@ -10,6 +10,7 @@ import {
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
 import type { Expense } from "@/types";
+import { format, subMonths } from "date-fns";
 
 const MAX_MONTHS = 12;
 
@@ -24,7 +25,7 @@ function CustomPieTooltip({ active, payload }: any) {
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
             <span className="font-medium">Amount:</span> {currency}
-            {data.total.toLocaleString()}
+            {data.total}
           </p>
           <p className="text-night-500 text-sm">
             <span className="font-medium">Percentage:</span>{" "}
@@ -41,10 +42,8 @@ function Analytics() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const { currency } = useCurrencyContext();
 
-  const today = new Date();
-
   function getMonthYear(index: number) {
-    const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
+    const date = subMonths(new Date(), index);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
   }
 
@@ -115,11 +114,10 @@ function Analytics() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {new Date(
-                monthData.year,
-                monthData.monthNumber - 1
-              ).toLocaleString("default", { month: "long" })}{" "}
-              {monthData.year}
+              {format(
+                new Date(monthData.year, monthData.monthNumber - 1, 1),
+                "MMMM yyyy"
+              )}
             </h2>
           </div>
         </div>
@@ -143,7 +141,7 @@ function Analytics() {
                   }`}
                 >
                   {currency}
-                  {monthData.monthlyRemainingBudget.toLocaleString()}
+                  {monthData.monthlyRemainingBudget}
                 </p>
               </div>
               <div>
@@ -152,7 +150,7 @@ function Analytics() {
                 </p>
                 <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
                   {currency}
-                  {monthData.monthlyBudget.toLocaleString()}
+                  {monthData.monthlyBudget}
                 </p>
               </div>
             </div>
@@ -175,10 +173,9 @@ function Analytics() {
               </div>
               <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
                 <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
-                {today.getMonth() === monthData.monthNumber - 1 &&
-                  today.getFullYear() === monthData.year && (
-                    <span>{monthData.remainingDays} Days Remaining</span>
-                  )}
+                {monthData.remainingDays > 0 && (
+                  <span>{`${monthData.remainingDays} Days Remaining`}</span>
+                )}
               </div>
             </div>
           </div>
@@ -191,7 +188,7 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {monthData.monthlyTotalSpent.toLocaleString()}
+                {monthData.monthlyTotalSpent}
               </p>
             </div>
             <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
@@ -200,7 +197,7 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {monthData.averageDailySpending.toLocaleString()}
+                {monthData.averageDailySpending}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
                 Avg. spend per day
@@ -213,7 +210,7 @@ function Analytics() {
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
                 {monthData.recommendedDailyLimit > 0
-                  ? monthData.recommendedDailyLimit.toLocaleString()
+                  ? monthData.recommendedDailyLimits
                   : "0"}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
@@ -290,7 +287,7 @@ function Analytics() {
                       <div className="text-right ml-2 flex-shrink-0">
                         <p className="font-semibold text-night-600">
                           {currency}
-                          {category.total.toLocaleString()}
+                          {category.total}
                         </p>
                         <p className="text-xs text-ash-gray-400 font-medium">
                           {category.percentageOfTotal}%
@@ -338,15 +335,12 @@ function Analytics() {
                       </p>
                       <p className="text-xs md:text-sm text-ash-gray-400">
                         {expense.category} •{" "}
-                        {new Date(expense.date).toLocaleDateString(undefined, {
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {format(new Date(expense.date), "MMMM d")}
                       </p>
                     </div>
                     <p className="font-semibold text-auburn-500 text-sm md:text-base ml-2 flex-shrink-0">
                       {currency}
-                      {expense.amount.toLocaleString()}
+                      {expense.amount}
                     </p>
                   </div>
                 )

@@ -14,8 +14,19 @@ import {
   useTransactionsData,
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
+import { format, subMonths } from "date-fns";
 
 const MAX_MONTHS = 12;
+
+function formatWeekRange(startDate: string, endDate: string): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (start.getMonth() === end.getMonth()) {
+    return `${format(start, "MMM. d")}-${format(end, "d")}`;
+  }
+  return `${format(start, "MMM. d")} - ${format(end, "MMM. d")}`;
+}
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -24,10 +35,8 @@ function Transactions() {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
 
-  const today = new Date();
-
   function getMonthYear(index: number) {
-    const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
+    const date = subMonths(new Date(), index);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
   }
 
@@ -142,11 +151,10 @@ function Transactions() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {new Date(
-                monthData.year,
-                monthData.monthNumber - 1
-              ).toLocaleString("default", { month: "long" })}{" "}
-              {monthData?.year}
+              {format(
+                new Date(monthData.year, monthData.monthNumber - 1),
+                "MMMM yyyy"
+              )}
             </h2>
           </div>
         </div>
@@ -161,7 +169,7 @@ function Transactions() {
             </p>
             <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
               {currency}
-              {monthData?.monthlyBudget?.toLocaleString()}
+              {monthData?.monthlyBudget}
             </p>
           </div>
           <div className="text-center">
@@ -176,14 +184,16 @@ function Transactions() {
               }`}
             >
               {currency}
-              {monthData?.monthlyTotalSpent?.toLocaleString()}
+              {monthData?.monthlyTotalSpent}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
               {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
                 ? "Remaining"
-                : "Savings/Deficit"}
+                : monthData?.monthlyRemainingBudget >= 0
+                ? "Savings"
+                : "Deficit"}
             </p>
             <p
               className={`text-xl md:text-3xl font-bold ${
@@ -193,7 +203,7 @@ function Transactions() {
               }`}
             >
               {currency}
-              {monthData?.monthlyRemainingBudget?.toLocaleString()}
+              {monthData?.monthlyRemainingBudgets}
             </p>
           </div>
         </div>
@@ -226,30 +236,42 @@ function Transactions() {
                   selectedWeek === week.weekNumber ? null : week.weekNumber
                 )
               }
-              className={`px-2 md:px-3 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
+              className={`px-2 md:px-3 py-3 md:py-4 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
                 selectedWeek === week.weekNumber
                   ? "bg-night-600 text-timberwolf-900 shadow-md"
                   : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
               }`}
             >
-              <div className="text-center">
-                <div className="text-xs md:text-sm font-semibold">
-                  Week {week.weekNumber}
+              <div className="text-center space-y-1.5">
+                {/* Week Header */}
+                <div>
+                  <div className="text-sm md:text-base font-bold">
+                    Week {week.weekNumber}
+                  </div>
+                  <div className="text-xs opacity-50 font-normal -mt-0.5">
+                    {formatWeekRange(week.weekStartDate, week.weekEndDate)}
+                  </div>
                 </div>
-                <div className="text-xs opacity-75 mt-1">
-                  {currency}
-                  {week.weeklyTotalSpent?.toLocaleString()}
-                </div>
-                <div
-                  className={`text-xs font-medium mt-1 ${
-                    week.weeklyRemainingBudget >= 0
-                      ? "text-emerald-500"
-                      : "text-auburn-500"
-                  }`}
-                >
-                  {week.weeklyRemainingBudget >= 0
-                    ? `+${currency}${week.weeklyRemainingBudget}`
-                    : `${currency}${week.weeklyRemainingBudget}`}
+
+                {/* Financial Info */}
+                <div className="pt-1 border-t border-opacity-20 border-current">
+                  <div className="text-xs opacity-80 font-medium">
+                    {currency}
+                    {week.weeklyTotalSpent}
+                  </div>
+                  <div className="text-xs font-semibold mt-0.5">
+                    {week.weeklyRemainingBudget >= 0 ? (
+                      <span className="text-emerald-500">
+                        +{currency}
+                        {week.weeklyRemainingBudget}
+                      </span>
+                    ) : (
+                      <span className="text-auburn-500">
+                        -{currency}
+                        {Math.abs(week.weeklyRemainingBudget)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </button>
@@ -267,7 +289,7 @@ function Transactions() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {selectedWeekData.weeklyBudget?.toLocaleString()}
+                {selectedWeekData.weeklyBudget}
               </p>
             </div>
             <div className="text-center">
@@ -283,14 +305,16 @@ function Transactions() {
                 }`}
               >
                 {currency}
-                {selectedWeekData.weeklyTotalSpent?.toLocaleString()}
+                {selectedWeekData.weeklyTotalSpent}
               </p>
             </div>
             <div className="text-center">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
                 {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
                   ? "Remaining"
-                  : "Savings/Deficit"}
+                  : monthData?.monthlyRemainingBudget >= 0
+                  ? "Savings"
+                  : "Deficit"}
               </p>
               <p
                 className={`text-lg md:text-2xl font-bold ${
@@ -300,7 +324,7 @@ function Transactions() {
                 }`}
               >
                 {currency}
-                {selectedWeekData.weeklyRemainingBudget?.toLocaleString()}
+                {selectedWeekData.weeklyRemainingBudget}
               </p>
             </div>
           </div>
@@ -310,12 +334,24 @@ function Transactions() {
       {/* Transactions List Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 md:mb-6">
         <h3 className="text-lg md:text-xl font-bold text-night-600">
-          {selectedWeek
-            ? `Week ${selectedWeek} Transactions`
-            : `All ${new Date(
-                monthData.year,
-                monthData.monthNumber - 1
-              ).toLocaleString("default", { month: "long" })} Transactions`}
+          {selectedWeek ? (
+            <>
+              Week {selectedWeek} Transactions{" "}
+              <span className="text-sm md:text-base font-normal text-ash-gray-400">
+                (
+                {formatWeekRange(
+                  selectedWeekData.weekStartDate,
+                  selectedWeekData.weekEndDate
+                )}
+                )
+              </span>
+            </>
+          ) : (
+            `All ${format(
+              new Date(monthData.year, monthData.monthNumber - 1),
+              "MMMM"
+            )} Transactions`
+          )}
         </h3>
 
         {/* Sort Toggle */}
@@ -373,8 +409,14 @@ function Transactions() {
           </p>
           <p className="text-sm">
             {selectedWeek
-              ? `No expenses recorded for Week ${selectedWeek}`
-              : `No expenses recorded for ${monthData?.month} ${monthData?.year}`}
+              ? `No expenses recorded for Week ${selectedWeek} (${formatWeekRange(
+                  selectedWeekData.weekStartDate,
+                  selectedWeekData.weekEndDate
+                )})`
+              : `No expenses recorded for ${format(
+                  new Date(monthData.year, monthData.monthNumber - 1),
+                  "MMMM yyyy"
+                )}`}
           </p>
         </div>
       )}

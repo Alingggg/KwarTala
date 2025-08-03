@@ -1,6 +1,7 @@
 import { useCurrencyContext } from "@/hooks";
 import type { Expense } from "@/types";
 import { FiX } from "@/assets/icons";
+import { format } from "date-fns";
 
 interface ExpenseDescriptionModalProps extends Omit<Expense, "id" | "userId"> {
   color?: string;
@@ -16,6 +17,8 @@ function ExpenseDescriptionModal({
   setShowDescription,
 }: ExpenseDescriptionModalProps) {
   const { currency } = useCurrencyContext();
+
+  const formattedDate = format(new Date(date), "MMMM d");
 
   return (
     <div
@@ -56,12 +59,7 @@ function ExpenseDescriptionModal({
 
           {/* Date */}
           {date && (
-            <p className="text-sm text-night-400 ml-6">
-              {new Date(date).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
+            <p className="text-sm text-night-400 ml-6">{formattedDate}</p>
           )}
 
           {/* Description */}
@@ -71,7 +69,7 @@ function ExpenseDescriptionModal({
                 {description}
               </p>
             ) : (
-              <p className="text-sm italic text-night-400">[No description]</p>
+              <p className="text-sm italic text-night-500">[No description]</p>
             )}
           </div>
         </div>

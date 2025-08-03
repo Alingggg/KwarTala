@@ -12,6 +12,7 @@ import { NavLink } from "react-router";
 import { useState } from "react";
 import { useLogout } from "@/hooks";
 import { AppLogo } from "@/assets/images";
+import { format } from "date-fns";
 
 interface NavItemProps {
   to: string;
@@ -49,12 +50,9 @@ function Sidebar() {
     // { to: "/goals", icon: <FiTarget />, label: "Goals" },
   ];
 
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const now = new Date();
+  const currentDate = format(now, "EEEE, MMMM d, yyyy");
+  const currentDateShort = format(now, "MMM d");
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -124,10 +122,7 @@ function Sidebar() {
               Today
             </p>
             <p className="text-sm font-medium text-timberwolf-900">
-              {new Date().toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              })}
+              {currentDateShort}
             </p>
           </div>
         </div>

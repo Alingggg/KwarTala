@@ -3,7 +3,7 @@ import { ExpenseDescriptionModal } from "@/components";
 import { useModalContext, useCurrencyContext } from "@/hooks";
 import { useState, useEffect, useRef } from "react";
 import type { Expense } from "@/types";
-import { formatDate } from "@/utils";
+import { format } from "date-fns";
 
 interface ExpenseCardProps extends Omit<Expense, "userId"> {
   color?: string;
@@ -23,10 +23,7 @@ export function ExpenseCard({
   const [showOptions, setShowOptions] = useState(false);
   const optionsRef = useRef<HTMLDivElement>(null);
 
-  const formattedDate = formatDate(date, {
-    includeMonth: true,
-    includeDay: true,
-  });
+  const formattedDate = format(new Date(date), "MMMM d");
 
   useEffect(() => {
     if (!showOptions) return;

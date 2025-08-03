@@ -11,6 +11,7 @@ import {
   Cell,
   CartesianGrid,
 } from "recharts";
+import { format } from "date-fns";
 import { useCurrencyContext } from "@/hooks";
 
 type ChartView = "weekly" | "daily";
@@ -34,6 +35,16 @@ interface ExpenseChartProps {
   weeklyChartsData: WeeklyChartDatum[];
 }
 
+function formatWeekRange(start: string | Date, end: string | Date) {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (startDate.getMonth() === endDate.getMonth()) {
+    return `${format(startDate, "MMM. d")}-${format(endDate, "d")}`;
+  }
+  return `${format(startDate, "MMM. d")} - ${format(endDate, "MMM. d")}`;
+}
+
 function tickFormatter(value: any): string {
   const numValue = Number(value);
   if (isNaN(numValue)) return String(value);
@@ -50,68 +61,13 @@ function tickFormatter(value: any): string {
   return String(numValue);
 }
 
-// Tooltip for chart points (shows week/day details)
-function CustomTooltip({ active, payload, label }: any) {
-  const { currency } = useCurrencyContext();
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    const total = data.total;
-    const days = data.days;
-    const dailyAverage = data.dailyAverage;
-    const title =
-      (data.weekNumber && `Week ${data.weekNumber}`) ||
-      (data.date &&
-        new Date(data.date).toLocaleDateString("default", {
-          month: "long",
-          day: "numeric",
-        })) ||
-      label;
-    const dateRange = `${new Date(data.weekStartDate).toLocaleString(
-      "default",
-      { month: "short" }
-    )}. ${new Date(data.weekStartDate).getDate()}-${new Date(
-      data.weekEndDate
-    ).getDate()}`;
-
-    return (
-      <div className="bg-timberwolf-900 border border-night-700 p-2 md:p-3 rounded-lg shadow-lg max-w-xs">
-        <p className="text-night-600 font-semibold mb-1 md:mb-2 text-sm md:text-base">
-          {title}
-        </p>
-        {data.weekStartDate && data.weekEndDate && (
-          <p className="text-night-500 text-xs mb-1 md:mb-2">{dateRange}</p>
-        )}
-        <div className="space-y-1">
-          <p className="text-night-500 text-xs md:text-sm">
-            <span className="font-medium">Total:</span> {currency}
-            {total.toLocaleString()}
-          </p>
-          {days && days > 1 && (
-            <p className="text-night-500 text-xs md:text-sm">
-              <span className="font-medium">Daily Average:</span> {currency}
-              {dailyAverage.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-  return null;
-}
-
 // Custom tick for weekly X axis (shows week number and date range)
 function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
   const weekData = weeklyData.find((w: any) => w.weekNumber === payload.value);
-  const dateRange = weekData
-    ? `${new Date(weekData.weekStartDate).toLocaleString("default", {
-        month: "short",
-      })}. ${new Date(weekData.weekStartDate).getDate()}-${new Date(
-        weekData.weekEndDate
-      ).getDate()}`
-    : "";
+  const dateRange = formatWeekRange(
+    weekData.weekStartDate,
+    weekData.weekEndDate
+  );
 
   return (
     <g transform={`translate(${x},${y})`}>
@@ -142,12 +98,47 @@ function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
   );
 }
 
-// Formats date as "Mon. 1"
-function monthAbbrevTick(dateStr: string): string {
-  const date = new Date(dateStr);
-  const month = date.toLocaleDateString("en-US", { month: "short" });
-  const day = date.getDate();
-  return `${month}. ${day}`;
+// Tooltip for chart points (shows week/day details)
+function CustomTooltip({ active, payload, label }: any) {
+  const { currency } = useCurrencyContext();
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const total = data.total;
+    const days = data.days;
+    const dailyAverage = data.dailyAverage;
+    const title =
+      (data.weekNumber && `Week ${data.weekNumber}`) ||
+      (data.date && format(new Date(data.date), "MMMM d")) ||
+      label;
+    const dateRange =
+      data.weekStartDate && data.weekEndDate
+        ? formatWeekRange(data.weekStartDate, data.weekEndDate)
+        : "";
+
+    return (
+      <div className="bg-timberwolf-900 border border-night-700 p-2 md:p-3 rounded-lg shadow-lg max-w-xs">
+        <p className="text-night-600 font-semibold mb-1 md:mb-2 text-sm md:text-base">
+          {title}
+        </p>
+        {dateRange && (
+          <p className="text-night-500 text-xs mb-1 md:mb-2">{dateRange}</p>
+        )}
+        <div className="space-y-1">
+          <p className="text-night-500 text-xs md:text-sm">
+            <span className="font-medium">Total:</span> {currency}
+            {total}
+          </p>
+          {days && days > 1 && (
+            <p className="text-night-500 text-xs md:text-sm">
+              <span className="font-medium">Daily Average:</span> {currency}
+              {dailyAverage.toFixed(2)}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+  return null;
 }
 
 function ExpenseChart({
@@ -267,7 +258,9 @@ function ExpenseChart({
                   angle={-45}
                   textAnchor="end"
                   height={50}
-                  tickFormatter={monthAbbrevTick}
+                  tickFormatter={(dateStr) =>
+                    format(new Date(dateStr), "MMM. d")
+                  }
                 />
                 <YAxis
                   tickLine={false}

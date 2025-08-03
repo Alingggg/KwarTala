@@ -3,6 +3,7 @@ import { Button, Input, LoadingOverlay } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useEditBudget, useCurrencyContext, useGetBudget } from "@/hooks";
+import { format, subYears, addMonths } from "date-fns";
 
 const validation = {
   budgetPeriod: {
@@ -31,16 +32,13 @@ interface EditBudgetFormValues {
   budget: number;
 }
 
-const formatDate = (year: number, month: number): string =>
-  `${year}-${String(month).padStart(2, "0")}`;
-
 function EditBudgetModal({
   onClose,
   monthNumber,
   year,
   currentBudget,
 }: EditBudgetModalProps) {
-  const initialPeriod = formatDate(year, monthNumber);
+  const initialPeriod = format(new Date(year, monthNumber - 1, 1), "yyyy-MM");
 
   const {
     register,
@@ -79,30 +77,40 @@ function EditBudgetModal({
 
     if (fetchedBudget && !isBudgetLoading) {
       reset({
-        budgetPeriod: formatDate(fetchedBudget.year, fetchedBudget.month),
+        budgetPeriod: format(
+          new Date(fetchedBudget.year, fetchedBudget.month - 1, 1),
+          "yyyy-MM"
+        ),
         budget: fetchedBudget.amount || 0,
       });
     }
-  }, [initialPeriod, budgetPeriod, fetchedBudget, isBudgetLoading, reset]);
+  }, [
+    initialPeriod,
+    budgetPeriod,
+    fetchedBudget,
+    isBudgetLoading,
+    reset,
+    currentBudget,
+  ]);
 
   const dateInfo = useMemo(() => {
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
 
-    let minYear = currentYear - 1;
-    let minMonth = currentMonth + 1;
-    if (minMonth > 12) {
-      minMonth = 1;
-      minYear = currentYear;
-    }
+    const minDateObj = addMonths(subYears(today, 1), 1);
+    const minDate = format(minDateObj, "yyyy-MM");
+    const maxDate = format(
+      new Date(currentYear, currentMonth - 1, 1),
+      "yyyy-MM"
+    );
 
     const selectedDate = new Date(budgetPeriod + "-01");
     const currentMonthDate = new Date(currentYear, currentMonth - 1, 1);
 
     return {
-      minDate: formatDate(minYear, minMonth),
-      maxDate: formatDate(currentYear, currentMonth),
+      minDate,
+      maxDate,
       isEditingPastMonth: selectedDate < currentMonthDate,
     };
   }, [budgetPeriod]);
