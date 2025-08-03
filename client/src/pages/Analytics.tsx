@@ -210,7 +210,7 @@ function Analytics() {
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
                 {monthData.recommendedDailyLimit > 0
-                  ? monthData.recommendedDailyLimits
+                  ? monthData.recommendedDailyLimit
                   : "0"}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">

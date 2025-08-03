@@ -203,7 +203,7 @@ function Transactions() {
               }`}
             >
               {currency}
-              {monthData?.monthlyRemainingBudgets}
+              {monthData?.monthlyRemainingBudget}
             </p>
           </div>
         </div>

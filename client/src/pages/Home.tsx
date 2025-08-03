@@ -72,7 +72,7 @@ function Home() {
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
               <p className="text-2xl md:text-4xl font-bold text-timberwolf-900">
                 {currency}
-                {homeData.remainingBudgets}
+                {homeData.remainingBudget.toFixed(2)}
               </p>
               <span className="text-sm md:text-base font-normal text-ash-gray-400">
                 remaining of {currency}
