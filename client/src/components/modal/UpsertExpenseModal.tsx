@@ -3,6 +3,7 @@ import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
+import { format } from "date-fns";
 
 const validation = {
   category: {
@@ -44,28 +45,41 @@ function UpsertExpenseModal({
   description,
   date,
 }: UpsertExpenseModalProps) {
+  const formattedDate = date ? format(new Date(date), "yyyy-MM-dd") : "";
   const {
     register,
-    setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm<Omit<Expense, "id" | "userId">>();
+  } = useForm<Omit<Expense, "id" | "userId">>({
+    defaultValues: {
+      category: category || "",
+      amount: amount,
+      description: description || "",
+      date: formattedDate || "",
+    },
+  });
   const { mutate: addExpense, isPending: isAdding } = useAddExpense();
   const { mutate: editExpense, isPending: isEditing } = useEditExpense();
   const { currency } = useCurrencyContext();
 
-  if (id) {
-    setValue("category", category || "");
-    setValue("amount", amount || 0);
-    setValue("description", description || "");
-    setValue("date", date || "");
-  }
-
   function onSubmit(data: Omit<Expense, "id" | "userId">) {
+    const { date, ...restData } = data;
+
+    // Convert date to UTC with timestamp format from just YYYY-MM-DD
+    const dateStr =
+      typeof date === "string" ? date : format(new Date(date), "yyyy-MM-dd");
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const dateWithTime = new Date(year, month - 1, day);
+
+    const finalData = {
+      ...restData,
+      date: dateWithTime,
+    };
+
     if (id) {
-      editExpense({ id, ...data }, { onSuccess: () => onClose() });
+      editExpense({ id, ...finalData }, { onSuccess: () => onClose() });
     } else {
-      addExpense(data, { onSuccess: () => onClose() });
+      addExpense(finalData, { onSuccess: () => onClose() });
     }
   }
 
