@@ -36,19 +36,57 @@ const expenseService = {
 
   async getTodaysTransactions(userId: number) {
     const today = new Date();
+
+    const startDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+    const endDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59,
+      999
+    );
     return expenseRepository.findByUserIdAndDateRange({
       userId,
-      startDate: today,
-      endDate: today,
+      startDate,
+      endDate,
     });
   },
 
   async getTotalSpentToday(userId: number) {
     const today = new Date();
+
+    const startDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+    const endDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59,
+      999
+    );
     return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
       userId,
-      startDate: today,
-      endDate: today,
+      startDate,
+      endDate,
     });
   },
 

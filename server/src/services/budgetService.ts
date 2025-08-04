@@ -29,6 +29,18 @@ const budgetService = {
     return budget;
   },
 
+  async findCurrentMonthBudget(userId: number) {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const year = today.getFullYear();
+
+    return budgetRepository.findByUserIdAndDate({
+      userId,
+      month,
+      year,
+    });
+  },
+
   async updateBudgetByUserIdAndDate({
     userId,
     month,
