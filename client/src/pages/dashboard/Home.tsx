@@ -24,7 +24,7 @@ function Home() {
   const currentMonthNumber = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
-  const { firstName } = useUser();
+  const { userName } = useUser();
   const { data: homeData, isLoading: isHomeLoading } = useHomeData();
 
   const transactionsWithColors = assignCategoryColors(
@@ -53,7 +53,7 @@ function Home() {
       <div className="mb-5 md:mb-8 mt-1 mb:mt-0">
         <div className="flex items-baseline justify-between gap-2">
           <h1 className="text-xl md:text-3xl font-bold text-night-600">
-            Hello, {firstName}
+            Hello, {userName}
           </h1>
           <p className="md:text-2xl font-semibold text-night-600">
             {format(

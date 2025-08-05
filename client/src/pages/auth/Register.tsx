@@ -7,42 +7,26 @@ import { AppLogo } from "@/assets/images";
 import { useState } from "react";
 
 interface FormValues {
-  firstName: string;
-  lastName: string;
+  userName: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
 const validation = {
-  firstName: {
-    required: "First name is required",
+  userName: {
+    required: "Username is required",
     minLength: {
-      value: 2,
-      message: "Must be at least 2 characters",
+      value: 3,
+      message: "Must be at least 3 characters",
     },
     maxLength: {
-      value: 50,
-      message: "Must be under 50 characters",
+      value: 20,
+      message: "Must be 20 characters or below",
     },
     pattern: {
-      value: /^[A-Za-z\s'-]+$/,
-      message: "Only letters, spaces, apostrophes, and hyphens allowed",
-    },
-  },
-  lastName: {
-    required: "Last name is required",
-    minLength: {
-      value: 2,
-      message: "Must be at least 2 characters",
-    },
-    maxLength: {
-      value: 50,
-      message: "Must be under 50 characters",
-    },
-    pattern: {
-      value: /^[A-Za-z\s'-]+$/,
-      message: "Only letters, spaces, apostrophes, and hyphens allowed",
+      value: /^[A-Za-z0-9]+$/,
+      message: "Only letters and numbers allowed",
     },
   },
   email: {
@@ -60,7 +44,7 @@ const validation = {
     },
     maxLength: {
       value: 64,
-      message: "Password must be under 64 characters",
+      message: "Password must be 64 characters or below",
     },
     pattern: {
       value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/,
@@ -139,60 +123,30 @@ function Register() {
           >
             <div className="flex flex-col gap-1">
               <label
-                htmlFor="firstName"
+                htmlFor="userName"
                 className="block text-sm font-semibold text-night-600"
               >
-                First Name
+                Username
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                   <FiUser className="h-4 w-4 text-night-500" />
                 </div>
                 <Input
-                  id="firstName"
+                  id="userName"
                   type="text"
-                  placeholder="Enter your first name"
+                  placeholder="Enter your username"
                   className={`pl-10 ${
-                    errors.firstName
+                    errors.userName
                       ? "border-auburn-600 focus:border-auburn-600"
                       : ""
                   }`}
-                  {...register("firstName", validation.firstName)}
+                  {...register("userName", validation.userName)}
                 />
               </div>
-              {errors.firstName && (
+              {errors.userName && (
                 <p className="text-xs text-auburn-600 font-semibold">
-                  {errors.firstName.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label
-                htmlFor="lastName"
-                className="block text-sm font-semibold text-night-600"
-              >
-                Last Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <FiUser className="h-4 w-4 text-night-500" />
-                </div>
-                <Input
-                  id="lastName"
-                  type="text"
-                  placeholder="Enter your last name"
-                  className={`pl-10 ${
-                    errors.lastName
-                      ? "border-auburn-600 focus:border-auburn-600"
-                      : ""
-                  }`}
-                  {...register("lastName", validation.lastName)}
-                />
-              </div>
-              {errors.lastName && (
-                <p className="text-xs text-auburn-600 font-semibold">
-                  {errors.lastName.message}
+                  {errors.userName.message}
                 </p>
               )}
             </div>

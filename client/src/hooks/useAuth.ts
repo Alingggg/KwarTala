@@ -6,8 +6,7 @@ function useRegister() {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: async (data: {
-      firstName: string;
-      lastName: string;
+      userName: string;
       email: string;
       password: string;
       confirmPassword: string;
@@ -81,8 +80,7 @@ function useUser() {
 
   return {
     id: user?.id,
-    firstName: user?.firstName,
-    lastName: user?.lastName,
+    userName: user?.userName,
     email: user?.email,
     isAuthenticated: !!user,
   };
