@@ -1,14 +1,11 @@
 const PREDEFINED_COLORS: { [key: string]: string } = {
-  food: "#FF6B6B",
-  transportation: "#4ECDC4",
-  entertainment: "#45B7D1",
-  shopping: "#96CEB4",
   bills: "#FECA57",
+  entertainment: "#45B7D1",
+  food: "#FF6B6B",
   healthcare: "#FF9FF3",
-  utilities: "#A29BFE",
-  groceries: "#00B894",
-  dining: "#E17055",
-  gas: "#F39C12",
+  shopping: "#00B894",
+  transportation: "#4ECDC4",
+  others: "#A29BFE",
 };
 
 const FALLBACK_COLORS = [
