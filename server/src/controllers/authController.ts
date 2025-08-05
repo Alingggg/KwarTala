@@ -5,39 +5,24 @@ import type { NextFunction, Request, Response } from "express";
 const authController = {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const { firstName, lastName, email, password } = req.body;
+      const { userName, email, password } = req.body;
 
-      if (!firstName || !lastName || !email || !password) {
+      if (!userName || !email || !password) {
         const error: CustomError = new Error("All fields are required");
         error.statusCode = 400;
         throw error;
       }
 
-      if (firstName.length < 2 || firstName.length > 50) {
+      if (userName.length < 3 || userName.length > 20) {
         const error: CustomError = new Error(
-          "First name must be between 2 and 50 characters"
+          "Username must be between 3 and 20 characters"
         );
         error.statusCode = 400;
         throw error;
       }
-      if (!/^[A-Za-z\s'-]+$/.test(firstName)) {
+      if (!/^[a-zA-Z0-9]+$/.test(userName)) {
         const error: CustomError = new Error(
-          "Only letters, spaces, apostrophes, and hyphens allowed"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-
-      if (lastName.length < 2 || lastName.length > 50) {
-        const error: CustomError = new Error(
-          "Last name must be between 2 and 50 characters"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-      if (!/^[A-Za-z\s'-]+$/.test(lastName)) {
-        const error: CustomError = new Error(
-          "Only letters, spaces, apostrophes, and hyphens allowed"
+          "Username can only contain letters and numbers"
         );
         error.statusCode = 400;
         throw error;
@@ -73,8 +58,7 @@ const authController = {
       }
 
       const newUser = await userService.registerUser({
-        firstName,
-        lastName,
+        userName,
         email,
         password,
       });

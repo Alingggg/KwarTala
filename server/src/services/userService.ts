@@ -5,13 +5,8 @@ import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
 
 const userService = {
-  async registerUser({
-    firstName,
-    lastName,
-    email,
-    password,
-  }: Omit<User, "id">) {
-    if (!firstName || !lastName || !email || !password) {
+  async registerUser({ userName, email, password }: Omit<User, "id">) {
+    if (!userName || !email || !password) {
       const error: CustomError = new Error("All fields are required.");
       error.statusCode = 400;
       throw error;
@@ -27,8 +22,7 @@ const userService = {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await userRepository.create({
-      firstName,
-      lastName,
+      userName,
       email,
       password: hashedPassword,
     });
