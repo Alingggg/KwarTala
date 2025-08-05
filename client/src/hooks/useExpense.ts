@@ -33,6 +33,14 @@ function useAddExpense() {
       queryClient.invalidateQueries({
         queryKey: ["analyticsData", expenseMonth, expenseYear],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dailyChartsData", expenseMonth, expenseYear],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["weeklyChartsData", expenseMonth, expenseYear],
+      });
     },
     onError: (error: any) => {
       console.error("Failed to add expense:", error?.response?.data?.message);
@@ -71,6 +79,14 @@ function useEditExpense() {
       queryClient.invalidateQueries({
         queryKey: ["analyticsData", expenseMonth, expenseYear],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dailyChartsData", expenseMonth, expenseYear],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["weeklyChartsData", expenseMonth, expenseYear],
+      });
     },
     onError: (error: any) => {
       console.error("Failed to edit expense:", error?.response?.data?.message);
@@ -108,6 +124,14 @@ function useDeleteExpense() {
 
       queryClient.invalidateQueries({
         queryKey: ["analyticsData", expenseMonth, expenseYear],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dailyChartsData", expenseMonth, expenseYear],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["weeklyChartsData", expenseMonth, expenseYear],
       });
     },
     onError: (error: any) => {

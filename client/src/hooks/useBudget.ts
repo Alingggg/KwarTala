@@ -56,6 +56,14 @@ function useEditBudget() {
       queryClient.invalidateQueries({
         queryKey: ["analyticsData", variables.month, variables.year],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dailyChartsData", variables.month, variables.year],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["weeklyChartsData", variables.month, variables.year],
+      });
     },
   });
 }
