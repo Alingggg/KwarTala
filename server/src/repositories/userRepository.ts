@@ -3,15 +3,16 @@ import type { User } from "@/types/index";
 
 function formatUser(row: any): User | null {
   if (!row) return null;
-  const { user_name, ...rest } = row;
+  const { user_name, is_verified = false, ...rest } = row;
   return {
     ...rest,
     userName: user_name,
+    isVerified: is_verified,
   };
 }
 
 const userRepository = {
-  async create({ userName, email, password }: Omit<User, "id">) {
+  async create({ userName, email, password }: Omit<User, "id" | "isVerified">) {
     const { rows } = await pool.query(
       "INSERT INTO users (user_name, email, password) VALUES ($1, $2, $3) RETURNING *",
       [userName, email, password]
@@ -33,10 +34,26 @@ const userRepository = {
     return formatUser(rows[0]);
   },
 
-  async update({ id, userName, email, password }: User) {
+  async updateCredentials({
+    id,
+    userName,
+    email,
+    password,
+  }: Omit<User, "isVerified">) {
     const { rows } = await pool.query(
       "UPDATE users SET user_name = $1, email = $2, password = $3 WHERE id = $4 RETURNING *",
       [userName, email, password, id]
+    );
+    return formatUser(rows[0]);
+  },
+
+  async updateVerificationStatus({
+    id,
+    isVerified,
+  }: Pick<User, "id" | "isVerified">) {
+    const { rows } = await pool.query(
+      "UPDATE users SET is_verified = $1 WHERE id = $2 RETURNING *",
+      [isVerified, id]
     );
     return formatUser(rows[0]);
   },

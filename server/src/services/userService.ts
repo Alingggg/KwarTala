@@ -1,11 +1,20 @@
 import { userRepository } from "@/repositories/index";
-import { sessionService } from "@/services/index";
+import {
+  emailService,
+  sessionService,
+  verificationTokenService,
+} from "@/services/index";
 import type { CustomError, User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
+import { addMinutes } from "date-fns";
 
 const userService = {
-  async registerUser({ userName, email, password }: Omit<User, "id">) {
+  async registerUser({
+    userName,
+    email,
+    password,
+  }: Omit<User, "id" | "isVerified">) {
     if (!userName || !email || !password) {
       const error: CustomError = new Error("All fields are required.");
       error.statusCode = 400;
@@ -35,6 +44,24 @@ const userService = {
 
     const { password: userPassword, ...userWithoutPassword } = newUser;
 
+    const payload = {
+      userId: newUser.id,
+      ...userWithoutPassword,
+    };
+
+    const token = generateToken(payload, "access-token");
+
+    await verificationTokenService.createVerificationToken({
+      userId: newUser.id,
+      token,
+      expiresAt: addMinutes(new Date(), 15),
+    });
+
+    await emailService.sendVerificationEmail({
+      email: newUser.email,
+      verificationLink: `http://localhost:5173/verify-email?token=${token}`,
+    });
+
     return userWithoutPassword;
   },
 
@@ -57,6 +84,12 @@ const userService = {
     if (!isPasswordValid) {
       const error: CustomError = new Error("Invalid email or password.");
       error.statusCode = 401;
+      throw error;
+    }
+
+    if (!userWithoutPassword.isVerified) {
+      const error: CustomError = new Error("Email not verified.");
+      error.statusCode = 403;
       throw error;
     }
 
@@ -146,6 +179,77 @@ const userService = {
     return userWithoutPassword;
   },
 
+  async sendVerificationEmail(email: string) {
+    if (!email) {
+      const error: CustomError = new Error("Email is required.");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      const error: CustomError = new Error("User not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const { password, ...userWithoutPassword } = user;
+
+    const payload = {
+      userId: user.id,
+      ...userWithoutPassword,
+    };
+
+    const token = generateToken(payload, "access-token");
+
+    await verificationTokenService.createVerificationToken({
+      userId: user.id,
+      token,
+      expiresAt: addMinutes(new Date(), 15),
+    });
+
+    await emailService.sendVerificationEmail({
+      email: user.email,
+      verificationLink: `http://localhost:5173/verify-email?token=${token}`,
+    });
+  },
+
+  async verifyEmail(token: string) {
+    if (!token) {
+      const error: CustomError = new Error("Token is required.");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const verificationToken = await verificationTokenService.findByToken(token);
+    if (!verificationToken) {
+      const error: CustomError = new Error("Invalid token.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const tokenPayload = verifyToken(token, "access-token");
+    if (!tokenPayload) {
+      const error: CustomError = new Error("Token is invalid or expired.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    await verificationTokenService.deleteVerificationToken(token);
+
+    const user = await this.findUserByEmail(tokenPayload.email);
+    if (!user) {
+      const error: CustomError = new Error("User not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    await userRepository.updateVerificationStatus({
+      id: user.id,
+      isVerified: true,
+    });
+  },
+
   async findUserById(id: number) {
     return await userRepository.findById(id);
   },
@@ -154,8 +258,8 @@ const userService = {
     return await userRepository.findByEmail(email);
   },
 
-  async updateUser(userData: User) {
-    return userRepository.update(userData);
+  async updateUserCredentials(userData: User) {
+    return userRepository.updateCredentials(userData);
   },
 
   async deleteUser(id: number) {

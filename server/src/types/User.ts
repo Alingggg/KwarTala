@@ -3,6 +3,7 @@ interface User {
   userName: string;
   email: string;
   password: string;
+  isVerified: boolean;
 }
 
 interface UserPayload extends Omit<User, "id" | "password"> {

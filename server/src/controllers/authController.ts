@@ -63,6 +63,12 @@ const authController = {
         password,
       });
 
+      if (!newUser) {
+        const error: CustomError = new Error("User registration failed");
+        error.statusCode = 500;
+        throw error;
+      }
+
       res
         .status(201)
         .json({ data: newUser, message: "User registered successfully" });
@@ -203,6 +209,42 @@ const authController = {
       const user = await userService.getUserProfile(userId);
 
       res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async sendVerificationEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        const error: CustomError = new Error("Email is required");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      await userService.sendVerificationEmail(email);
+
+      res.status(200).json({ message: "Verification email sent successfully" });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        const error: CustomError = new Error("Token is required");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      await userService.verifyEmail(token);
+
+      res.status(200).json({ message: "Email verified successfully" });
     } catch (error) {
       next(error);
     }
