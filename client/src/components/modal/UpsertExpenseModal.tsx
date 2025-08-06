@@ -1,9 +1,10 @@
-import { Button, Input, LoadingOverlay } from "@/components";
+import { Button, Dropdown, Input, LoadingOverlay } from "@/components";
 import { FiX } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
 import { format } from "date-fns";
+import { useState } from "react";
 
 const validation = {
   category: {
@@ -33,6 +34,16 @@ const validation = {
   },
 };
 
+const DEFAULT_CATEGORIES = [
+  { value: "Bills", label: "Bills" },
+  { value: "Entertainment", label: "Entertainment" },
+  { value: "Food", label: "Food" },
+  { value: "Healthcare", label: "Healthcare" },
+  { value: "Shopping", label: "Shopping" },
+  { value: "Transportation", label: "Transportation" },
+  { value: "Others", label: "Others" },
+];
+
 interface UpsertExpenseModalProps extends Partial<Omit<Expense, "userId">> {
   onClose: () => void;
 }
@@ -50,6 +61,7 @@ function UpsertExpenseModal({
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<Omit<Expense, "id" | "userId">>({
     defaultValues: {
       category: category || "",
@@ -61,6 +73,9 @@ function UpsertExpenseModal({
   const { mutate: addExpense, isPending: isAdding } = useAddExpense();
   const { mutate: editExpense, isPending: isEditing } = useEditExpense();
   const { currency } = useCurrencyContext();
+  const [categoryOption, setCategoryOption] = useState<"default" | "custom">(
+    "default"
+  );
 
   function onSubmit(data: Omit<Expense, "id" | "userId">) {
     const { date, ...restData } = data;
@@ -103,23 +118,64 @@ function UpsertExpenseModal({
           autoComplete="off"
         >
           <div className="flex flex-col gap-1">
-            <label
-              htmlFor="category"
-              className="text-xs md:text-sm font-semibold text-night-600"
-            >
-              Category <span className="text-auburn-600">*</span>
-            </label>
-            <Input
-              id="category"
-              type="text"
-              placeholder="e.g. Food"
-              {...register("category", validation.category)}
-              className={
-                errors.category
-                  ? "border-auburn-600 focus:border-auburn-600"
-                  : ""
-              }
-            />
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="category"
+                className="text-xs md:text-sm font-semibold text-night-600"
+              >
+                Category <span className="text-auburn-600">*</span>
+              </label>
+              <div className="flex bg-timberwolf-700 rounded-lg p-0.5">
+                <button
+                  type="button"
+                  aria-label="Use default categories"
+                  className={`px-1.5 py-1 rounded-md text-[10px] font-medium transition-colors ${
+                    categoryOption === "default"
+                      ? "bg-night-600 text-timberwolf-900"
+                      : "text-night-500 hover:bg-timberwolf-600"
+                  }`}
+                  onClick={() => setCategoryOption("default")}
+                >
+                  Default
+                </button>
+                <button
+                  type="button"
+                  aria-label="Use custom category"
+                  className={`px-1.5 py-1 rounded-md text-[10px] font-medium transition-colors ${
+                    categoryOption === "custom"
+                      ? "bg-night-600 text-timberwolf-900"
+                      : "text-night-500 hover:bg-timberwolf-600"
+                  }`}
+                  onClick={() => setCategoryOption("custom")}
+                >
+                  Custom
+                </button>
+              </div>
+            </div>
+            {categoryOption === "default" ? (
+              <Dropdown
+                options={DEFAULT_CATEGORIES}
+                id="category"
+                placeholder="e.g. Food"
+                {...register("category", validation.category)}
+                classname={`${
+                  watch("category") ? "text-night-500" : "text-night-500/50"
+                }`}
+              />
+            ) : (
+              <Input
+                id="category"
+                type="text"
+                maxLength={25}
+                placeholder="e.g. Food"
+                {...register("category", validation.category)}
+                className={
+                  errors.category
+                    ? "border-auburn-600 focus:border-auburn-600"
+                    : ""
+                }
+              />
+            )}
             {errors.category && (
               <p className="text-xs text-auburn-600 font-semibold">
                 {errors.category.message}
@@ -136,6 +192,7 @@ function UpsertExpenseModal({
             <Input
               id="description"
               type="text"
+              maxLength={50}
               placeholder="e.g. Lunch at restaurant"
               {...register("description", validation.description)}
             />
