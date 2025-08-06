@@ -22,7 +22,6 @@ function Input({
   const [showPassword, setShowPassword] = useState(false);
 
   const inputType = type === "password" && showPassword ? "text" : type;
-
   const step = type === "number" ? "any" : undefined;
 
   return (
@@ -36,13 +35,9 @@ function Input({
         step={step}
         {...otherProps}
         className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
-          type === "number"
-            ? "appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            : ""
-        } ${type === "password" ? "pr-11" : ""} ${className}`}
-        style={type === "number" ? { MozAppearance: "textfield" } : undefined}
+          type === "password" ? "pr-11" : ""
+        } ${className}`}
       />
-
       {type === "password" && (
         <button
           type="button"
