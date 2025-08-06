@@ -1,7 +1,14 @@
 export { default as useModalContext } from "./useModalContext";
 export { default as useCurrencyContext } from "./useCurrencyContext";
 export { default as useApiInterceptor } from "./useApiInterceptor";
-export { useRegister, useLogin, useLogout, useUser } from "./useAuth";
+export {
+  useRegister,
+  useLogin,
+  useLogout,
+  useUser,
+  useGetVerificationEmail,
+  useVerifyEmail,
+} from "./useAuth";
 export {
   useHomeData,
   useTransactionsData,

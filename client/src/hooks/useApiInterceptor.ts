@@ -25,9 +25,15 @@ const processQueue = (error: AxiosError | null, token = null) => {
   failedQueue = [];
 };
 
+const EXCLUDED_REFRESH_PATHS = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/refresh-token",
+  "/auth/verify-email",
+];
+
 function useApiInterceptor(queryClient: QueryClient) {
   useEffect(() => {
-    // Set up the response interceptor with access to queryClient
     const responseInterceptor = api.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
@@ -35,7 +41,15 @@ function useApiInterceptor(queryClient: QueryClient) {
           _retry?: boolean;
         };
 
-        if (error.response?.status === 401 && !originalRequest?._retry) {
+        const shouldExcludeRefresh = EXCLUDED_REFRESH_PATHS.some((path) =>
+          originalRequest?.url?.includes(path)
+        );
+
+        if (
+          error.response?.status === 401 &&
+          !originalRequest?._retry &&
+          !shouldExcludeRefresh
+        ) {
           if (isRefreshing) {
             return new Promise<void>((resolve, reject) => {
               failedQueue.push({ resolve, reject });
@@ -71,7 +85,6 @@ function useApiInterceptor(queryClient: QueryClient) {
       }
     );
 
-    // Cleanup function to remove interceptor when component unmounts
     return () => {
       api.interceptors.response.eject(responseInterceptor);
     };

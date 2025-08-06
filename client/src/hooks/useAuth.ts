@@ -86,4 +86,39 @@ function useUser() {
   };
 }
 
-export { useRegister, useLogin, useLogout, useUser };
+function useGetVerificationEmail() {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      await api.post("/auth/verification-email", { email });
+    },
+    onError: (error: any) => {
+      console.error(
+        "Failed to send verification email:",
+        error?.response?.data?.message
+      );
+    },
+  });
+}
+
+function useVerifyEmail() {
+  return useMutation({
+    mutationFn: async (token: string) => {
+      await api.post("/auth/verify-email", { token });
+    },
+    onError: (error: any) => {
+      console.error(
+        "Email verification failed:",
+        error?.response?.data?.message
+      );
+    },
+  });
+}
+
+export {
+  useRegister,
+  useLogin,
+  useLogout,
+  useUser,
+  useGetVerificationEmail,
+  useVerifyEmail,
+};

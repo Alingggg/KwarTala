@@ -2,7 +2,7 @@ import { Button, Input, LoadingOverlay } from "@/components";
 import { FiMail, FiLock, FiAlertCircle } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import { useLogin } from "@/hooks";
+import { useGetVerificationEmail, useLogin } from "@/hooks";
 import { AppLogo } from "@/assets/images";
 import { useState } from "react";
 
@@ -38,16 +38,22 @@ const validation = {
 
 function Login() {
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    mode: "onChange",
+  });
   const { mutate: login, isPending } = useLogin();
+  const { mutate: resendVerification } = useGetVerificationEmail();
 
   function onSubmit(data: FormValues) {
+    setEmail(data.email);
     setError(null);
+
     login(data, {
       onError: (err: any) => {
         setError(
@@ -95,6 +101,19 @@ function Login() {
                   {error}
                 </span>
               </div>
+              {error === "Email not verified." && (
+                <div className="mt-3 flex flex-col items-center">
+                  <Button
+                    variant="secondary"
+                    className="w-fit text-sm font-semibold px-4 py-2"
+                    onClick={() => {
+                      resendVerification(email as string);
+                    }}
+                  >
+                    Resend email to {email}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
