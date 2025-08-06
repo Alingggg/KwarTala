@@ -5,4 +5,8 @@ interface User {
   password: string;
 }
 
-export type { User };
+interface UserPayload extends Omit<User, "id" | "password"> {
+  userId: number;
+}
+
+export type { User, UserPayload };
