@@ -62,7 +62,7 @@ function Register() {
     formState: { errors },
     watch,
   } = useForm<FormValues>();
-  const { mutate: registerUser, isPending } = useRegister();
+  const { mutate: registerUser, isPending, isSuccess } = useRegister();
 
   const password = watch("password");
 
@@ -98,175 +98,198 @@ function Register() {
         </div>
 
         <div className="relative bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
-          <div className="mb-5">
-            <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-1">
-              Create Account
-            </h2>
-            <p className="text-night-500 text-sm">Sign up to get started</p>
-          </div>
-
-          {error && (
-            <div className="mb-4 text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
-                <FiAlertCircle className="w-5 h-5 text-auburn-100" />
-                <span className="text-base text-auburn-100 font-semibold">
-                  {error}
-                </span>
-              </div>
-            </div>
-          )}
-
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-          >
-            <div className="flex flex-col gap-1">
-              <label
-                htmlFor="userName"
-                className="block text-sm font-semibold text-night-600"
-              >
-                Username
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <FiUser className="h-4 w-4 text-night-500" />
-                </div>
-                <Input
-                  id="userName"
-                  type="text"
-                  placeholder="Enter your username"
-                  className={`pl-10 ${
-                    errors.userName
-                      ? "border-auburn-600 focus:border-auburn-600"
-                      : ""
-                  }`}
-                  {...register("userName", validation.userName)}
-                />
-              </div>
-              {errors.userName && (
-                <p className="text-xs text-auburn-600 font-semibold">
-                  {errors.userName.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-night-600"
-              >
-                Email
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <FiMail className="h-4 w-4 text-night-500" />
-                </div>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  className={`pl-10 ${
-                    errors.email
-                      ? "border-auburn-600 focus:border-auburn-600"
-                      : ""
-                  }`}
-                  {...register("email", validation.email)}
-                />
-              </div>
-              {errors.email && (
-                <p className="text-xs text-auburn-600 font-semibold">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold text-night-600"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <FiLock className="h-4 w-4 text-night-500" />
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  className={`pl-10 ${
-                    errors.password
-                      ? "border-auburn-600 focus:border-auburn-600"
-                      : ""
-                  }`}
-                  {...register("password", validation.password)}
-                />
-              </div>
-              {errors.password && (
-                <p className="text-xs text-auburn-600 font-semibold">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-semibold text-night-600"
-              >
-                Confirm Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <FiLock className="h-4 w-4 text-night-500" />
-                </div>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  className={`pl-10 ${
-                    errors.confirmPassword
-                      ? "border-auburn-600 focus:border-auburn-600"
-                      : ""
-                  }`}
-                  {...register("confirmPassword", {
-                    required: "Please confirm your password",
-                    validate: (value) =>
-                      value === password || "Passwords do not match",
-                  })}
-                />
-              </div>
-              {errors.confirmPassword && (
-                <p className="text-xs text-auburn-600 font-semibold">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full text-sm md:text-base font-semibold py-2.5 md:py-3"
-              variant="primary"
-              disabled={isPending}
-            >
-              Create Account
-            </Button>
-          </form>
-
-          <div className="mt-5 text-center">
-            <p className="text-sm text-night-500">
-              Already have an account?{" "}
-              <button
-                className="text-night-600 hover:text-night-700 font-semibold"
+          {isSuccess ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <FiMail className="w-12 h-12 text-night-600 mb-4" />
+              <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-2">
+                Registration Successful!
+              </h2>
+              <p className="text-night-500 text-base text-center mb-4">
+                Please check your email to verify your account before logging
+                in.
+              </p>
+              <Button
+                type="button"
+                className="w-full text-sm md:text-base font-semibold py-2.5 md:py-3"
+                variant="primary"
                 onClick={() => navigate("/login")}
               >
-                Sign in here
-              </button>
-            </p>
-          </div>
-          {isPending && <LoadingOverlay message="Creating account..." />}
+                Go to Login
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="mb-5">
+                <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-1">
+                  Create Account
+                </h2>
+                <p className="text-night-500 text-sm">Sign up to get started</p>
+              </div>
+
+              {error && (
+                <div className="mb-4 text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
+                    <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+                    <span className="text-base text-auburn-100 font-semibold">
+                      {error}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <form
+                className="flex flex-col gap-4"
+                onSubmit={handleSubmit(onSubmit)}
+                noValidate
+              >
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="userName"
+                    className="block text-sm font-semibold text-night-600"
+                  >
+                    Username
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <FiUser className="h-4 w-4 text-night-500" />
+                    </div>
+                    <Input
+                      id="userName"
+                      type="text"
+                      placeholder="Enter your username"
+                      className={`pl-10 ${
+                        errors.userName
+                          ? "border-auburn-600 focus:border-auburn-600"
+                          : ""
+                      }`}
+                      {...register("userName", validation.userName)}
+                    />
+                  </div>
+                  {errors.userName && (
+                    <p className="text-xs text-auburn-600 font-semibold">
+                      {errors.userName.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-semibold text-night-600"
+                  >
+                    Email
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <FiMail className="h-4 w-4 text-night-500" />
+                    </div>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      className={`pl-10 ${
+                        errors.email
+                          ? "border-auburn-600 focus:border-auburn-600"
+                          : ""
+                      }`}
+                      {...register("email", validation.email)}
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="text-xs text-auburn-600 font-semibold">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-semibold text-night-600"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <FiLock className="h-4 w-4 text-night-500" />
+                    </div>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      className={`pl-10 ${
+                        errors.password
+                          ? "border-auburn-600 focus:border-auburn-600"
+                          : ""
+                      }`}
+                      {...register("password", validation.password)}
+                    />
+                  </div>
+                  {errors.password && (
+                    <p className="text-xs text-auburn-600 font-semibold">
+                      {errors.password.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-semibold text-night-600"
+                  >
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <FiLock className="h-4 w-4 text-night-500" />
+                    </div>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="Confirm your password"
+                      className={`pl-10 ${
+                        errors.confirmPassword
+                          ? "border-auburn-600 focus:border-auburn-600"
+                          : ""
+                      }`}
+                      {...register("confirmPassword", {
+                        required: "Please confirm your password",
+                        validate: (value) =>
+                          value === password || "Passwords do not match",
+                      })}
+                    />
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-auburn-600 font-semibold">
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full text-sm md:text-base font-semibold py-2.5 md:py-3"
+                  variant="primary"
+                  disabled={isPending}
+                >
+                  Create Account
+                </Button>
+              </form>
+
+              <div className="mt-5 text-center">
+                <p className="text-sm text-night-500">
+                  Already have an account?{" "}
+                  <button
+                    className="text-night-600 hover:text-night-700 font-semibold"
+                    onClick={() => navigate("/login")}
+                  >
+                    Sign in here
+                  </button>
+                </p>
+              </div>
+              {isPending && <LoadingOverlay message="Creating account..." />}
+            </>
+          )}
         </div>
       </div>
     </div>
