@@ -105,12 +105,12 @@ function Login() {
                 <div className="mt-3 flex flex-col items-center">
                   <Button
                     variant="secondary"
-                    className="w-fit text-sm font-semibold px-4 py-2"
+                    className="w-fit text-xs font-semibold"
                     onClick={() => {
                       resendVerification(email as string);
                     }}
                   >
-                    Resend email to {email}
+                    Send verification email to {email}
                   </Button>
                 </div>
               )}
