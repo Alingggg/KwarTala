@@ -99,7 +99,13 @@ function useDeleteExpense() {
 
   return useMutation({
     mutationKey: ["deleteExpense"],
-    mutationFn: async ({ id, date }: { id: number; date: Date | string }) => {
+    mutationFn: async ({
+      id,
+      date: _date,
+    }: {
+      id: number;
+      date: Date | string;
+    }) => {
       const response = await api.delete(`/expenses/${id}`);
       return response.data.data;
     },
