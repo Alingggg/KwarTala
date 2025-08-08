@@ -310,37 +310,6 @@ const authController = {
     }
   },
 
-  async updateEmail(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { token, newEmail } = req.body;
-
-      if (!token || !newEmail) {
-        const error: CustomError = new Error(
-          "Token and new email are required"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-        const error: CustomError = new Error("Invalid email format");
-        error.statusCode = 400;
-        throw error;
-      }
-
-      const updatedUser = await userService.updateEmail({
-        token,
-        email: newEmail,
-      });
-
-      res
-        .status(200)
-        .json({ data: updatedUser, message: "Email updated successfully" });
-    } catch (error) {
-      next(error);
-    }
-  },
-
   async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { token, newPassword } = req.body;
