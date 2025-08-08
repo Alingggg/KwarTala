@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExpenseChart, LoadingSpinner } from "@/components";
-import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
+import { FiCalendar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
   useAnalyticsData,

@@ -1,5 +1,5 @@
 import { Button, LoadingOverlay } from "@/components";
-import { FiX, FiCheckCircle, FiAlertCircle, FiMail } from "@/assets/icons";
+import { FiX, FiCheckCircle, FiAlertCircle, FiMail } from "react-icons/fi";
 import { useState } from "react";
 import { useGetVerificationEmail } from "@/hooks";
 

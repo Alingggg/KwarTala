@@ -1,12 +1,12 @@
 import {
   FiHome,
-  TfiWallet,
   FiBarChart2,
   FiTarget,
   FiMenu,
   FiX,
   FiSettings,
-} from "@/assets/icons";
+} from "react-icons/fi";
+import { TfiWallet } from "react-icons/tfi";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router";
 import { useState } from "react";

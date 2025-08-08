@@ -7,7 +7,7 @@ import {
   FiFilter,
   FiChevronUp,
   FiChevronDown,
-} from "@/assets/icons";
+} from "react-icons/fi";
 import {
   useModalContext,
   useCurrencyContext,

@@ -1,5 +1,5 @@
 import { Button, LoadingOverlay } from "@/components";
-import { FiX, FiAlertTriangle } from "@/assets/icons";
+import { FiX, FiAlertTriangle } from "react-icons/fi";
 import { useCurrencyContext, useDeleteExpense } from "@/hooks";
 import type { Expense } from "@/types";
 import { format } from "date-fns";

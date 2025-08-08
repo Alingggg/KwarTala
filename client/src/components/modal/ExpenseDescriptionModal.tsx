@@ -1,6 +1,6 @@
 import { useCurrencyContext } from "@/hooks";
 import type { Expense } from "@/types";
-import { FiX } from "@/assets/icons";
+import { FiX } from "react-icons/fi";
 import { format } from "date-fns";
 
 interface ExpenseDescriptionModalProps extends Omit<Expense, "id" | "userId"> {

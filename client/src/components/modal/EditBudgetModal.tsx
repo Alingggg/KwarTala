@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Button, Input, LoadingOverlay } from "@/components";
-import { FiX } from "@/assets/icons";
+import { FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useEditBudget, useCurrencyContext, useGetBudget } from "@/hooks";
 import { format, subYears, addMonths } from "date-fns";

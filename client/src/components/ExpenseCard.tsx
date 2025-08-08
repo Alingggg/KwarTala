@@ -1,4 +1,4 @@
-import { FiEdit, FiTrash2, FiInfo, FiMoreHorizontal } from "@/assets/icons";
+import { FiEdit, FiTrash2, FiInfo, FiMoreHorizontal } from "react-icons/fi";
 import { ExpenseDescriptionModal } from "@/components";
 import { useModalContext, useCurrencyContext } from "@/hooks";
 import { useState, useEffect, useRef } from "react";

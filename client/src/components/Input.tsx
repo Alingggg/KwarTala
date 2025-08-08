@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiEye, FiEyeOff } from "@/assets/icons";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 interface InputProps {
   type?: string;

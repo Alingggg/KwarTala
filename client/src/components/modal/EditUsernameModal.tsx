@@ -1,5 +1,5 @@
 import { Button, Input, LoadingOverlay } from "@/components";
-import { FiX, FiUser, FiCheckCircle, FiAlertCircle } from "@/assets/icons";
+import { FiX, FiUser, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useEditUsername } from "@/hooks";

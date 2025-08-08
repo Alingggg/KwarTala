@@ -1,5 +1,5 @@
 import { Button, Dropdown, Input, LoadingOverlay } from "@/components";
-import { FiX } from "@/assets/icons";
+import { FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";

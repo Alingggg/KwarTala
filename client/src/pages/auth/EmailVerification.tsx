@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useVerifyEmail } from "@/hooks";
 import { Button, LoadingSpinner } from "@/components";
-import { FiAlertCircle, FiCheckCircle } from "@/assets/icons";
+import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 
 export default function EmailVerification() {
   const [hasToken, setHasToken] = useState(false);

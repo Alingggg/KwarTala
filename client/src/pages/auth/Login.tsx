@@ -1,5 +1,5 @@
 import { Button, Input, LoadingOverlay } from "@/components";
-import { FiMail, FiLock, FiAlertCircle } from "@/assets/icons";
+import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useGetVerificationEmail, useLogin, useModalContext } from "@/hooks";
