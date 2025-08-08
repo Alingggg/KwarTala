@@ -1,11 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import {
   Analytics,
+  EditEmail,
   EmailVerification,
   Goals,
   Home,
   Login,
   Register,
+  ResetPassword,
+  Settings,
   Transactions,
 } from "@/pages";
 import { DashboardLayout, ProtectedRoute, PublicRoute } from "@/components";
@@ -38,10 +41,13 @@ function AppRouter() {
             <Route path="/home" element={<Home />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<Settings />} />
             {/* <Route path="/goals" element={<Goals />} /> */}
           </Route>
         </Route>
         <Route path="/verify-email" element={<EmailVerification />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/change-email" element={<EditEmail />} />
       </Routes>
     </BrowserRouter>
   );

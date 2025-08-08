@@ -7,14 +7,14 @@ import {
 import type { CustomError, User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
-import { addMinutes } from "date-fns";
+import { addMinutes, subDays } from "date-fns";
 
 const userService = {
   async registerUser({
     userName,
     email,
     password,
-  }: Omit<User, "id" | "isVerified">) {
+  }: Pick<User, "userName" | "email" | "password">) {
     if (!userName || !email || !password) {
       const error: CustomError = new Error("All fields are required.");
       error.statusCode = 400;
@@ -43,24 +43,6 @@ const userService = {
     }
 
     const { password: userPassword, ...userWithoutPassword } = newUser;
-
-    const payload = {
-      userId: newUser.id,
-      ...userWithoutPassword,
-    };
-
-    const token = generateToken(payload, "access-token");
-
-    await verificationTokenService.createVerificationToken({
-      userId: newUser.id,
-      token,
-      expiresAt: addMinutes(new Date(), 15),
-    });
-
-    await emailService.sendVerificationEmail({
-      email: newUser.email,
-      verificationLink: `http://localhost:5173/verify-email?token=${token}`,
-    });
 
     return userWithoutPassword;
   },
@@ -179,7 +161,15 @@ const userService = {
     return userWithoutPassword;
   },
 
-  async sendVerificationEmail(email: string) {
+  async sendVerificationEmail({
+    email,
+    type,
+    newEmail,
+  }: {
+    email: string;
+    type: "register" | "change-email" | "reset-password";
+    newEmail?: string;
+  }) {
     if (!email) {
       const error: CustomError = new Error("Email is required.");
       error.statusCode = 400;
@@ -208,13 +198,47 @@ const userService = {
       expiresAt: addMinutes(new Date(), 15),
     });
 
+    let subject;
+    let mainTitle: string;
+    let mainText: string;
+    let buttonLabel: string;
+    let path: string;
+
+    let params = `?token=${token}`;
+
+    if (type === "register") {
+      subject = "🔐 Verify Your Email - KwarTala";
+      mainTitle = "Verify Your Email";
+      mainText = "Please click the button below to verify your email address.";
+      buttonLabel = "Verify Email Address";
+      path = "/verify-email";
+      if (newEmail) params += `&newEmail=${newEmail}`;
+    } else if (type === "change-email") {
+      subject = "🔐 Change Your Email - KwarTala";
+      mainTitle = "Change Your Email";
+      mainText = "Please click the button below to change your email address.";
+      buttonLabel = "Change Email Address";
+      path = "/change-email";
+      params += `&oldEmail=${email}`;
+    } else {
+      subject = "🔐 Reset Your Password - KwarTala";
+      mainTitle = "Reset Your Password";
+      mainText = "Please click the button below to reset your password.";
+      buttonLabel = "Reset Password";
+      path = "/reset-password";
+    }
+
     await emailService.sendVerificationEmail({
-      email: user.email,
-      verificationLink: `http://localhost:5173/verify-email?token=${token}`,
+      email: newEmail ? newEmail : user.email,
+      verificationLink: `http://localhost:5173${path}${params}`,
+      subject,
+      mainTitle,
+      mainText,
+      buttonLabel,
     });
   },
 
-  async verifyEmail(token: string) {
+  async verifyEmail({ token, newEmail }: { token: string; newEmail?: string }) {
     if (!token) {
       const error: CustomError = new Error("Token is required.");
       error.statusCode = 400;
@@ -223,7 +247,7 @@ const userService = {
 
     const verificationToken = await verificationTokenService.findByToken(token);
     if (!verificationToken) {
-      const error: CustomError = new Error("Invalid token.");
+      const error: CustomError = new Error("Invalid or expired token.");
       error.statusCode = 401;
       throw error;
     }
@@ -244,9 +268,143 @@ const userService = {
       throw error;
     }
 
-    await userRepository.updateVerificationStatus({
+    if (!newEmail) {
+      await userRepository.updateVerificationStatus({
+        id: user.id,
+        isVerified: true,
+      });
+    } else {
+      await this.updateEmail({
+        token,
+        email: newEmail as string,
+      });
+    }
+  },
+
+  async updateUserName({
+    userId,
+    userName,
+    userNameChangedAt,
+  }: {
+    userId: number;
+    userName: string;
+    userNameChangedAt: Date | string;
+  }) {
+    const CHANGE_COOLDOWN_DAYS = 30;
+
+    if (!userId || !userName || !userNameChangedAt) {
+      const error: CustomError = new Error(
+        "ID, username, and username changed date are required."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (
+      new Date(userNameChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+    ) {
+      const error: CustomError = new Error(
+        "Username can only be changed once every 30 days."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    return await userRepository.updateUserName({ id: userId, userName });
+  },
+
+  async updateEmail({ token, email }: { token: string; email: string }) {
+    const CHANGE_COOLDOWN_DAYS = 30;
+
+    if (!token || !email) {
+      const error: CustomError = new Error("Token and email are required.");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const tokenPayload = verifyToken(token, "access-token");
+    if (!tokenPayload) {
+      const error: CustomError = new Error("Token is invalid or expired.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const user = await this.findUserById(tokenPayload.userId);
+    if (!user) {
+      const error: CustomError = new Error("User not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (
+      new Date(user.emailChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+    ) {
+      const error: CustomError = new Error(
+        "Email can only be changed once every 30 days."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    return await userRepository.updateEmail({ id: user.id, email });
+  },
+
+  async updatePassword({
+    token,
+    newPassword,
+  }: {
+    token: string;
+    newPassword: string;
+  }) {
+    const CHANGE_COOLDOWN_DAYS = 30;
+
+    if (!token || !newPassword) {
+      const error: CustomError = new Error(
+        "Token and new password are required."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const verificationToken = await verificationTokenService.findByToken(token);
+    if (!verificationToken) {
+      const error: CustomError = new Error("Invalid or expired token.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const tokenPayload = verifyToken(token, "access-token");
+    if (!tokenPayload) {
+      const error: CustomError = new Error("Token is invalid or expired.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    await verificationTokenService.deleteVerificationToken(token);
+
+    const user = await this.findUserById(tokenPayload.userId);
+    if (!user) {
+      const error: CustomError = new Error("User not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (
+      new Date(user.passwordChangedAt) >
+      subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+    ) {
+      const error: CustomError = new Error(
+        "Password can only be changed once every 30 days."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    return await userRepository.updatePassword({
       id: user.id,
-      isVerified: true,
+      password: hashedPassword,
     });
   },
 
@@ -256,10 +414,6 @@ const userService = {
 
   async findUserByEmail(email: string) {
     return await userRepository.findByEmail(email);
-  },
-
-  async updateUserCredentials(userData: User) {
-    return userRepository.updateCredentials(userData);
   },
 
   async deleteUser(id: number) {

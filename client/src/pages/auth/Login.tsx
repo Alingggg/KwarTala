@@ -2,7 +2,7 @@ import { Button, Input, LoadingOverlay } from "@/components";
 import { FiMail, FiLock, FiAlertCircle } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import { useGetVerificationEmail, useLogin } from "@/hooks";
+import { useGetVerificationEmail, useLogin, useModalContext } from "@/hooks";
 import { AppLogo } from "@/assets/images";
 import { useState } from "react";
 
@@ -44,11 +44,10 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({
-    mode: "onChange",
-  });
+  } = useForm<FormValues>();
   const { mutate: login, isPending } = useLogin();
-  const { mutate: resendVerification } = useGetVerificationEmail();
+  const { mutate: sendVerification } = useGetVerificationEmail();
+  const { openModal } = useModalContext();
 
   function onSubmit(data: FormValues) {
     setEmail(data.email);
@@ -107,7 +106,10 @@ function Login() {
                     variant="secondary"
                     className="w-fit text-xs font-semibold"
                     onClick={() => {
-                      resendVerification(email as string);
+                      sendVerification({
+                        email: email as string,
+                        type: "register",
+                      });
                     }}
                   >
                     Send verification email to {email}
@@ -180,6 +182,13 @@ function Login() {
                   {errors.password.message}
                 </p>
               )}
+              <button
+                type="button"
+                className="mt-2 text-xs text-night-600 hover:text-night-700 font-semibold self-end hover:cursor-pointer"
+                onClick={() => openModal("REQUEST_RESET_PASSWORD")}
+              >
+                Forgot Password?
+              </button>
             </div>
 
             <Button

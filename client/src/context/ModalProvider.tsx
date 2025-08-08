@@ -7,6 +7,9 @@ type ModalType =
   | "EDIT_BUDGET"
   | "ADD_GOAL"
   | "EDIT_GOAL"
+  | "REQUEST_RESET_PASSWORD"
+  | "EDIT_USERNAME"
+  | "REQUEST_EDIT_EMAIL"
   | null;
 
 interface ModalContextType {

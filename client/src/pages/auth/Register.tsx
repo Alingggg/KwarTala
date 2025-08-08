@@ -2,7 +2,7 @@ import { Button, Input, LoadingOverlay } from "@/components";
 import { FiUser, FiLock, FiMail, FiAlertCircle } from "@/assets/icons";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import { useRegister } from "@/hooks";
+import { useGetVerificationEmail, useRegister } from "@/hooks";
 import { AppLogo } from "@/assets/images";
 import { useState } from "react";
 
@@ -63,12 +63,16 @@ function Register() {
     watch,
   } = useForm<FormValues>();
   const { mutate: registerUser, isPending, isSuccess } = useRegister();
+  const { mutate: sendVerificationEmail } = useGetVerificationEmail();
 
   const password = watch("password");
 
   function onSubmit(data: FormValues) {
     setError(null);
     registerUser(data, {
+      onSuccess: () => {
+        sendVerificationEmail({ email: data.email, type: "register" });
+      },
       onError: (err: any) => {
         setError(
           err?.response?.data?.message ||

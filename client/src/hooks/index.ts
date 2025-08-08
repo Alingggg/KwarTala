@@ -8,6 +8,8 @@ export {
   useUser,
   useGetVerificationEmail,
   useVerifyEmail,
+  useResetPassword,
+  useEditUsername,
 } from "./useAuth";
 export {
   useHomeData,

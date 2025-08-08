@@ -8,6 +8,7 @@ interface InputProps {
   min?: string | number;
   max?: string | number;
   className?: string;
+  disabled?: boolean;
 }
 
 function Input({
@@ -17,6 +18,7 @@ function Input({
   min,
   max,
   className = "",
+  disabled = false,
   ...otherProps
 }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,6 +35,7 @@ function Input({
         min={min}
         max={max}
         step={step}
+        disabled={disabled}
         {...otherProps}
         className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
           type === "password" ? "pr-11" : ""

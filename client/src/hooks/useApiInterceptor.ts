@@ -30,6 +30,9 @@ const EXCLUDED_REFRESH_PATHS = [
   "/auth/register",
   "/auth/refresh-token",
   "/auth/verify-email",
+  "/auth/change-username",
+  "/auth/change-email",
+  "/auth/reset-password",
 ];
 
 function useApiInterceptor(queryClient: QueryClient) {

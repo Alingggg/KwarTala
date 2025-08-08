@@ -13,15 +13,28 @@ const emailService = {
   async sendVerificationEmail({
     email,
     verificationLink,
+    subject,
+    mainTitle,
+    mainText,
+    buttonLabel,
   }: {
     email: string;
     verificationLink: string;
+    subject: string;
+    mainTitle: string;
+    mainText: string;
+    buttonLabel: string;
   }) {
     await transporter.sendMail({
       from: process.env.EMAIL,
       to: email,
-      subject: "🔐 Verify Your Email - KwarTala",
-      html: emailTemplates.verifyEmail({ email, verificationLink }),
+      subject,
+      html: emailTemplates.verifyEmail({
+        verificationLink,
+        mainTitle,
+        mainText,
+        buttonLabel,
+      }),
     });
   },
 };

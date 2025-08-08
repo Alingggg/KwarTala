@@ -23,5 +23,7 @@ export {
   FiInfo,
   FiAlertCircle,
   FiMoreHorizontal,
+  FiSettings,
+  FiCheckCircle,
 } from "react-icons/fi";
 export { TfiWallet } from "react-icons/tfi";

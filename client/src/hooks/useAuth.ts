@@ -13,9 +13,6 @@ function useRegister() {
     }) => {
       await api.post("/auth/register", data);
     },
-    onSuccess: () => {
-      navigate("/login");
-    },
     onError: (error: any) => {
       console.error("Registration failed:", error?.response?.data?.message);
     },
@@ -88,8 +85,16 @@ function useUser() {
 
 function useGetVerificationEmail() {
   return useMutation({
-    mutationFn: async (email: string) => {
-      await api.post("/auth/verification-email", { email });
+    mutationFn: async ({
+      email,
+      type,
+      newEmail,
+    }: {
+      email: string;
+      type: "register" | "change-email" | "reset-password";
+      newEmail?: string;
+    }) => {
+      await api.post("/auth/verification-email", { email, type, newEmail });
     },
     onError: (error: any) => {
       console.error(
@@ -102,14 +107,46 @@ function useGetVerificationEmail() {
 
 function useVerifyEmail() {
   return useMutation({
-    mutationFn: async (token: string) => {
-      await api.post("/auth/verify-email", { token });
+    mutationFn: async ({
+      token,
+      newEmail,
+    }: {
+      token: string;
+      newEmail?: string;
+    }) => {
+      await api.post("/auth/verify-email", { token, newEmail });
     },
     onError: (error: any) => {
       console.error(
         "Email verification failed:",
         error?.response?.data?.message
       );
+    },
+  });
+}
+
+function useResetPassword() {
+  return useMutation({
+    mutationFn: async (data: { token: string; newPassword: string }) => {
+      await api.post("/auth/reset-password", data);
+    },
+    onError: (error: any) => {
+      console.error("Password reset failed:", error?.response?.data?.message);
+    },
+  });
+}
+
+function useEditUsername() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (userName: string) => {
+      await api.post("/auth/change-username", { userName });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+    onError: (error: any) => {
+      console.error("Username change failed:", error?.response?.data?.message);
     },
   });
 }
@@ -121,4 +158,6 @@ export {
   useUser,
   useGetVerificationEmail,
   useVerifyEmail,
+  useResetPassword,
+  useEditUsername,
 };

@@ -11,5 +11,8 @@ router.post("/refresh-token", authController.refreshAccessToken);
 router.get("/me", authMiddleware, authController.getCurrentUser);
 router.post("/verify-email", authController.verifyEmail);
 router.post("/verification-email", authController.sendVerificationEmail);
+router.post("/change-username", authMiddleware, authController.updateUserName);
+router.post("/change-email", authMiddleware, authController.updateEmail);
+router.post("/reset-password", authController.resetPassword);
 
 export default router;

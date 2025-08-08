@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useVerifyEmail } from "@/hooks";
 import { Button, LoadingSpinner } from "@/components";
-import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
+import { FiAlertCircle, FiCheckCircle } from "@/assets/icons";
 
 export default function EmailVerification() {
   const [hasToken, setHasToken] = useState(false);
@@ -12,10 +12,15 @@ export default function EmailVerification() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
+    const newEmail = urlParams.get("newEmail");
 
     if (token) {
       setHasToken(true);
-      verifyEmail(token);
+      if (newEmail) {
+        verifyEmail({ token, newEmail });
+      } else {
+        verifyEmail({ token });
+      }
     }
   }, [verifyEmail, setHasToken]);
 
@@ -65,9 +70,6 @@ export default function EmailVerification() {
                 Email verified successfully!
               </span>
             </div>
-            <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-2">
-              Welcome to KwarTala
-            </h2>
             <p className="text-night-500 text-sm">
               Your email has been verified. You can now sign in to your account.
             </p>
