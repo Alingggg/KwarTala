@@ -247,6 +247,16 @@ const authController = {
       }
 
       await userService.verifyEmail({ token, newEmail });
+      if (newEmail) {
+        const cookieOptions = {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "none" as const,
+        };
+
+        res.clearCookie("accessToken", cookieOptions);
+        res.clearCookie("refreshToken", cookieOptions);
+      }
 
       res.status(200).json({ message: "Email verified successfully" });
     } catch (error) {
@@ -347,6 +357,15 @@ const authController = {
         token,
         newPassword,
       });
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none" as const,
+      };
+
+      res.clearCookie("accessToken", cookieOptions);
+      res.clearCookie("refreshToken", cookieOptions);
 
       res.status(200).json({ message: "Password reset successfully" });
     } catch (error) {

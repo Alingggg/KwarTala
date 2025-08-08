@@ -346,7 +346,8 @@ const userService = {
       throw error;
     }
 
-    return await userRepository.updateEmail({ id: user.id, email });
+    await userRepository.updateEmail({ id: user.id, email });
+    await sessionService.deleteSessionByUserId(user.id);
   },
 
   async updatePassword({
@@ -402,10 +403,11 @@ const userService = {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    return await userRepository.updatePassword({
+    await userRepository.updatePassword({
       id: user.id,
       password: hashedPassword,
     });
+    await sessionService.deleteSessionByUserId(user.id);
   },
 
   async findUserById(id: number) {
