@@ -46,7 +46,11 @@ function Login() {
     formState: { errors },
   } = useForm<FormValues>();
   const { mutate: login, isPending } = useLogin();
-  const { mutate: sendVerification } = useGetVerificationEmail();
+  const {
+    mutate: sendVerification,
+    isSuccess,
+    isPending: isSendingVerification,
+  } = useGetVerificationEmail();
   const { openModal } = useModalContext();
 
   function onSubmit(data: FormValues) {
@@ -102,18 +106,26 @@ function Login() {
               </div>
               {error === "Email not verified." && (
                 <div className="mt-3 flex flex-col items-center">
-                  <Button
-                    variant="secondary"
-                    className="w-fit text-xs font-semibold"
-                    onClick={() => {
-                      sendVerification({
-                        email: email as string,
-                        type: "register",
-                      });
-                    }}
-                  >
-                    Send verification email to {email}
-                  </Button>
+                  {isSuccess ? (
+                    <span className="text-emerald-700 text-xs font-semibold">
+                      Verification email sent to {email}. Please check your
+                      inbox.
+                    </span>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      className="w-fit text-xs font-semibold"
+                      onClick={() => {
+                        sendVerification({
+                          email: email as string,
+                          type: "register",
+                        });
+                      }}
+                      disabled={isSendingVerification}
+                    >
+                      Send verification email to {email}
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
