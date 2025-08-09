@@ -6,11 +6,12 @@ interface ButtonProps {
   className?: string;
   variant?: "primary" | "secondary" | "success" | "danger";
   size?: "default" | "sm" | "lg";
+  disabled?: boolean;
   onClick?: () => void;
 }
 
 const buttonStyles = {
-  base: "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2",
+  base: "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 hover:cursor-pointer",
   variants: {
     primary:
       "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500",
@@ -34,6 +35,7 @@ function Button({
   className,
   variant = "primary",
   size = "default",
+  disabled = false,
   onClick,
 }: ButtonProps) {
   const variantClass = buttonStyles.variants[variant];
@@ -46,6 +48,7 @@ function Button({
         className || ""
       }`}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>

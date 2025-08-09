@@ -6,16 +6,12 @@ function useRegister() {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: async (data: {
-      firstName: string;
-      lastName: string;
+      userName: string;
       email: string;
       password: string;
       confirmPassword: string;
     }) => {
       await api.post("/auth/register", data);
-    },
-    onSuccess: () => {
-      navigate("/login");
     },
     onError: (error: any) => {
       console.error("Registration failed:", error?.response?.data?.message);
@@ -81,11 +77,87 @@ function useUser() {
 
   return {
     id: user?.id,
-    firstName: user?.firstName,
-    lastName: user?.lastName,
+    userName: user?.userName,
     email: user?.email,
     isAuthenticated: !!user,
   };
 }
 
-export { useRegister, useLogin, useLogout, useUser };
+function useGetVerificationEmail() {
+  return useMutation({
+    mutationFn: async ({
+      email,
+      type,
+      newEmail,
+    }: {
+      email: string;
+      type: "register" | "change-email" | "reset-password";
+      newEmail?: string;
+    }) => {
+      await api.post("/auth/verification-email", { email, type, newEmail });
+    },
+    onError: (error: any) => {
+      console.error(
+        "Failed to send verification email:",
+        error?.response?.data?.message
+      );
+    },
+  });
+}
+
+function useVerifyEmail() {
+  return useMutation({
+    mutationFn: async ({
+      token,
+      newEmail,
+    }: {
+      token: string;
+      newEmail?: string;
+    }) => {
+      await api.post("/auth/verify-email", { token, newEmail });
+    },
+    onError: (error: any) => {
+      console.error(
+        "Email verification failed:",
+        error?.response?.data?.message
+      );
+    },
+  });
+}
+
+function useResetPassword() {
+  return useMutation({
+    mutationFn: async (data: { token: string; newPassword: string }) => {
+      await api.post("/auth/reset-password", data);
+    },
+    onError: (error: any) => {
+      console.error("Password reset failed:", error?.response?.data?.message);
+    },
+  });
+}
+
+function useEditUsername() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (userName: string) => {
+      await api.post("/auth/change-username", { userName });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+    onError: (error: any) => {
+      console.error("Username change failed:", error?.response?.data?.message);
+    },
+  });
+}
+
+export {
+  useRegister,
+  useLogin,
+  useLogout,
+  useUser,
+  useGetVerificationEmail,
+  useVerifyEmail,
+  useResetPassword,
+  useEditUsername,
+};

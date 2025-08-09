@@ -1,8 +1,8 @@
-import { Button } from "@/components";
-import { FiX, FiAlertTriangle } from "@/assets/icons";
+import { Button, LoadingOverlay } from "@/components";
+import { FiX, FiAlertTriangle } from "react-icons/fi";
 import { useCurrencyContext, useDeleteExpense } from "@/hooks";
 import type { Expense } from "@/types";
-import { formatDate } from "@/utils";
+import { format } from "date-fns";
 
 interface DeleteExpenseModalProps extends Omit<Expense, "userId"> {
   onClose: () => void;
@@ -16,16 +16,12 @@ function DeleteExpenseModal({
   description,
   date,
 }: DeleteExpenseModalProps) {
-  const { mutate: deleteExpense } = useDeleteExpense();
+  const { mutate: deleteExpense, isPending } = useDeleteExpense();
 
-  const formattedDate = formatDate(date, {
-    includeMonth: true,
-    includeDay: true,
-  });
+  const formattedDate = format(new Date(date), "MMMM d");
 
   function handleDelete() {
-    deleteExpense(id);
-    onClose();
+    deleteExpense({ id, date }, { onSuccess: () => onClose() });
   }
 
   const { currency } = useCurrencyContext();
@@ -36,6 +32,7 @@ function DeleteExpenseModal({
         <button
           onClick={onClose}
           className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500"
+          disabled={isPending}
         >
           <FiX size={20} className="md:w-6 md:h-6" />
         </button>
@@ -51,8 +48,9 @@ function DeleteExpenseModal({
           <p className="mb-1">
             <span className="font-semibold">Category:</span> {category}
           </p>
-          <p className="mb-1">
-            <span className="font-semibold">Description:</span> {description}
+          <p className="mb-1 break-words">
+            <span className="font-semibold">Description:</span>{" "}
+            {description || "N/A"}
           </p>
           <p className="mb-1">
             <span className="font-semibold">Amount:</span> {currency}
@@ -70,6 +68,7 @@ function DeleteExpenseModal({
             variant="secondary"
             onClick={onClose}
             className="w-full text-sm md:text-base"
+            disabled={isPending}
           >
             Cancel
           </Button>
@@ -78,10 +77,12 @@ function DeleteExpenseModal({
             onClick={handleDelete}
             variant="danger"
             className="w-full text-sm md:text-base"
+            disabled={isPending}
           >
             Delete
           </Button>
         </div>
+        {isPending && <LoadingOverlay message="Deleting expense..." />}
       </div>
     </div>
   );

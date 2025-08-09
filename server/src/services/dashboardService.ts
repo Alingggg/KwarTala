@@ -13,28 +13,17 @@ const dashboardService = {
     const monthNumber = today.getMonth() + 1;
     const year = today.getFullYear();
 
-    function formatDate(date: Date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
+    const startDate = new Date(year, today.getMonth(), 1);
+    const endDate = new Date(year, today.getMonth() + 1, 0);
 
-    const startOfMonth = formatDate(new Date(year, today.getMonth(), 1));
-    const endOfMonth = formatDate(new Date(year, today.getMonth() + 1, 0));
-
-    const budget = await budgetService.findCurrentMonthBudgetByUserId({
-      userId,
-      month: monthNumber,
-      year,
-    });
+    const budget = await budgetService.findCurrentMonthBudget(userId);
 
     const spentToday = (await expenseService.getTotalSpentToday(userId)) ?? 0;
 
     const totalMonthlySpent = await expenseService.getTotalMonthlySpent({
       userId,
-      startDate: startOfMonth,
-      endDate: endOfMonth,
+      startDate,
+      endDate,
     });
 
     const remainingBudget =
@@ -50,7 +39,7 @@ const dashboardService = {
     );
 
     return {
-      month: today.toLocaleString("en-US", { month: "long" }),
+      monthNumber,
       year,
       budget: budget?.amount ?? 0,
       remainingBudget,
@@ -69,7 +58,7 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const budget = await budgetService.findCurrentMonthBudgetByUserId({
+    const budget = await budgetService.findBudgetByUserIdAndDate({
       userId,
       month,
       year,
@@ -121,14 +110,7 @@ const dashboardService = {
         transactionsByWeek[weekNumber] = [];
       }
 
-      transactionsByWeek[weekNumber].push({
-        id: transaction.id,
-        userId: transaction.userId,
-        category: transaction.category,
-        description: transaction.description,
-        amount: transaction.amount,
-        date: transaction.date,
-      });
+      transactionsByWeek[weekNumber].push(transaction);
     });
 
     // Create weeks array with weekly spending data
@@ -138,6 +120,9 @@ const dashboardService = {
       const weekStartDay = (weekNumber - 1) * 7 + 1;
       const weekEndDay = Math.min(weekNumber * 7, daysInMonth);
       const daysInWeek = weekEndDay - weekStartDay + 1;
+
+      const weekStartDate = new Date(year, month - 1, weekStartDay);
+      const weekEndDate = new Date(year, month - 1, weekEndDay);
 
       const weeklyBudget = Math.round(dailyBudget * daysInWeek * 100) / 100;
 
@@ -161,7 +146,9 @@ const dashboardService = {
 
       weeks.push({
         weekNumber,
-        weeklyBudget: Math.round(weeklyBudget * 100) / 100,
+        weekStartDate,
+        weekEndDate,
+        weeklyBudget,
         weeklyTotalSpent,
         weeklyRemainingBudget,
         transactions,
@@ -169,9 +156,7 @@ const dashboardService = {
     }
 
     return {
-      month: new Date(year, month - 1).toLocaleString("en-US", {
-        month: "long",
-      }),
+      monthNumber: month,
       year,
       monthlyBudget: Math.round((budget?.amount ?? 0) * 100) / 100,
       monthlyTotalSpent: Math.round(monthlyTotalSpent * 100) / 100,
@@ -189,7 +174,7 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const budget = await budgetService.findCurrentMonthBudgetByUserId({
+    const budget = await budgetService.findBudgetByUserIdAndDate({
       userId,
       month,
       year,
@@ -212,18 +197,36 @@ const dashboardService = {
         ? Math.round((totalMonthlySpent / budget.amount) * 100 * 100) / 100
         : 0;
 
-    const lastDayOfMonth = endOfMonth.getDate();
-    const averageDailySpending =
-      totalMonthlySpent / (lastDayOfMonth - startOfMonth.getDate() + 1);
-
     const today = new Date();
-    const dateToday = today.getDate();
-    const remainingDays = lastDayOfMonth - dateToday + 1;
+    const isCurrentMonth =
+      today.getFullYear() === year && today.getMonth() + 1 === month;
+    const dayToday = isCurrentMonth ? today.getDate() : endOfMonth.getDate();
+    const lastDayOfMonth = endOfMonth.getDate();
 
-    const recommendedDailyLimit =
-      remainingDays > 0
-        ? Math.round((monthlyRemainingBudget / remainingDays) * 100) / 100
-        : 0;
+    let remainingDays = 0;
+    if (isCurrentMonth) {
+      remainingDays = lastDayOfMonth - dayToday + 1;
+    }
+
+    const isPastMonth =
+      year < today.getFullYear() ||
+      (year === today.getFullYear() && month < today.getMonth() + 1);
+
+    if (isPastMonth) {
+      remainingDays = 0;
+    }
+
+    let averageDailySpending = 0;
+    if (isCurrentMonth) {
+      averageDailySpending = totalMonthlySpent / dayToday;
+    } else {
+      const daysInMonth = endOfMonth.getDate();
+      averageDailySpending = totalMonthlySpent / daysInMonth;
+    }
+
+    const recommendedDailyLimit = isCurrentMonth
+      ? Math.round((monthlyRemainingBudget / remainingDays) * 100) / 100
+      : 0;
 
     const expenseByCategory = await expenseService.getTotalSpentPerCategory({
       userId,
@@ -245,9 +248,7 @@ const dashboardService = {
     });
 
     return {
-      month: new Date(year, month - 1).toLocaleString("en-US", {
-        month: "long",
-      }),
+      monthNumber: month,
       year,
       monthlyBudget: Math.round((budget?.amount ?? 0) * 100) / 100,
       monthlyTotalSpent: Math.round(totalMonthlySpent * 100) / 100,
@@ -271,8 +272,7 @@ const dashboardService = {
     year: number;
   }) {
     const today = new Date();
-    const requestedMonthStart = new Date(year, month - 1, 1);
-    const startDate = requestedMonthStart;
+    const startDate = new Date(year, month - 1, 1);
     let endDate;
 
     if (today.getFullYear() === year && today.getMonth() === month - 1) {
@@ -287,15 +287,7 @@ const dashboardService = {
       endDate,
     });
 
-    const formattedData = data.map((item: any) => ({
-      ...item,
-      date: new Date(item.date).toLocaleDateString(undefined, {
-        month: "long",
-        day: "numeric",
-      }),
-    }));
-
-    return formattedData;
+    return data;
   },
 
   async getWeeklyChartData({
@@ -312,30 +304,34 @@ const dashboardService = {
 
     const data = await expenseService.getTotalWeeklyExpenseInDateRange({
       userId,
-      startDate,
-      endDate,
+      startDate: startDate,
+      endDate: endDate,
     });
 
-    const formattedData = data.map((item: any, idx: number, arr: any[]) => {
-      const weekStart = new Date(item.date);
-      const weekEnd =
-        idx < arr.length - 1 ? new Date(arr[idx + 1].date) : endDate;
+    const formattedData = data.map((item: any, idx: number) => {
+      const weekStartDate = new Date(item.date);
+      let weekEndDate = new Date(weekStartDate);
+      weekEndDate.setDate(weekStartDate.getDate() + 6);
+      if (weekEndDate > endDate) {
+        weekEndDate = endDate;
+      }
 
       const days =
         Math.ceil(
-          (weekEnd.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24)
-        ) || 1;
+          (weekEndDate.getTime() - weekStartDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+        ) + 1;
 
-      const dateRange = `${weekStart.toLocaleString(undefined, {
-        month: "short",
-      })}. ${weekStart.getDate()}-${weekEnd.getDate()}`;
+      const dailyAverage =
+        days > 0 ? Number((item.total / days).toFixed(2)) : 0;
 
       return {
-        name: `Week ${idx + 1}`,
-        dateRange,
+        weekNumber: idx + 1,
+        weekStartDate,
+        weekEndDate,
         total: item.total,
         days,
-        dailyAverage: days > 0 ? Number((item.total / days).toFixed(2)) : 0,
+        dailyAverage,
       };
     });
 

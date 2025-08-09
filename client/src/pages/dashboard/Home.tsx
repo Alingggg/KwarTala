@@ -13,7 +13,9 @@ import {
   useDailyChartsData,
 } from "@/hooks";
 import type { Expense } from "@/types";
+import { assignCategoryColors } from "@/utils";
 import { FiCalendar } from "react-icons/fi";
+import { format } from "date-fns";
 
 function Home() {
   const { openModal } = useModalContext();
@@ -22,8 +24,12 @@ function Home() {
   const currentMonthNumber = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
-  const { firstName } = useUser();
+  const { userName } = useUser();
   const { data: homeData, isLoading: isHomeLoading } = useHomeData();
+
+  const transactionsWithColors = assignCategoryColors(
+    homeData?.todaysTransactions
+  );
 
   const { data: dailyChartsData, isLoading: isDailyLoading } =
     useDailyChartsData({
@@ -44,13 +50,16 @@ function Home() {
   return (
     <div className="p-3 md:p-8">
       {/* Page Header */}
-      <div className="mb-5 md:mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-night-600">
-            Hello, {firstName}
+      <div className="mb-5 md:mb-8 mt-1 mb:mt-0">
+        <div className="flex items-baseline justify-between gap-2">
+          <h1 className="text-xl md:text-3xl font-bold text-night-600">
+            Hello, {userName}
           </h1>
-          <p className="text-lg md:text-2xl font-semibold text-night-600">
-            {homeData.month} {homeData.year}
+          <p className="md:text-2xl font-semibold text-night-600">
+            {format(
+              new Date(homeData.year, homeData.monthNumber - 1),
+              "MMMM yyyy"
+            )}
           </p>
         </div>
       </div>
@@ -63,11 +72,11 @@ function Home() {
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
               <p className="text-2xl md:text-4xl font-bold text-timberwolf-900">
                 {currency}
-                {homeData.remainingBudget.toLocaleString()}
+                {homeData.remainingBudget.toFixed(2)}
               </p>
               <span className="text-sm md:text-base font-normal text-ash-gray-400">
                 remaining of {currency}
-                {homeData.budget.toLocaleString()}
+                {homeData.budget}
               </span>
             </div>
           </div>
@@ -77,7 +86,7 @@ function Home() {
             <Button
               onClick={() =>
                 openModal("EDIT_BUDGET", {
-                  month: homeData.month,
+                  monthNumber: homeData.monthNumber,
                   year: homeData.year,
                   currentBudget: homeData.budget,
                 })
@@ -113,7 +122,7 @@ function Home() {
                 <span>{currency}0</span>
                 <span>
                   {currency}
-                  {homeData.budget.toLocaleString()}
+                  {homeData.budget}
                 </span>
               </div>
             </div>
@@ -129,7 +138,7 @@ function Home() {
                 </div>
                 <span className="text-lg md:text-xl font-bold text-timberwolf-900">
                   {currency}
-                  {homeData.spentToday.toLocaleString()}
+                  {homeData.spentToday}
                 </span>
               </div>
             </div>
@@ -161,15 +170,14 @@ function Home() {
           <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
         </div>
         <div className="space-y-3 md:space-y-4">
-          {homeData.todaysTransactions &&
-            homeData.todaysTransactions.map((transaction: Expense) => (
+          {transactionsWithColors &&
+            transactionsWithColors.map((transaction: Expense) => (
               <ExpenseCard key={transaction.id} {...transaction} />
             ))}
         </div>
 
         {/* No Transactions Message */}
-        {(!homeData.todaysTransactions ||
-          homeData.todaysTransactions.length === 0) && (
+        {(!transactionsWithColors || transactionsWithColors.length === 0) && (
           <div className="text-center py-12 md:py-16 text-ash-gray-500">
             <FiCalendar
               size={48}

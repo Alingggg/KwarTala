@@ -172,3 +172,40 @@ html ::-webkit-scrollbar-thumb {
 html ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+input,
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Remove number input spin buttons (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove number input spin buttons (Firefox) */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Remove password toggle (Chrome, Safari) */
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+/* Remove clear (×) icon in search inputs (Chrome, Safari) */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}

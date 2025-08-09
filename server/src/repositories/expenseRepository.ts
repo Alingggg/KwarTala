@@ -65,19 +65,13 @@ const expenseRepository = {
   }) {
     const { rows } = await pool.query(
       `WITH date_range AS (
-      SELECT generate_series(
-        DATE($1), 
-        DATE($2), 
-        '1 day'::interval
-      )::date AS date
-    )
-    SELECT 
-      dr.date, 
-      COALESCE(SUM(e.amount), 0) AS total
-    FROM date_range dr
-    LEFT JOIN expenses e ON dr.date = e.date AND e.user_id = $3
-    GROUP BY dr.date
-    ORDER BY dr.date`,
+         SELECT generate_series($1, $2, '1 day'::interval)::timestamptz AS date
+       )
+       SELECT dr.date, COALESCE(SUM(e.amount), 0) AS total
+       FROM date_range dr
+       LEFT JOIN expenses e ON dr.date = e.date AND e.user_id = $3
+       GROUP BY dr.date
+       ORDER BY dr.date`,
       [startDate, endDate, userId]
     );
 
@@ -95,22 +89,16 @@ const expenseRepository = {
   }) {
     const { rows } = await pool.query(
       `WITH date_range AS (
-      SELECT generate_series(
-        DATE($1), 
-        DATE($2), 
-        '1 week'::interval
-      )::date AS week_start
-    )
-    SELECT 
-      dr.week_start AS date,
-      COALESCE(SUM(e.amount), 0) AS total
-    FROM date_range dr
-    LEFT JOIN expenses e ON 
-      e.date >= dr.week_start 
-      AND e.date < dr.week_start + '1 week'::interval
-      AND e.user_id = $3
-    GROUP BY dr.week_start
-    ORDER BY dr.week_start`,
+         SELECT generate_series($1, $2, '1 week'::interval)::timestamptz AS week_start
+       )
+       SELECT dr.week_start AS date, COALESCE(SUM(e.amount), 0) AS total
+       FROM date_range dr
+       LEFT JOIN expenses e
+         ON e.date >= dr.week_start
+         AND e.date < LEAST(dr.week_start + '1 week'::interval, $2::timestamptz + INTERVAL '1 day')
+         AND e.user_id = $3
+       GROUP BY dr.week_start
+       ORDER BY dr.week_start`,
       [startDate, endDate, userId]
     );
 

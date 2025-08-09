@@ -4,7 +4,7 @@ interface Expense {
   category: string;
   description: string;
   amount: number;
-  date: string;
+  date: string | Date;
 }
 
 export type { Expense };

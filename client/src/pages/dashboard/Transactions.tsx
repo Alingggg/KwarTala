@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, ExpenseCard } from "@/components";
+import { Button, ExpenseCard, LoadingSpinner } from "@/components";
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -7,13 +7,26 @@ import {
   FiFilter,
   FiChevronUp,
   FiChevronDown,
-} from "@/assets/icons";
+} from "react-icons/fi";
 import {
   useModalContext,
   useCurrencyContext,
   useTransactionsData,
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
+import { format, subMonths } from "date-fns";
+
+const MAX_MONTHS = 12;
+
+function formatWeekRange(startDate: string, endDate: string): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (start.getMonth() === end.getMonth()) {
+    return `${format(start, "MMM. d")}-${format(end, "d")}`;
+  }
+  return `${format(start, "MMM. d")} - ${format(end, "MMM. d")}`;
+}
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -22,24 +35,20 @@ function Transactions() {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
 
-  const today = new Date();
-
   function getMonthYear(index: number) {
-    const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
+    const date = subMonths(new Date(), index);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
   }
 
   const { month, year } = getMonthYear(currentMonthIndex);
 
-  const { data: currentMonth, isLoading } = useTransactionsData({
+  const { data: monthData, isLoading } = useTransactionsData({
     month,
     year,
   });
 
-  const maxMonths = 12;
-
   function navigateMonth(direction: "prev" | "next") {
-    if (direction === "prev" && currentMonthIndex < maxMonths - 1) {
+    if (direction === "prev" && currentMonthIndex < MAX_MONTHS - 1) {
       setCurrentMonthIndex(currentMonthIndex + 1);
     } else if (direction === "next" && currentMonthIndex > 0) {
       setCurrentMonthIndex(currentMonthIndex - 1);
@@ -47,12 +56,7 @@ function Transactions() {
     setSelectedWeek(null);
   }
 
-  function getStatusColor(remaining: number) {
-    if (remaining > 0) return "text-night-700";
-    return "text-auburn-500";
-  }
-
-  const allWeeks = currentMonth?.weeks || [];
+  const allWeeks = monthData?.weeks || [];
 
   function sortTransactions(transactions: any[]) {
     return [...transactions].sort((a, b) => {
@@ -81,12 +85,16 @@ function Transactions() {
     ? allWeeks.find((w: any) => w.weekNumber === selectedWeek)
     : null;
 
+  function isPreviousMonthYear(month: number, year: number) {
+    const now = new Date();
+    const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const prevYear =
+      now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    return month === prevMonth + 1 && year === prevYear;
+  }
+
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <span>Loading...</span>
-      </div>
-    );
+    return <LoadingSpinner message="Loading transactions..." />;
   }
 
   return (
@@ -101,9 +109,9 @@ function Transactions() {
             variant="secondary"
             onClick={() =>
               openModal("EDIT_BUDGET", {
-                month: currentMonth?.month,
-                year: currentMonth?.year,
-                currentBudget: currentMonth?.monthlyBudget,
+                monthNumber: monthData?.monthNumber,
+                year: monthData?.year,
+                currentBudget: monthData?.monthlyBudget,
               })
             }
             className="shadow-sm text-sm md:text-base w-full sm:w-auto"
@@ -124,7 +132,7 @@ function Transactions() {
         {/* Navigation Buttons */}
         <button
           onClick={() => navigateMonth("prev")}
-          disabled={currentMonthIndex >= maxMonths - 1}
+          disabled={currentMonthIndex >= MAX_MONTHS - 1}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
         >
           <FiChevronLeft size={20} className="md:w-6 md:h-6" />
@@ -143,7 +151,10 @@ function Transactions() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {currentMonth?.month} {currentMonth?.year}
+              {format(
+                new Date(monthData.year, monthData.monthNumber - 1),
+                "MMMM yyyy"
+              )}
             </h2>
           </div>
         </div>
@@ -158,31 +169,41 @@ function Transactions() {
             </p>
             <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
               {currency}
-              {currentMonth?.monthlyBudget?.toLocaleString()}
+              {monthData?.monthlyBudget}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
               Total Spent
             </p>
-            <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
+            <p
+              className={`text-xl md:text-3xl font-bold ${
+                monthData?.monthlyTotalSpent > monthData?.monthlyBudget
+                  ? "text-auburn-500"
+                  : "text-timberwolf-900"
+              }`}
+            >
               {currency}
-              {currentMonth?.monthlyTotalSpent?.toLocaleString()}
+              {monthData?.monthlyTotalSpent}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              Remaining
+              {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
+                ? "Remaining"
+                : monthData?.monthlyRemainingBudget >= 0
+                ? "Savings"
+                : "Deficit"}
             </p>
             <p
               className={`text-xl md:text-3xl font-bold ${
-                currentMonth?.monthlyRemainingBudget >= 0
-                  ? "text-timberwolf-900"
+                monthData?.monthlyRemainingBudget >= 0
+                  ? "text-emerald-500"
                   : "text-auburn-500"
               }`}
             >
               {currency}
-              {currentMonth?.monthlyRemainingBudget?.toLocaleString()}
+              {monthData?.monthlyRemainingBudget}
             </p>
           </div>
         </div>
@@ -215,32 +236,42 @@ function Transactions() {
                   selectedWeek === week.weekNumber ? null : week.weekNumber
                 )
               }
-              className={`px-2 md:px-3 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
+              className={`px-2 md:px-3 py-3 md:py-4 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
                 selectedWeek === week.weekNumber
                   ? "bg-night-600 text-timberwolf-900 shadow-md"
                   : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
               }`}
             >
-              <div className="text-center">
-                <div className="text-xs md:text-sm font-semibold">
-                  Week {week.weekNumber}
+              <div className="text-center space-y-1.5">
+                {/* Week Header */}
+                <div>
+                  <div className="text-sm md:text-base font-bold">
+                    Week {week.weekNumber}
+                  </div>
+                  <div className="text-xs opacity-50 font-normal -mt-0.5">
+                    {formatWeekRange(week.weekStartDate, week.weekEndDate)}
+                  </div>
                 </div>
-                <div className="text-xs opacity-75 mt-1">
-                  {currency}
-                  {week.weeklyTotalSpent?.toLocaleString()}
-                </div>
-                <div
-                  className={`text-xs font-medium mt-1 ${
-                    selectedWeek === week.weekNumber
-                      ? week.weeklyRemainingBudget >= 0
-                        ? "text-night-800"
-                        : "text-auburn-700"
-                      : getStatusColor(week.weeklyRemainingBudget)
-                  }`}
-                >
-                  {week.weeklyRemainingBudget >= 0
-                    ? `+${currency}${week.weeklyRemainingBudget}`
-                    : `${currency}${week.weeklyRemainingBudget}`}
+
+                {/* Financial Info */}
+                <div className="pt-1 border-t border-opacity-20 border-current">
+                  <div className="text-xs opacity-80 font-medium">
+                    {currency}
+                    {week.weeklyTotalSpent}
+                  </div>
+                  <div className="text-xs font-semibold mt-0.5">
+                    {week.weeklyRemainingBudget >= 0 ? (
+                      <span className="text-emerald-500">
+                        +{currency}
+                        {week.weeklyRemainingBudget}
+                      </span>
+                    ) : (
+                      <span className="text-auburn-500">
+                        -{currency}
+                        {Math.abs(week.weeklyRemainingBudget)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </button>
@@ -258,31 +289,42 @@ function Transactions() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {selectedWeekData.weeklyBudget?.toLocaleString()}
+                {selectedWeekData.weeklyBudget}
               </p>
             </div>
             <div className="text-center">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
                 Week {selectedWeek} Spent
               </p>
-              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
+              <p
+                className={`text-lg md:text-2xl font-bold ${
+                  selectedWeekData.weeklyTotalSpent >
+                  selectedWeekData.weeklyBudget
+                    ? "text-auburn-500"
+                    : "text-timberwolf-900"
+                }`}
+              >
                 {currency}
-                {selectedWeekData.weeklyTotalSpent?.toLocaleString()}
+                {selectedWeekData.weeklyTotalSpent}
               </p>
             </div>
             <div className="text-center">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-                Remaining
+                {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
+                  ? "Remaining"
+                  : monthData?.monthlyRemainingBudget >= 0
+                  ? "Savings"
+                  : "Deficit"}
               </p>
               <p
                 className={`text-lg md:text-2xl font-bold ${
                   selectedWeekData.weeklyRemainingBudget >= 0
-                    ? "text-timberwolf-900"
+                    ? "text-emerald-500"
                     : "text-auburn-500"
                 }`}
               >
                 {currency}
-                {selectedWeekData.weeklyRemainingBudget?.toLocaleString()}
+                {selectedWeekData.weeklyRemainingBudget}
               </p>
             </div>
           </div>
@@ -292,20 +334,35 @@ function Transactions() {
       {/* Transactions List Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 md:mb-6">
         <h3 className="text-lg md:text-xl font-bold text-night-600">
-          {selectedWeek
-            ? `Week ${selectedWeek} Transactions`
-            : `All ${currentMonth?.month} Transactions`}
+          {selectedWeek ? (
+            <>
+              Week {selectedWeek} Transactions{" "}
+              <span className="text-sm md:text-base font-normal text-ash-gray-400">
+                (
+                {formatWeekRange(
+                  selectedWeekData.weekStartDate,
+                  selectedWeekData.weekEndDate
+                )}
+                )
+              </span>
+            </>
+          ) : (
+            `All ${format(
+              new Date(monthData.year, monthData.monthNumber - 1),
+              "MMMM"
+            )} Transactions`
+          )}
         </h3>
 
         {/* Sort Toggle */}
         <div className="flex items-center space-x-2">
-          <span className="text-xs md:text-sm text-ash-gray-400">Sort:</span>
+          <span className="text-xs md:text-sm text-ash-gray-300">Sort:</span>
           <button
             onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "desc"
                 ? "bg-night-600 text-timberwolf-900"
-                : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
+                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
             }`}
           >
             <span>Newest</span>
@@ -316,7 +373,7 @@ function Transactions() {
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "asc"
                 ? "bg-night-600 text-timberwolf-900"
-                : "bg-timberwolf-700 text-night-500 hover:bg-timberwolf-600"
+                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
             }`}
           >
             <span>Oldest</span>
@@ -352,8 +409,14 @@ function Transactions() {
           </p>
           <p className="text-sm">
             {selectedWeek
-              ? `No expenses recorded for Week ${selectedWeek}`
-              : `No expenses recorded for ${currentMonth?.month} ${currentMonth?.year}`}
+              ? `No expenses recorded for Week ${selectedWeek} (${formatWeekRange(
+                  selectedWeekData.weekStartDate,
+                  selectedWeekData.weekEndDate
+                )})`
+              : `No expenses recorded for ${format(
+                  new Date(monthData.year, monthData.monthNumber - 1),
+                  "MMMM yyyy"
+                )}`}
           </p>
         </div>
       )}

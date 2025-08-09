@@ -3,19 +3,33 @@ import type { User } from "@/types/index";
 
 function formatUser(row: any): User | null {
   if (!row) return null;
-  const { first_name, last_name, ...rest } = row;
+  const {
+    user_name,
+    username_changed_at,
+    email_changed_at,
+    password_changed_at,
+    is_verified = false,
+    ...rest
+  } = row;
   return {
     ...rest,
-    firstName: first_name,
-    lastName: last_name,
+    userName: user_name,
+    isVerified: is_verified,
+    userNameChangedAt: username_changed_at,
+    emailChangedAt: email_changed_at,
+    passwordChangedAt: password_changed_at,
   };
 }
 
 const userRepository = {
-  async create({ firstName, lastName, email, password }: Omit<User, "id">) {
+  async create({
+    userName,
+    email,
+    password,
+  }: Pick<User, "userName" | "email" | "password">) {
     const { rows } = await pool.query(
-      "INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
-      [firstName, lastName, email, password]
+      "INSERT INTO users (user_name, email, password) VALUES ($1, $2, $3) RETURNING *",
+      [userName, email, password]
     );
     return formatUser(rows[0]);
   },
@@ -34,10 +48,40 @@ const userRepository = {
     return formatUser(rows[0]);
   },
 
-  async update({ id, firstName, lastName, email, password }: User) {
+  async updateVerificationStatus({
+    id,
+    isVerified,
+  }: Pick<User, "id" | "isVerified">) {
     const { rows } = await pool.query(
-      "UPDATE users SET first_name = $1, last_name = $2, email = $3, password = $4 WHERE id = $5 RETURNING *",
-      [firstName, lastName, email, password, id]
+      "UPDATE users SET is_verified = $1 WHERE id = $2 RETURNING *",
+      [isVerified, id]
+    );
+    return formatUser(rows[0]);
+  },
+
+  async updateUserName({ id, userName }: Pick<User, "id" | "userName">) {
+    const changeAt = new Date();
+    const { rows } = await pool.query(
+      "UPDATE users SET user_name = $1, username_changed_at = $2 WHERE id = $3 RETURNING *",
+      [userName, changeAt, id]
+    );
+    return formatUser(rows[0]);
+  },
+
+  async updateEmail({ id, email }: Pick<User, "id" | "email">) {
+    const changedAt = new Date();
+    const { rows } = await pool.query(
+      "UPDATE users SET email = $1, email_changed_at = $2 WHERE id = $3 RETURNING *",
+      [email, changedAt, id]
+    );
+    return formatUser(rows[0]);
+  },
+
+  async updatePassword({ id, password }: Pick<User, "id" | "password">) {
+    const changedAt = new Date();
+    const { rows } = await pool.query(
+      "UPDATE users SET password = $1, password_changed_at = $2 WHERE id = $3 RETURNING *",
+      [password, changedAt, id]
     );
     return formatUser(rows[0]);
   },

@@ -1,17 +1,17 @@
 import {
   FiHome,
-  TfiWallet,
   FiBarChart2,
   FiTarget,
-  FiLogOut,
   FiMenu,
   FiX,
-} from "@/assets/icons";
+  FiSettings,
+} from "react-icons/fi";
+import { TfiWallet } from "react-icons/tfi";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router";
 import { useState } from "react";
-import { useLogout } from "@/hooks";
 import { AppLogo } from "@/assets/images";
+import { format } from "date-fns";
 
 interface NavItemProps {
   to: string;
@@ -40,7 +40,6 @@ const NavItem = ({ to, icon, label, onClick }: NavItemProps) => (
 
 function Sidebar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { mutate: logout } = useLogout();
 
   const navItems = [
     { to: "/home", icon: <FiHome />, label: "Home" },
@@ -49,12 +48,9 @@ function Sidebar() {
     // { to: "/goals", icon: <FiTarget />, label: "Goals" },
   ];
 
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const now = new Date();
+  const currentDate = format(now, "EEEE, MMMM d, yyyy");
+  const currentDateShort = format(now, "MMM d");
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -88,14 +84,7 @@ function Sidebar() {
           ))}
         </nav>
         <div className="mt-auto">
-          <button
-            type="button"
-            onClick={() => logout()}
-            className="flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors text-ash-gray-500 hover:bg-night-600 hover:text-timberwolf-900 w-full"
-          >
-            <FiLogOut />
-            <span className="ml-4">Logout</span>
-          </button>
+          <NavItem to="/settings" icon={<FiSettings />} label="Settings" />
         </div>
       </aside>
 
@@ -124,10 +113,7 @@ function Sidebar() {
               Today
             </p>
             <p className="text-sm font-medium text-timberwolf-900">
-              {new Date().toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              })}
+              {currentDateShort}
             </p>
           </div>
         </div>
@@ -181,18 +167,14 @@ function Sidebar() {
                   <NavItem key={item.label} {...item} onClick={closeMenu} />
                 ))}
               </nav>
+              {/* Settings at the bottom */}
               <div className="mt-auto">
-                <button
-                  type="button"
-                  onClick={() => {
-                    logout();
-                    closeMenu();
-                  }}
-                  className="flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors text-ash-gray-500 hover:bg-night-600 hover:text-timberwolf-900 w-full"
-                >
-                  <FiLogOut />
-                  <span className="ml-4">Logout</span>
-                </button>
+                <NavItem
+                  to="/settings"
+                  icon={<FiSettings />}
+                  label="Settings"
+                  onClick={closeMenu}
+                />
               </div>
             </div>
           </div>

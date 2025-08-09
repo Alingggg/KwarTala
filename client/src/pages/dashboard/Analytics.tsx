@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ExpenseChart } from "@/components";
-import { FiCalendar, FiChevronLeft, FiChevronRight } from "@/assets/icons";
+import { ExpenseChart, LoadingSpinner } from "@/components";
+import { FiCalendar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
   useAnalyticsData,
@@ -10,6 +10,7 @@ import {
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
 import type { Expense } from "@/types";
+import { format, subMonths } from "date-fns";
 
 const MAX_MONTHS = 12;
 
@@ -24,7 +25,7 @@ function CustomPieTooltip({ active, payload }: any) {
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
             <span className="font-medium">Amount:</span> {currency}
-            {data.total.toLocaleString()}
+            {data.total}
           </p>
           <p className="text-night-500 text-sm">
             <span className="font-medium">Percentage:</span>{" "}
@@ -41,17 +42,17 @@ function Analytics() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const { currency } = useCurrencyContext();
 
-  const today = new Date();
-
   function getMonthYear(index: number) {
-    const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
+    const date = subMonths(new Date(), index);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
   }
 
   const { month, year } = getMonthYear(currentMonthIndex);
 
-  const { data: analyticsData, isLoading: isAnalyticsLoading } =
-    useAnalyticsData({ month, year });
+  const { data: monthData, isLoading: isAnalyticsLoading } = useAnalyticsData({
+    month,
+    year,
+  });
   const { data: dailyChartsData, isLoading: isDailyLoading } =
     useDailyChartsData({
       month,
@@ -64,9 +65,9 @@ function Analytics() {
     });
 
   const highestExpensesWithColors =
-    analyticsData && assignCategoryColors(analyticsData.highestExpenses);
+    monthData && assignCategoryColors(monthData.highestExpenses);
   const expenseByCategoryWithColors =
-    analyticsData && assignCategoryColors(analyticsData.expenseByCategory);
+    monthData && assignCategoryColors(monthData.expenseByCategory);
 
   function navigateMonth(direction: "prev" | "next") {
     if (direction === "prev" && currentMonthIndex < MAX_MONTHS - 1) {
@@ -77,11 +78,7 @@ function Analytics() {
   }
 
   if (isAnalyticsLoading || isDailyLoading || isWeeklyLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <span>Loading...</span>
-      </div>
-    );
+    return <LoadingSpinner message="Loading analytics data..." />;
   }
 
   return (
@@ -117,7 +114,10 @@ function Analytics() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {analyticsData.month} {analyticsData.year}
+              {format(
+                new Date(monthData.year, monthData.monthNumber - 1, 1),
+                "MMMM yyyy"
+              )}
             </h2>
           </div>
         </div>
@@ -135,13 +135,13 @@ function Analytics() {
                 </p>
                 <p
                   className={`text-xl md:text-3xl font-bold ${
-                    analyticsData.monthlyRemainingBudget >= 0
+                    monthData.monthlyRemainingBudget >= 0
                       ? "text-timberwolf-900"
                       : "text-auburn-500"
                   }`}
                 >
                   {currency}
-                  {analyticsData.monthlyRemainingBudget.toLocaleString()}
+                  {monthData.monthlyRemainingBudget}
                 </p>
               </div>
               <div>
@@ -150,7 +150,7 @@ function Analytics() {
                 </p>
                 <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
                   {currency}
-                  {analyticsData.monthlyBudget.toLocaleString()}
+                  {monthData.monthlyBudget}
                 </p>
               </div>
             </div>
@@ -159,21 +159,23 @@ function Analytics() {
               <div className="w-full bg-night-600 rounded-full h-2 md:h-3 shadow-inner">
                 <div
                   className={`${
-                    analyticsData.monthlyRemainingBudget >= 0
+                    monthData.monthlyRemainingBudget >= 0
                       ? "bg-night-700"
                       : "bg-auburn-500"
                   } h-2 md:h-3 rounded-full shadow-sm`}
                   style={{
                     width: `${Math.min(
-                      analyticsData.monthlyBudgetUsedPercentage,
+                      monthData.monthlyBudgetUsedPercentage,
                       100
                     )}%`,
                   }}
                 ></div>
               </div>
               <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
-                <span>{analyticsData.monthlyBudgetUsedPercentage}% Used</span>
-                <span>{analyticsData.remainingDays} Days Remaining</span>
+                <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
+                {monthData.remainingDays > 0 && (
+                  <span>{`${monthData.remainingDays} Days Remaining`}</span>
+                )}
               </div>
             </div>
           </div>
@@ -186,7 +188,7 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {analyticsData.monthlyTotalSpent.toLocaleString()}
+                {monthData.monthlyTotalSpent}
               </p>
             </div>
             <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
@@ -195,7 +197,7 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {analyticsData.averageDailySpending.toLocaleString()}
+                {monthData.averageDailySpending}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
                 Avg. spend per day
@@ -207,8 +209,8 @@ function Analytics() {
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                 {currency}
-                {analyticsData.recommendedDailyLimit > 0
-                  ? analyticsData.recommendedDailyLimit.toLocaleString()
+                {monthData.recommendedDailyLimit > 0
+                  ? monthData.recommendedDailyLimit
                   : "0"}
               </p>
               <p className="text-xs text-ash-gray-500 mt-1">
@@ -234,67 +236,80 @@ function Analytics() {
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Expenses by Category
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {/* Pie Chart */}
-            <div className="h-48 md:h-52 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={expenseByCategoryWithColors}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={window.innerWidth < 768 ? 60 : 80}
-                    dataKey="total"
-                    label={false}
-                  >
-                    {expenseByCategoryWithColors.map(
-                      (entry: any, index: number) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={entry.color}
-                          stroke="var(--color-ash-gray-900)"
-                          strokeWidth={2}
-                          style={{ cursor: "pointer" }}
-                        />
-                      )
-                    )}
-                  </Pie>
-                  <Tooltip content={<CustomPieTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Category List */}
-            <div className="space-y-1">
-              {expenseByCategoryWithColors.map(
-                (category: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between text-xs md:text-sm hover:bg-timberwolf-900 p-2 rounded-lg transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center overflow-hidden min-w-0">
-                      <div
-                        className="w-3 h-3 rounded-full mr-2 md:mr-3 flex-shrink-0"
-                        style={{ backgroundColor: category.color }}
-                      ></div>
-                      <span className="font-medium text-night-600 truncate">
-                        {category.category}
-                      </span>
+          {expenseByCategoryWithColors &&
+          expenseByCategoryWithColors.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Pie Chart */}
+              <div className="h-48 md:h-52 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={expenseByCategoryWithColors}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={window.innerWidth < 768 ? 60 : 80}
+                      dataKey="total"
+                      label={false}
+                    >
+                      {expenseByCategoryWithColors.map(
+                        (entry: any, index: number) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.color}
+                            stroke="var(--color-ash-gray-900)"
+                            strokeWidth={2}
+                            style={{ cursor: "pointer" }}
+                          />
+                        )
+                      )}
+                    </Pie>
+                    <Tooltip content={<CustomPieTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              {/* Category List */}
+              <div className="space-y-1">
+                {expenseByCategoryWithColors.map(
+                  (category: any, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-xs md:text-sm hover:bg-timberwolf-900 p-2 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center overflow-hidden min-w-0">
+                        <div
+                          className="w-3 h-3 rounded-full mr-2 md:mr-3 flex-shrink-0"
+                          style={{ backgroundColor: category.color }}
+                        ></div>
+                        <span className="font-medium text-night-600 truncate">
+                          {category.category}
+                        </span>
+                      </div>
+                      <div className="text-right ml-2 flex-shrink-0">
+                        <p className="font-semibold text-night-600">
+                          {currency}
+                          {category.total}
+                        </p>
+                        <p className="text-xs text-ash-gray-400 font-medium">
+                          {category.percentageOfTotal}%
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right ml-2 flex-shrink-0">
-                      <p className="font-semibold text-night-600">
-                        {currency}
-                        {category.total.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-ash-gray-400 font-medium">
-                        {category.percentageOfTotal}%
-                      </p>
-                    </div>
-                  </div>
-                )
-              )}
+                  )
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-12 md:py-16 text-ash-gray-500">
+              <FiCalendar
+                size={48}
+                className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
+              />
+              <p className="text-lg md:text-xl font-semibold mb-2">
+                No category data found
+              </p>
+              <p className="text-sm">No expenses recorded for this month.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -304,33 +319,45 @@ function Analytics() {
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Top Expenses
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3 md:gap-y-4">
-            {highestExpensesWithColors.map(
-              (expense: Expense & { color: string }, index: number) => (
-                <div
-                  key={expense.id || index}
-                  className="flex items-center justify-between py-2 md:py-3 border-b border-ash-gray-700"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-night-600 text-sm md:text-base truncate">
-                      {expense.description}
-                    </p>
-                    <p className="text-xs md:text-sm text-ash-gray-400">
-                      {expense.category} •{" "}
-                      {new Date(expense.date).toLocaleDateString(undefined, {
-                        month: "long",
-                        day: "numeric",
-                      })}
+          {highestExpensesWithColors && highestExpensesWithColors.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3 md:gap-y-4">
+              {highestExpensesWithColors.map(
+                (expense: Expense & { color: string }, index: number) => (
+                  <div
+                    key={expense.id || index}
+                    className="flex items-center justify-between py-2 md:py-3 border-b border-ash-gray-700"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-night-600 text-sm md:text-base truncate">
+                        {expense.description || (
+                          <span className="italic">[No Description]</span>
+                        )}
+                      </p>
+                      <p className="text-xs md:text-sm text-ash-gray-400">
+                        {expense.category} •{" "}
+                        {format(new Date(expense.date), "MMMM d")}
+                      </p>
+                    </div>
+                    <p className="font-semibold text-auburn-500 text-sm md:text-base ml-2 flex-shrink-0">
+                      {currency}
+                      {expense.amount}
                     </p>
                   </div>
-                  <p className="font-semibold text-auburn-500 text-sm md:text-base ml-2 flex-shrink-0">
-                    {currency}
-                    {expense.amount.toLocaleString()}
-                  </p>
-                </div>
-              )
-            )}
-          </div>
+                )
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-ash-gray-500">
+              <FiCalendar
+                size={48}
+                className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
+              />
+              <p className="text-lg md:text-xl font-semibold mb-2">
+                No top expenses found
+              </p>
+              <p className="text-sm">No expenses recorded for this month.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ function generateToken(
   }
 
   const options = {
-    expiresIn: type === "access-token" ? "15m" : "30d", // 15 minutes, 30 days
+    expiresIn: type === "access-token" ? "15m" : "30d",
   };
 
   return jwt.sign(payload, secret, options as jwt.SignOptions);

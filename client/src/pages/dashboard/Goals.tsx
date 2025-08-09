@@ -6,7 +6,7 @@ import {
   FiChevronRight,
   FiEdit,
   FiPlus,
-} from "@/assets/icons";
+} from "react-icons/fi";
 import { useModalContext } from "@/hooks";
 
 interface Goal {

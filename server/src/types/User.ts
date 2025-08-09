@@ -1,12 +1,15 @@
 interface User {
   id: number;
-  firstName: string;
-  lastName: string;
+  userName: string;
   email: string;
   password: string;
+  isVerified: boolean;
+  userNameChangedAt: Date | string;
+  emailChangedAt: Date | string;
+  passwordChangedAt: Date | string;
 }
 
-interface UserPayload extends Omit<User, "password" | "id"> {
+interface UserPayload extends Omit<User, "id" | "password"> {
   userId: number;
 }
 

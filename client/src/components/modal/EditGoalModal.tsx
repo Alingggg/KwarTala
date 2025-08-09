@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiTarget, FiX, FiTrash2 } from "@/assets/icons";
+import { FiTarget, FiX, FiTrash2 } from "react-icons/fi";
 import { Button } from "@/components";
 import { useCurrencyContext } from "@/hooks";
 

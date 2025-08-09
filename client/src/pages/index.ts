@@ -1,6 +1,11 @@
-export { default as Login } from "./Login";
-export { default as Register } from "./Register";
-export { default as Home } from "./Home";
-export { default as Transactions } from "./Transactions";
-export { default as Analytics } from "./Analytics";
-export { default as Goals } from "./Goals";
+export { default as Login } from "./auth/Login";
+export { default as Register } from "./auth/Register";
+export { default as EmailVerification } from "./auth/EmailVerification";
+export { default as ResetPassword } from "./auth/ResetPassword";
+export { default as EditEmail } from "./auth/EditEmail";
+
+export { default as Home } from "./dashboard/Home";
+export { default as Transactions } from "./dashboard/Transactions";
+export { default as Analytics } from "./dashboard/Analytics";
+export { default as Goals } from "./dashboard/Goals";
+export { default as Settings } from "./dashboard/Settings";

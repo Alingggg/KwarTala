@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiEye, FiEyeOff } from "@/assets/icons";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 interface InputProps {
   type?: string;
@@ -8,6 +8,7 @@ interface InputProps {
   min?: string | number;
   max?: string | number;
   className?: string;
+  disabled?: boolean;
 }
 
 function Input({
@@ -17,12 +18,12 @@ function Input({
   min,
   max,
   className = "",
+  disabled = false,
   ...otherProps
 }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   const inputType = type === "password" && showPassword ? "text" : type;
-
   const step = type === "number" ? "any" : undefined;
 
   return (
@@ -34,20 +35,17 @@ function Input({
         min={min}
         max={max}
         step={step}
+        disabled={disabled}
         {...otherProps}
         className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${
-          type === "number"
-            ? "appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            : ""
-        } ${type === "password" ? "pr-10" : ""} ${className}`}
-        style={type === "number" ? { MozAppearance: "textfield" } : undefined}
+          type === "password" ? "pr-11" : ""
+        } ${className}`}
       />
-
       {type === "password" && (
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          className="absolute inset-y-0 right-0 px-3 flex items-center"
         >
           {showPassword ? (
             <FiEyeOff className="h-5 w-5 text-night-500 hover:text-night-600" />

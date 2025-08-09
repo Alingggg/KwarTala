@@ -1,9 +1,10 @@
-import { Button, Input } from "@/components";
-import { FiMail, FiLock } from "@/assets/icons";
+import { Button, Input, LoadingOverlay } from "@/components";
+import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import { useLogin } from "@/hooks";
+import { useGetVerificationEmail, useLogin, useModalContext } from "@/hooks";
 import { AppLogo } from "@/assets/images";
+import { useState } from "react";
 
 interface FormValues {
   email: string;
@@ -36,16 +37,30 @@ const validation = {
 };
 
 function Login() {
+  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-  const { mutate: login } = useLogin();
+  const { mutate: login, isPending } = useLogin();
+  const { mutate: sendVerification } = useGetVerificationEmail();
+  const { openModal } = useModalContext();
 
   function onSubmit(data: FormValues) {
-    login(data);
+    setEmail(data.email);
+    setError(null);
+
+    login(data, {
+      onError: (err: any) => {
+        setError(
+          err?.response?.data?.message ||
+            "Internal server error. Please try again."
+        );
+      },
+    });
   }
 
   return (
@@ -67,7 +82,7 @@ function Login() {
           </p>
         </div>
 
-        <div className="bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
+        <div className="relative bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
           <div className="mb-5">
             <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-1">
               Sign In
@@ -76,6 +91,33 @@ function Login() {
               Enter your credentials to access your account
             </p>
           </div>
+
+          {error && (
+            <div className="mb-4 text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
+                <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+                <span className="text-base text-auburn-100 font-semibold">
+                  {error}
+                </span>
+              </div>
+              {error === "Email not verified." && (
+                <div className="mt-3 flex flex-col items-center">
+                  <Button
+                    variant="secondary"
+                    className="w-fit text-xs font-semibold"
+                    onClick={() => {
+                      sendVerification({
+                        email: email as string,
+                        type: "register",
+                      });
+                    }}
+                  >
+                    Send verification email to {email}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           <form
             className="flex flex-col gap-4"
@@ -97,12 +139,16 @@ function Login() {
                   id="email"
                   type="text"
                   placeholder="Enter your email"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.email
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("email", validation.email)}
                 />
               </div>
               {errors.email && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.email.message}
                 </p>
               )}
@@ -123,21 +169,33 @@ function Login() {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="pl-10"
+                  className={`pl-10 ${
+                    errors.password
+                      ? "border-auburn-600 focus:border-auburn-600"
+                      : ""
+                  }`}
                   {...register("password", validation.password)}
                 />
               </div>
               {errors.password && (
-                <p className="text-xs text-auburn-600">
+                <p className="text-xs text-auburn-600 font-semibold">
                   {errors.password.message}
                 </p>
               )}
+              <button
+                type="button"
+                className="mt-2 text-xs text-night-600 hover:text-night-700 font-semibold self-end hover:cursor-pointer"
+                onClick={() => openModal("REQUEST_RESET_PASSWORD")}
+              >
+                Forgot Password?
+              </button>
             </div>
 
             <Button
               type="submit"
               className="w-full text-sm md:text-base font-semibold py-2.5 md:py-3"
               variant="primary"
+              disabled={isPending}
             >
               Sign In
             </Button>
@@ -154,6 +212,7 @@ function Login() {
               </button>
             </p>
           </div>
+          {isPending && <LoadingOverlay message="Signing in..." />}
         </div>
       </div>
     </div>
