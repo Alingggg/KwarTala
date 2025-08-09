@@ -230,7 +230,7 @@ const userService = {
 
     await emailService.sendVerificationEmail({
       email: newEmail ? newEmail : user.email,
-      verificationLink: `http://localhost:5173${path}${params}`,
+      verificationLink: `http://${process.env.FRONTEND_URL}${path}${params}`,
       subject,
       mainTitle,
       mainText,
