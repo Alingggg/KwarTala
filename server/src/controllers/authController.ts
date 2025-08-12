@@ -154,7 +154,9 @@ const authController = {
 
       const user = await userService.getUserProfile(userId);
 
-      res.status(200).json(user);
+      res
+        .status(200)
+        .json({ data: user, message: "User fetched successfully" });
     } catch (error) {
       next(error);
     }

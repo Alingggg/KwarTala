@@ -63,7 +63,7 @@ function useUser() {
     queryKey: ["me"],
     queryFn: async () => {
       const response = await api.get("/auth/me");
-      return response.data;
+      return response.data.data;
     },
     staleTime: 1000 * 60 * 15,
   });
