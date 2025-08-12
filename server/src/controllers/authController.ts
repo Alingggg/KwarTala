@@ -1,3 +1,11 @@
+import {
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+  userNameSchema,
+  verificationEmailSchema,
+  verifyEmailSchema,
+} from "@/schemas/index";
 import { sessionService, userService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
@@ -5,52 +13,17 @@ import type { NextFunction, Request, Response } from "express";
 const authController = {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userName, email, password } = req.body;
-
-      if (!userName || !email || !password) {
-        const error: CustomError = new Error("All fields are required");
+      const validationResult = registerSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
-      if (userName.length < 3 || userName.length > 20) {
-        const error: CustomError = new Error(
-          "Username must be between 3 and 20 characters"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-      if (!/^[a-zA-Z0-9]+$/.test(userName)) {
-        const error: CustomError = new Error(
-          "Username can only contain letters and numbers"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        const error: CustomError = new Error("Invalid email format");
-        error.statusCode = 400;
-        throw error;
-      }
-
-      if (password.length < 8 || password.length > 64) {
-        const error: CustomError = new Error(
-          "Password must be between 8 and 64 characters"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-      if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/.test(password)) {
-        const error: CustomError = new Error(
-          "Must include upper & lowercase letters, a number, and a symbol"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
+      const { userName, email, password } = validationResult.data;
 
       const existingUser = await userService.findUserByEmail(email);
-
       if (existingUser) {
         const error: CustomError = new Error("User already exists");
         error.statusCode = 409;
@@ -62,7 +35,6 @@ const authController = {
         email,
         password,
       });
-
       if (!newUser) {
         const error: CustomError = new Error("User registration failed");
         error.statusCode = 500;
@@ -81,40 +53,21 @@ const authController = {
     try {
       const hasAccessToken = req.cookies.accessToken;
       const hasRefreshToken = req.cookies.refreshToken;
-
       if (hasAccessToken || hasRefreshToken) {
         const error: CustomError = new Error("Already logged in");
         error.statusCode = 409;
         throw error;
       }
 
-      const { email, password } = req.body;
-      if (!email || !password) {
-        const error: CustomError = new Error("Email and password are required");
+      const validationResult = loginSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        const error: CustomError = new Error("Invalid email format");
-        error.statusCode = 400;
-        throw error;
-      }
-
-      if (password.length < 8 || password.length > 64) {
-        const error: CustomError = new Error(
-          "Password must be between 8 and 64 characters"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-      if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/.test(password)) {
-        const error: CustomError = new Error(
-          "Must include upper & lowercase letters, a number, and a symbol"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
+      const { email, password } = validationResult.data;
 
       const { user, accessToken, refreshToken } = await userService.loginUser({
         email,
@@ -144,7 +97,6 @@ const authController = {
   async refreshAccessToken(req: Request, res: Response, next: NextFunction) {
     try {
       const refreshToken = req.cookies.refreshToken;
-
       if (!refreshToken) {
         const error: CustomError = new Error("Refresh token is required");
         error.statusCode = 401;
@@ -200,12 +152,6 @@ const authController = {
       }
       const { userId } = req.user;
 
-      if (!userId) {
-        const error: CustomError = new Error("User ID is required");
-        error.statusCode = 400;
-        throw error;
-      }
-
       const user = await userService.getUserProfile(userId);
 
       res.status(200).json(user);
@@ -216,13 +162,15 @@ const authController = {
 
   async sendVerificationEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, type, newEmail } = req.body;
-
-      if (!email || !type) {
-        const error: CustomError = new Error("Email and type are required");
+      const validationResult = verificationEmailSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
+
+      const { email, type, newEmail } = validationResult.data;
 
       await userService.sendVerificationEmail({
         email,
@@ -238,13 +186,15 @@ const authController = {
 
   async verifyEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token, newEmail } = req.body;
-
-      if (!token) {
-        const error: CustomError = new Error("Token is required");
+      const validationResult = verifyEmailSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
+
+      const { token, newEmail } = validationResult.data;
 
       await userService.verifyEmail({ token, newEmail });
       if (newEmail) {
@@ -272,29 +222,16 @@ const authController = {
         throw error;
       }
 
-      const { userName } = req.body;
       const { userId, userNameChangedAt } = req.user;
 
-      if (!userName) {
-        const error: CustomError = new Error("Username is required");
+      const validationResult = userNameSchema.safeParse(req.body.userName);
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
         throw error;
       }
 
-      if (userName.length < 3 || userName.length > 20) {
-        const error: CustomError = new Error(
-          "Username must be between 3 and 20 characters"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
-      if (!/^[a-zA-Z0-9]+$/.test(userName)) {
-        const error: CustomError = new Error(
-          "Username can only contain letters and numbers"
-        );
-        error.statusCode = 400;
-        throw error;
-      }
+      const userName = validationResult.data;
 
       const updatedUser = await userService.updateUserName({
         userId,
@@ -312,15 +249,18 @@ const authController = {
 
   async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token, newPassword } = req.body;
+      const resetPasswordDetails = req.body;
 
-      if (!token || !newPassword) {
-        const error: CustomError = new Error(
-          "Token and new password are required"
-        );
+      const validationResult =
+        resetPasswordSchema.safeParse(resetPasswordDetails);
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
+
+      const { token, newPassword } = validationResult.data;
 
       await userService.updatePassword({
         token,
