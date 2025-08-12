@@ -1,63 +1,11 @@
+import {
+  createExpenseSchema,
+  deleteExpenseSchema,
+  updateExpenseSchema,
+} from "@/schemas";
 import { expenseService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
-
-function validateExpense({
-  category,
-  description,
-  amount,
-  date,
-}: {
-  category?: string;
-  description?: string;
-  amount?: number;
-  date?: string;
-}) {
-  if (!category) {
-    const error: CustomError = new Error("Category is required");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (category.length > 25) {
-    const error: CustomError = new Error(
-      "Category must be at most 25 characters"
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-  if (description && description.length > 50) {
-    const error: CustomError = new Error(
-      "Description must be at most 50 characters"
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-  if (amount === undefined || amount === null) {
-    const error: CustomError = new Error("Amount is required");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (typeof amount !== "number" || isNaN(amount)) {
-    const error: CustomError = new Error("Amount must be a number");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (amount < 0) {
-    const error: CustomError = new Error("Amount cannot be negative");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (amount > 10000000) {
-    const error: CustomError = new Error("Amount must not exceed 10,000,000");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (!date) {
-    const error: CustomError = new Error("Date is required");
-    error.statusCode = 400;
-    throw error;
-  }
-}
 
 const expenseController = {
   async createExpense(req: Request, res: Response, next: NextFunction) {
@@ -69,9 +17,16 @@ const expenseController = {
       }
 
       const { userId } = req.user;
-      const { category, description, amount, date } = req.body;
 
-      validateExpense({ category, description, amount, date });
+      const validationResult = createExpenseSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
+        error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
+        throw error;
+      }
+
+      const { category, description, amount, date } = validationResult.data;
 
       const newExpense = await expenseService.createExpense({
         userId,
@@ -92,18 +47,20 @@ const expenseController = {
   async updateExpense(req: Request, res: Response, next: NextFunction) {
     try {
       const { id: idParam } = req.params;
-      const { category, description, amount, date } = req.body;
+      const id = Number(idParam);
 
-      const id = idParam ? Number(idParam) : undefined;
-      if (!id || isNaN(id)) {
-        const error: CustomError = new Error(
-          "Expense ID is required and must be a number"
-        );
+      const validationResult = updateExpenseSchema.safeParse({
+        id,
+        ...req.body,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
-      validateExpense({ category, description, amount, date });
+      const { category, description, amount, date } = validationResult.data;
 
       const updatedExpense = await expenseService.updateExpense({
         id,
@@ -125,12 +82,13 @@ const expenseController = {
   async deleteExpense(req: Request, res: Response, next: NextFunction) {
     try {
       const { id: idParam } = req.params;
-      const id = idParam ? Number(idParam) : undefined;
-      if (!id || isNaN(id)) {
-        const error: CustomError = new Error(
-          "Expense ID is required and must be a number"
-        );
+      const id = Number(idParam);
+
+      const validationResult = deleteExpenseSchema.safeParse({ id });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
