@@ -16,7 +16,7 @@ const dashboardService = {
     const startDate = new Date(year, today.getMonth(), 1);
     const endDate = new Date(year, today.getMonth() + 1, 0);
 
-    const budget = await budgetService.findCurrentMonthBudget(userId);
+    const budget = await budgetService.getCurrentMonthBudget(userId);
 
     const spentToday = (await expenseService.getTotalSpentToday(userId)) ?? 0;
 
@@ -58,7 +58,7 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const budget = await budgetService.findBudgetByUserIdAndDate({
+    const budget = await budgetService.getBudgetByUserIdAndDate({
       userId,
       month,
       year,
@@ -174,7 +174,7 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const budget = await budgetService.findBudgetByUserIdAndDate({
+    const budget = await budgetService.getBudgetByUserIdAndDate({
       userId,
       month,
       year,

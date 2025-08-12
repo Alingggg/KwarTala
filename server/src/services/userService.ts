@@ -21,7 +21,7 @@ const userService = {
       throw error;
     }
 
-    const existingUser = await userRepository.findByEmail(email);
+    const existingUser = await userRepository.getByEmail(email);
     if (existingUser) {
       const error: CustomError = new Error("User already exists");
       error.statusCode = 409;
@@ -54,7 +54,7 @@ const userService = {
       throw error;
     }
 
-    const user = await userRepository.findByEmail(email);
+    const user = await userRepository.getByEmail(email);
     if (!user) {
       const error: CustomError = new Error("Invalid email or password.");
       error.statusCode = 401;
@@ -102,7 +102,7 @@ const userService = {
       throw error;
     }
 
-    const session = await sessionService.findSessionByToken(refreshToken);
+    const session = await sessionService.getSessionByToken(refreshToken);
     if (!session) {
       const error: CustomError = new Error("Invalid refresh token.");
       error.statusCode = 401;
@@ -149,7 +149,7 @@ const userService = {
       throw error;
     }
 
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.getById(userId);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -176,7 +176,7 @@ const userService = {
       throw error;
     }
 
-    const user = await userRepository.findByEmail(email);
+    const user = await userRepository.getByEmail(email);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -245,7 +245,7 @@ const userService = {
       throw error;
     }
 
-    const verificationToken = await verificationTokenService.findByToken(token);
+    const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
       const error: CustomError = new Error("Invalid or expired token.");
       error.statusCode = 401;
@@ -261,7 +261,7 @@ const userService = {
 
     await verificationTokenService.deleteVerificationToken(token);
 
-    const user = await this.findUserByEmail(tokenPayload.email);
+    const user = await this.getUserByEmail(tokenPayload.email);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -329,7 +329,7 @@ const userService = {
       throw error;
     }
 
-    const user = await this.findUserById(tokenPayload.userId);
+    const user = await this.getUserById(tokenPayload.userId);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -367,7 +367,7 @@ const userService = {
       throw error;
     }
 
-    const verificationToken = await verificationTokenService.findByToken(token);
+    const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
       const error: CustomError = new Error("Invalid or expired token.");
       error.statusCode = 401;
@@ -383,7 +383,7 @@ const userService = {
 
     await verificationTokenService.deleteVerificationToken(token);
 
-    const user = await this.findUserById(tokenPayload.userId);
+    const user = await this.getUserById(tokenPayload.userId);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -410,12 +410,12 @@ const userService = {
     await sessionService.deleteSessionByUserId(user.id);
   },
 
-  async findUserById(id: number) {
-    return await userRepository.findById(id);
+  async getUserById(id: number) {
+    return await userRepository.getById(id);
   },
 
-  async findUserByEmail(email: string) {
-    return await userRepository.findByEmail(email);
+  async getUserByEmail(email: string) {
+    return await userRepository.getByEmail(email);
   },
 
   async deleteUser(id: number) {

@@ -16,7 +16,7 @@ const budgetRepository = {
     return formatBudget(rows[0]);
   },
 
-  async findByUserIdAndDate({
+  async getByUserIdAndDate({
     userId,
     month,
     year,

@@ -34,14 +34,14 @@ const userRepository = {
     return formatUser(rows[0]);
   },
 
-  async findById(id: number) {
+  async getById(id: number) {
     const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [
       id,
     ]);
     return formatUser(rows[0]);
   },
 
-  async findByEmail(email: string) {
+  async getByEmail(email: string) {
     const { rows } = await pool.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);

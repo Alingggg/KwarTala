@@ -21,7 +21,7 @@ const sessionRepository = {
     return formatSession(rows[0]);
   },
 
-  async findByUserId(userId: number) {
+  async getByUserId(userId: number) {
     const { rows } = await pool.query(
       "SELECT * FROM sessions WHERE user_id = $1",
       [userId]
@@ -29,7 +29,7 @@ const sessionRepository = {
     return formatSession(rows[0]);
   },
 
-  async findByToken(refreshToken: string) {
+  async getByToken(refreshToken: string) {
     const { rows } = await pool.query(
       "SELECT * FROM sessions WHERE refresh_token = $1",
       [refreshToken]

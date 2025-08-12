@@ -17,8 +17,8 @@ const verificationTokenService = {
     });
   },
 
-  async findByToken(token: string) {
-    return await verificationTokenRepository.findByToken(token);
+  async getByToken(token: string) {
+    return await verificationTokenRepository.getByToken(token);
   },
 
   async deleteVerificationToken(token: string) {

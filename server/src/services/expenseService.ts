@@ -27,7 +27,7 @@ const expenseService = {
     startDate: Date | string;
     endDate: Date | string;
   }) {
-    return expenseRepository.findByUserIdAndDateRange({
+    return expenseRepository.getByUserIdAndDateRange({
       userId,
       startDate,
       endDate,
@@ -55,7 +55,7 @@ const expenseService = {
       59,
       999
     );
-    return expenseRepository.findByUserIdAndDateRange({
+    return expenseRepository.getByUserIdAndDateRange({
       userId,
       startDate,
       endDate,

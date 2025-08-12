@@ -23,7 +23,7 @@ const authController = {
 
       const { userName, email, password } = validationResult.data;
 
-      const existingUser = await userService.findUserByEmail(email);
+      const existingUser = await userService.getUserByEmail(email);
       if (existingUser) {
         const error: CustomError = new Error("User already exists");
         error.statusCode = 409;

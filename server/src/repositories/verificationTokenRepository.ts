@@ -27,7 +27,7 @@ const verificationTokenRepository = {
     return formatVerificationToken(rows[0]);
   },
 
-  async findByToken(token: string) {
+  async getByToken(token: string) {
     const { rows } = await pool.query(
       "SELECT * FROM email_verification_tokens WHERE token = $1",
       [token]

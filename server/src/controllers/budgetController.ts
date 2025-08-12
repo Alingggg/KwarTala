@@ -27,7 +27,7 @@ const budgetController = {
         throw error;
       }
 
-      const budget = await budgetService.findBudgetByUserIdAndDate({
+      const budget = await budgetService.getBudgetByUserIdAndDate({
         userId,
         month,
         year,

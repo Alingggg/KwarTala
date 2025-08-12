@@ -22,7 +22,7 @@ const expenseRepository = {
     return formatExpense(rows[0]);
   },
 
-  async findByUserIdAndDateRange({
+  async getByUserIdAndDateRange({
     userId,
     startDate,
     endDate,

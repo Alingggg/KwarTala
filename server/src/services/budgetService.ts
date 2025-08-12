@@ -6,12 +6,12 @@ const budgetService = {
     return budgetRepository.create({ userId, month, year, amount });
   },
 
-  async findBudgetByUserIdAndDate({
+  async getBudgetByUserIdAndDate({
     userId,
     month,
     year,
   }: Omit<Budget, "id" | "amount">) {
-    let budget = await budgetRepository.findByUserIdAndDate({
+    let budget = await budgetRepository.getByUserIdAndDate({
       userId,
       month,
       year,
@@ -29,12 +29,12 @@ const budgetService = {
     return budget;
   },
 
-  async findCurrentMonthBudget(userId: number) {
+  async getCurrentMonthBudget(userId: number) {
     const today = new Date();
     const month = today.getMonth() + 1;
     const year = today.getFullYear();
 
-    return budgetRepository.findByUserIdAndDate({
+    return budgetRepository.getByUserIdAndDate({
       userId,
       month,
       year,

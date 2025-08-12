@@ -11,12 +11,12 @@ const sessionService = {
     return sessionRepository.create({ userId, refreshToken });
   },
 
-  async findSessionByUserId(userId: number) {
-    return sessionRepository.findByUserId(userId);
+  async getSessionByUserId(userId: number) {
+    return sessionRepository.getByUserId(userId);
   },
 
-  async findSessionByToken(refreshToken: string) {
-    return sessionRepository.findByToken(refreshToken);
+  async getSessionByToken(refreshToken: string) {
+    return sessionRepository.getByToken(refreshToken);
   },
 
   async deleteSessionByUserId(userId: number) {
