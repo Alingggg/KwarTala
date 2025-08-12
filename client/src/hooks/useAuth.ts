@@ -3,7 +3,6 @@ import { api } from "@/api";
 import { useNavigate } from "react-router";
 
 function useRegister() {
-  const navigate = useNavigate();
   return useMutation({
     mutationFn: async (data: {
       userName: string;
@@ -66,6 +65,7 @@ function useUser() {
       const response = await api.get("/auth/me");
       return response.data;
     },
+    staleTime: 1000 * 60 * 15,
   });
 
   if (isError) {
