@@ -15,12 +15,6 @@ const userService = {
     email,
     password,
   }: Pick<User, "userName" | "email" | "password">) {
-    if (!userName || !email || !password) {
-      const error: CustomError = new Error("All fields are required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
     const existingUser = await userRepository.getByEmail(email);
     if (existingUser) {
       const error: CustomError = new Error("User already exists");
@@ -48,12 +42,6 @@ const userService = {
   },
 
   async loginUser({ email, password }: { email: string; password: string }) {
-    if (!email || !password) {
-      const error: CustomError = new Error("Email and password are required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
     const user = await userRepository.getByEmail(email);
     if (!user) {
       const error: CustomError = new Error("Invalid email or password.");
@@ -96,12 +84,6 @@ const userService = {
   },
 
   async refreshAccessToken(refreshToken: string) {
-    if (!refreshToken) {
-      const error: CustomError = new Error("Refresh token is required.");
-      error.statusCode = 401;
-      throw error;
-    }
-
     const session = await sessionService.getSessionByToken(refreshToken);
     if (!session) {
       const error: CustomError = new Error("Invalid refresh token.");
@@ -133,22 +115,10 @@ const userService = {
   },
 
   async logoutUser(refreshToken: string) {
-    if (!refreshToken) {
-      const error: CustomError = new Error("Refresh token is required.");
-      error.statusCode = 401;
-      throw error;
-    }
-
     await sessionService.deleteSessionByToken(refreshToken);
   },
 
   async getUserProfile(userId: number) {
-    if (!userId) {
-      const error: CustomError = new Error("User ID is required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
     const user = await userRepository.getById(userId);
     if (!user) {
       const error: CustomError = new Error("User not found.");
@@ -170,12 +140,6 @@ const userService = {
     type: "register" | "change-email" | "reset-password";
     newEmail?: string;
   }) {
-    if (!email) {
-      const error: CustomError = new Error("Email is required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
     const user = await userRepository.getByEmail(email);
     if (!user) {
       const error: CustomError = new Error("User not found.");
@@ -239,12 +203,6 @@ const userService = {
   },
 
   async verifyEmail({ token, newEmail }: { token: string; newEmail?: string }) {
-    if (!token) {
-      const error: CustomError = new Error("Token is required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
     const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
       const error: CustomError = new Error("Invalid or expired token.");
@@ -292,14 +250,6 @@ const userService = {
   }) {
     const CHANGE_COOLDOWN_DAYS = 30;
 
-    if (!userId || !userName || !userNameChangedAt) {
-      const error: CustomError = new Error(
-        "ID, username, and username changed date are required."
-      );
-      error.statusCode = 400;
-      throw error;
-    }
-
     if (
       new Date(userNameChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
     ) {
@@ -315,12 +265,6 @@ const userService = {
 
   async updateEmail({ token, email }: { token: string; email: string }) {
     const CHANGE_COOLDOWN_DAYS = 30;
-
-    if (!token || !email) {
-      const error: CustomError = new Error("Token and email are required.");
-      error.statusCode = 400;
-      throw error;
-    }
 
     const tokenPayload = verifyToken(token, "access-token");
     if (!tokenPayload) {
@@ -358,14 +302,6 @@ const userService = {
     newPassword: string;
   }) {
     const CHANGE_COOLDOWN_DAYS = 30;
-
-    if (!token || !newPassword) {
-      const error: CustomError = new Error(
-        "Token and new password are required."
-      );
-      error.statusCode = 400;
-      throw error;
-    }
 
     const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {

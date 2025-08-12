@@ -1,14 +1,8 @@
 import { budgetService, expenseService } from "@/services/index";
-import type { CustomError, Expense } from "@/types/index";
+import type { Expense } from "@/types/index";
 
 const dashboardService = {
   async getHomeData(userId: number) {
-    if (!userId) {
-      const error: CustomError = new Error("User ID is required");
-      error.statusCode = 400;
-      throw error;
-    }
-
     const today = new Date();
     const monthNumber = today.getMonth() + 1;
     const year = today.getFullYear();
