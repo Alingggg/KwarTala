@@ -1,3 +1,4 @@
+import { datePeriodSchema } from "@/schemas/index";
 import { dashboardService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
@@ -35,9 +36,14 @@ const dashboardController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
@@ -69,9 +75,14 @@ const dashboardController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
@@ -103,9 +114,14 @@ const dashboardController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
@@ -137,9 +153,14 @@ const dashboardController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 

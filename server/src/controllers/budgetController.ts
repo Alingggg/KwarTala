@@ -1,4 +1,4 @@
-import { budgetSchema } from "@/schemas/index";
+import { budgetSchema, datePeriodSchema } from "@/schemas/index";
 import { budgetService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
@@ -16,9 +16,14 @@ const budgetController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
@@ -54,9 +59,8 @@ const budgetController = {
         year,
         amount,
       });
-
       if (!validationResult.success) {
-        const error: CustomError = new Error("Invalid budget data");
+        const error: CustomError = new Error();
         error.statusCode = 400;
         error.message = validationResult.error.issues[0].message;
         throw error;

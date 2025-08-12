@@ -1,14 +1,7 @@
+import { datePeriodSchema } from "./datePeriodSchema";
 import * as z from "zod";
 
-const budgetSchema = z.object({
-  month: z
-    .number({ error: "Month must be a number" })
-    .min(1, { error: "Month is required" })
-    .max(12),
-  year: z
-    .number({ error: "Year must be a number" })
-    .min(2000, { error: "Year is required " })
-    .max(new Date().getFullYear()),
+const budgetSchema = datePeriodSchema.extend({
   amount: z
     .number({ error: "Budget must be a number" })
     .min(0, { error: "Budget must not be negative" })
