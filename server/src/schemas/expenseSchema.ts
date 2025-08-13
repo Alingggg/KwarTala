@@ -13,7 +13,9 @@ const createExpenseSchema = z.object({
     .number({ error: "Amount must be a positive number" })
     .min(0)
     .max(10000000),
-  date: z.date().max(new Date(), { error: "Date cannot be in the future" }),
+  date: z
+    .date({ error: "Date is required" })
+    .max(new Date(), { error: "Date cannot be in the future" }),
 });
 
 const updateExpenseSchema = createExpenseSchema.extend({
