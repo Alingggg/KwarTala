@@ -8,7 +8,6 @@ function useRegister() {
       userName: string;
       email: string;
       password: string;
-      confirmPassword: string;
     }) => {
       await api.post("/auth/register", data);
     },
