@@ -45,8 +45,8 @@ export const expenses = pgTable(
     userId: integer("user_id").notNull(),
     category: varchar({ length: 25 }).notNull(),
     description: varchar({ length: 50 }),
-    amount: numeric({ precision: 10, scale: 2 }).notNull().$type<number>(),
-    date: date("date").notNull(),
+    amount: numeric({ precision: 10, scale: 2, mode: "number" }).notNull(),
+    date: date().notNull(),
   },
   (table) => [
     foreignKey({
@@ -99,7 +99,7 @@ export const budgets = pgTable(
     userId: integer("user_id").notNull(),
     month: integer().notNull(),
     year: integer().notNull(),
-    amount: numeric({ precision: 10, scale: 2 }).notNull().$type<number>(),
+    amount: numeric({ precision: 10, scale: 2, mode: "number" }).notNull(),
   },
   (table) => [
     foreignKey({
