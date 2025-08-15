@@ -102,9 +102,9 @@ const expenseService = {
   }) {
     const { rows } = await db.execute(
       sql`WITH date_range AS (
-         SELECT generate_series(${startDate}, ${endDate}, '1 day'::interval)::timestamptz AS date
+         SELECT generate_series(${startDate}, ${endDate}, INTERVAL '1 day')::date AS date
        )
-       SELECT dr.date, COALESCE(SUM(e.amount), 0) AS total
+       SELECT dr.date, COALESCE(SUM(e.amount), 0)::float AS total
        FROM date_range dr
        LEFT JOIN expenses e ON dr.date = e.date AND e.user_id = ${userId}
        GROUP BY dr.date
@@ -125,13 +125,13 @@ const expenseService = {
   }) {
     const { rows } = await db.execute(
       sql`WITH date_range AS (
-         SELECT generate_series(${startDate}, ${endDate}, '1 week'::interval)::timestamptz AS week_start
+         SELECT generate_series(${startDate}, ${endDate}, INTERVAL '1 week')::date AS week_start
        )
-       SELECT dr.week_start AS date, COALESCE(SUM(e.amount), 0) AS total
+       SELECT dr.week_start AS date, COALESCE(SUM(e.amount), 0)::float AS total
        FROM date_range dr
        LEFT JOIN expenses e
          ON e.date >= dr.week_start
-         AND e.date < LEAST(dr.week_start + '1 week'::interval, ${endDate}::timestamptz + INTERVAL '1 day')
+         AND e.date < LEAST(dr.week_start + INTERVAL '1 week', ${endDate}::date + INTERVAL '1 day')
          AND e.user_id = ${userId}
        GROUP BY dr.week_start
        ORDER BY dr.week_start`
@@ -174,7 +174,10 @@ const expenseService = {
     endDate: string;
   }) {
     return await db
-      .select({ category: expenses.category, total: sum(expenses.amount) })
+      .select({
+        category: expenses.category,
+        total: sql<number>`COALESCE(SUM(${expenses.amount}), 0)::float`,
+      })
       .from(expenses)
       .where(
         and(
