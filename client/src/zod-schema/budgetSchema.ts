@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { isAfter, parse } from "date-fns";
 
 const editBudgetSchema = z.object({
@@ -20,24 +20,4 @@ const editBudgetSchema = z.object({
     .max(100000000),
 });
 
-const expenseSchema = z.object({
-  date: z
-    .string()
-    .refine((val) => /^\d{4}-\d{2}$/.test(val), {
-      message: "Date must be in YYYY-MM format",
-    })
-    .refine(
-      (val) => {
-        const [year, month] = val.split("-").map(Number);
-        const now = new Date();
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth() + 1;
-        return (
-          year < currentYear || (year === currentYear && month <= currentMonth)
-        );
-      },
-      { message: "Date must not be in the future" }
-    ),
-});
-
-export { editBudgetSchema, expenseSchema };
+export { editBudgetSchema };
