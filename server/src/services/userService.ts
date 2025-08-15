@@ -165,7 +165,7 @@ const userService = {
     await verificationTokenService.createVerificationToken({
       userId: user.id,
       token,
-      expiresAt: addMinutes(new Date(), 15),
+      expiresAt: format(addMinutes(new Date(), 15), "yyyy-MM-dd"),
     });
 
     let subject;
