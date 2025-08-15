@@ -1,4 +1,4 @@
-import { userRepository } from "@/repositories/index";
+import db, { users } from "@/db/index";
 import {
   emailService,
   sessionService,
@@ -8,6 +8,7 @@ import type { CustomError, User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
 import { addMinutes, subDays } from "date-fns";
+import { eq } from "drizzle-orm";
 
 const userService = {
   async registerUser({
@@ -15,7 +16,10 @@ const userService = {
     email,
     password,
   }: Pick<User, "userName" | "email" | "password">) {
-    const existingUser = await userRepository.getByEmail(email);
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
     if (existingUser) {
       const error: CustomError = new Error("User already exists");
       error.statusCode = 409;
@@ -24,12 +28,14 @@ const userService = {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await userRepository.create({
-      userName,
-      email,
-      password: hashedPassword,
-    });
-
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        userName,
+        email,
+        password: hashedPassword,
+      })
+      .returning();
     if (!newUser) {
       const error: CustomError = new Error("Failed to create user.");
       error.statusCode = 500;
@@ -42,7 +48,7 @@ const userService = {
   },
 
   async loginUser({ email, password }: { email: string; password: string }) {
-    const user = await userRepository.getByEmail(email);
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     if (!user) {
       const error: CustomError = new Error("Invalid email or password.");
       error.statusCode = 401;
@@ -119,7 +125,7 @@ const userService = {
   },
 
   async getUserProfile(userId: number) {
-    const user = await userRepository.getById(userId);
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -140,7 +146,7 @@ const userService = {
     type: "register" | "change-email" | "reset-password";
     newEmail?: string;
   }) {
-    const user = await userRepository.getByEmail(email);
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -227,10 +233,12 @@ const userService = {
     }
 
     if (!newEmail) {
-      await userRepository.updateVerificationStatus({
-        id: user.id,
-        isVerified: true,
-      });
+      await db
+        .update(users)
+        .set({
+          isVerified: true,
+        })
+        .where(eq(users.id, user.id));
     } else {
       await this.updateEmail({
         token,
@@ -260,7 +268,16 @@ const userService = {
       throw error;
     }
 
-    return await userRepository.updateUserName({ id: userId, userName });
+    const [user] = await db
+      .update(users)
+      .set({
+        userName,
+        userNameChangedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
+    return user;
   },
 
   async updateEmail({ token, email }: { token: string; email: string }) {
@@ -290,7 +307,13 @@ const userService = {
       throw error;
     }
 
-    await userRepository.updateEmail({ id: user.id, email });
+    await db
+      .update(users)
+      .set({
+        email,
+        emailChangedAt: new Date(),
+      })
+      .where(eq(users.id, user.id));
     await sessionService.deleteSessionByUserId(user.id);
   },
 
@@ -339,23 +362,33 @@ const userService = {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await userRepository.updatePassword({
-      id: user.id,
-      password: hashedPassword,
-    });
+    await db
+      .update(users)
+      .set({
+        password: hashedPassword,
+        passwordChangedAt: new Date(),
+      })
+      .where(eq(users.id, user.id))
+      .returning();
     await sessionService.deleteSessionByUserId(user.id);
   },
 
   async getUserById(id: number) {
-    return await userRepository.getById(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+
+    return user;
   },
 
   async getUserByEmail(email: string) {
-    return await userRepository.getByEmail(email);
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+
+    return user;
   },
 
   async deleteUser(id: number) {
-    return userRepository.delete(id);
+    const [user] = await db.delete(users).where(eq(users.id, id)).returning();
+
+    return user;
   },
 };
 

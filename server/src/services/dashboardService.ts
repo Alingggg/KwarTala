@@ -125,7 +125,7 @@ const dashboardService = {
       );
 
       const weeklyTotalSpent = weekData
-        ? Math.round(weekData.total * 100) / 100
+        ? Math.round((weekData as any).total * 100) / 100
         : 0;
 
       const weeklyRemainingBudget =

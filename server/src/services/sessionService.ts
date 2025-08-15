@@ -1,4 +1,5 @@
-import { sessionRepository } from "@/repositories/index";
+import db, { sessions } from "@/db/index";
+import { eq } from "drizzle-orm";
 
 const sessionService = {
   async createSession({
@@ -8,23 +9,51 @@ const sessionService = {
     userId: number;
     refreshToken: string;
   }) {
-    return sessionRepository.create({ userId, refreshToken });
+    const [session] = await db
+      .insert(sessions)
+      .values({
+        userId,
+        refreshToken,
+      })
+      .returning();
+
+    return session;
   },
 
   async getSessionByUserId(userId: number) {
-    return sessionRepository.getByUserId(userId);
+    const [session] = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.userId, userId));
+
+    return session;
   },
 
   async getSessionByToken(refreshToken: string) {
-    return sessionRepository.getByToken(refreshToken);
+    const [session] = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.refreshToken, refreshToken));
+
+    return session;
   },
 
   async deleteSessionByUserId(userId: number) {
-    return sessionRepository.deleteByUserId(userId);
+    const [session] = await db
+      .delete(sessions)
+      .where(eq(sessions.userId, userId))
+      .returning();
+
+    return session;
   },
 
   async deleteSessionByToken(refreshToken: string) {
-    return sessionRepository.deleteByToken(refreshToken);
+    const [session] = await db
+      .delete(sessions)
+      .where(eq(sessions.refreshToken, refreshToken))
+      .returning();
+
+    return session;
   },
 };
 

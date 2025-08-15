@@ -1,9 +1,20 @@
-import { budgetRepository } from "@/repositories/index";
+import db, { budgets } from "@/db/index";
 import type { Budget } from "@/types/index";
+import { and, eq } from "drizzle-orm";
 
 const budgetService = {
   async createBudget({ userId, month, year, amount }: Omit<Budget, "id">) {
-    return budgetRepository.create({ userId, month, year, amount });
+    const [budget] = await db
+      .insert(budgets)
+      .values({
+        userId,
+        month,
+        year,
+        amount: amount ?? 0,
+      })
+      .returning();
+
+    return budget;
   },
 
   async getBudgetByUserIdAndDate({
@@ -11,14 +22,20 @@ const budgetService = {
     month,
     year,
   }: Omit<Budget, "id" | "amount">) {
-    let budget = await budgetRepository.getByUserIdAndDate({
-      userId,
-      month,
-      year,
-    });
+    let [budget] = await db
+      .select()
+      .from(budgets)
+      .where(
+        and(
+          eq(budgets.userId, userId),
+          eq(budgets.month, month),
+          eq(budgets.year, year)
+        )
+      )
+      .limit(1);
 
     if (!budget) {
-      budget = await budgetRepository.create({
+      budget = await this.createBudget({
         userId,
         month,
         year,
@@ -34,11 +51,19 @@ const budgetService = {
     const month = today.getMonth() + 1;
     const year = today.getFullYear();
 
-    return budgetRepository.getByUserIdAndDate({
-      userId,
-      month,
-      year,
-    });
+    const [budget] = await db
+      .select()
+      .from(budgets)
+      .where(
+        and(
+          eq(budgets.userId, userId),
+          eq(budgets.month, month),
+          eq(budgets.year, year)
+        )
+      )
+      .limit(1);
+
+    return budget;
   },
 
   async updateBudgetByUserIdAndDate({
@@ -47,15 +72,25 @@ const budgetService = {
     year,
     amount,
   }: Omit<Budget, "id">) {
-    let budget = await budgetRepository.updateByUserIdAndDate({
-      userId,
-      month,
-      year,
-      amount,
-    });
+    let [budget] = await db
+      .update(budgets)
+      .set({ amount })
+      .where(
+        and(
+          eq(budgets.userId, userId),
+          eq(budgets.month, month),
+          eq(budgets.year, year)
+        )
+      )
+      .returning();
 
     if (!budget) {
-      budget = await budgetRepository.create({ userId, month, year, amount });
+      budget = await this.createBudget({
+        userId,
+        month,
+        year,
+        amount: 0,
+      });
     }
 
     return budget;

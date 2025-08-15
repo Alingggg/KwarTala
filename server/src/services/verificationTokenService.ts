@@ -1,4 +1,5 @@
-import { verificationTokenRepository } from "@/repositories/index";
+import db, { emailVerificationTokens } from "@/db/index";
+import { eq } from "drizzle-orm";
 
 const verificationTokenService = {
   async createVerificationToken({
@@ -10,19 +11,34 @@ const verificationTokenService = {
     token: string;
     expiresAt: Date;
   }) {
-    return await verificationTokenRepository.create({
-      userId,
-      token,
-      expiresAt,
-    });
+    const [verificationToken] = await db
+      .insert(emailVerificationTokens)
+      .values({
+        userId,
+        token,
+        expiresAt,
+      })
+      .returning();
+
+    return verificationToken;
   },
 
   async getByToken(token: string) {
-    return await verificationTokenRepository.getByToken(token);
+    const [verificationToken] = await db
+      .select()
+      .from(emailVerificationTokens)
+      .where(eq(emailVerificationTokens.token, token));
+
+    return verificationToken;
   },
 
   async deleteVerificationToken(token: string) {
-    return await verificationTokenRepository.deleteByToken(token);
+    const [verificationToken] = await db
+      .delete(emailVerificationTokens)
+      .where(eq(emailVerificationTokens.token, token))
+      .returning();
+
+    return verificationToken;
   },
 };
 
