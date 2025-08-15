@@ -2,7 +2,7 @@ import {
   createExpenseSchema,
   deleteExpenseSchema,
   updateExpenseSchema,
-} from "@/schemas";
+} from "@/zod-schemas";
 import { expenseService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";

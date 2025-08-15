@@ -1,4 +1,4 @@
-import { datePeriodSchema } from "@/schemas/index";
+import { datePeriodSchema } from "@/zod-schemas/index";
 import { dashboardService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";

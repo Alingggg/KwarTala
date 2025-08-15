@@ -5,7 +5,7 @@ import {
   userNameSchema,
   verificationEmailSchema,
   verifyEmailSchema,
-} from "@/schemas/index";
+} from "@/zod-schemas/index";
 import { sessionService, userService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
