@@ -5,53 +5,11 @@ import { useForm } from "react-hook-form";
 import { useGetVerificationEmail, useRegister } from "@/hooks";
 import { AppLogo } from "@/assets/images";
 import { useState } from "react";
+import * as z from "zod";
+import { registerSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface FormValues {
-  userName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-const validation = {
-  userName: {
-    required: "Username is required",
-    minLength: {
-      value: 3,
-      message: "Must be at least 3 characters",
-    },
-    maxLength: {
-      value: 20,
-      message: "Must be 20 characters or below",
-    },
-    pattern: {
-      value: /^[A-Za-z0-9]+$/,
-      message: "Only letters and numbers allowed",
-    },
-  },
-  email: {
-    required: "Email is required",
-    pattern: {
-      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      message: "Invalid email format",
-    },
-  },
-  password: {
-    required: "Password is required",
-    minLength: {
-      value: 8,
-      message: "Password must be at least 8 characters",
-    },
-    maxLength: {
-      value: 64,
-      message: "Password must be 64 characters or below",
-    },
-    pattern: {
-      value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/,
-      message: "Must include upper & lowercase letters, a number, and a symbol",
-    },
-  },
-};
+type FormValues = z.infer<typeof registerSchema>;
 
 function Register() {
   const [error, setError] = useState<string | null>(null);
@@ -60,12 +18,9 @@ function Register() {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({ resolver: zodResolver(registerSchema) });
   const { mutate: registerUser, isPending, isSuccess } = useRegister();
   const { mutate: sendVerificationEmail } = useGetVerificationEmail();
-
-  const password = watch("password");
 
   function onSubmit(data: FormValues) {
     setError(null);
@@ -166,7 +121,7 @@ function Register() {
                           ? "border-auburn-600 focus:border-auburn-600"
                           : ""
                       }`}
-                      {...register("userName", validation.userName)}
+                      {...register("userName")}
                     />
                   </div>
                   {errors.userName && (
@@ -196,7 +151,7 @@ function Register() {
                           ? "border-auburn-600 focus:border-auburn-600"
                           : ""
                       }`}
-                      {...register("email", validation.email)}
+                      {...register("email")}
                     />
                   </div>
                   {errors.email && (
@@ -226,7 +181,7 @@ function Register() {
                           ? "border-auburn-600 focus:border-auburn-600"
                           : ""
                       }`}
-                      {...register("password", validation.password)}
+                      {...register("password")}
                     />
                   </div>
                   {errors.password && (
@@ -256,11 +211,7 @@ function Register() {
                           ? "border-auburn-600 focus:border-auburn-600"
                           : ""
                       }`}
-                      {...register("confirmPassword", {
-                        required: "Please confirm your password",
-                        validate: (value) =>
-                          value === password || "Passwords do not match",
-                      })}
+                      {...register("confirmPassword")}
                     />
                   </div>
                   {errors.confirmPassword && (

@@ -3,29 +3,17 @@ import { FiX, FiUser, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useEditUsername } from "@/hooks";
+import * as z from "zod";
+import { userNameSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const formObjectSchema = z.object({ userName: userNameSchema });
+type FormValues = z.infer<typeof formObjectSchema>;
 
 interface EditUsernameModalProps {
   onClose: () => void;
   currentUsername?: string;
 }
-
-const validation = {
-  userName: {
-    required: "Username is required",
-    minLength: {
-      value: 3,
-      message: "Username must be at least 3 characters",
-    },
-    maxLength: {
-      value: 20,
-      message: "Username must be at most 20 characters",
-    },
-    pattern: {
-      value: /^[a-zA-Z0-9_]+$/,
-      message: "Username can only contain letters, numbers, and underscores",
-    },
-  },
-};
 
 function EditUsernameModal({
   onClose,
@@ -36,7 +24,8 @@ function EditUsernameModal({
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<{ userName: string }>({
+  } = useForm<FormValues>({
+    resolver: zodResolver(formObjectSchema),
     defaultValues: { userName: currentUsername || "" },
   });
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +34,7 @@ function EditUsernameModal({
   );
   const { mutate: editUsername, isPending, isSuccess } = useEditUsername();
 
-  function onSubmit({ userName }: { userName: string }) {
+  function onSubmit({ userName }: FormValues) {
     setError(null);
     editUsername(userName, {
       onError: (err: any) => {
@@ -125,7 +114,7 @@ function EditUsernameModal({
                     id="userName"
                     type="text"
                     placeholder="Enter new username"
-                    {...register("userName", validation.userName)}
+                    {...register("userName")}
                     className={`pl-10 ${
                       errors.userName
                         ? "border-auburn-600 focus:border-auburn-600"
