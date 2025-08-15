@@ -23,15 +23,15 @@ export const users = pgTable(
     isVerified: boolean("is_verified").default(false).notNull(),
     usernameChangedAt: timestamp("username_changed_at", {
       withTimezone: true,
-      mode: "string",
+      mode: "date",
     }).default(sql`(now() AT TIME ZONE 'utc'::text)`),
     emailChangedAt: timestamp("email_changed_at", {
       withTimezone: true,
-      mode: "string",
+      mode: "date",
     }).default(sql`(now() AT TIME ZONE 'utc'::text)`),
     passwordChangedAt: timestamp("password_changed_at", {
       withTimezone: true,
-      mode: "string",
+      mode: "date",
     }).default(sql`(now() AT TIME ZONE 'utc'::text)`),
   },
   (table) => [
@@ -49,7 +49,7 @@ export const expenses = pgTable(
     category: varchar({ length: 25 }).notNull(),
     description: varchar({ length: 50 }),
     amount: numeric({ precision: 10, scale: 2 }).notNull().$type<number>(),
-    date: timestamp({ withTimezone: true, mode: "string" }).notNull(),
+    date: timestamp({ withTimezone: true, mode: "date" }).notNull(),
   },
   (table) => [
     foreignKey({
@@ -86,7 +86,7 @@ export const emailVerificationTokens = pgTable(
     token: text().notNull(),
     expiresAt: timestamp("expires_at", {
       withTimezone: true,
-      mode: "string",
+      mode: "date",
     }).notNull(),
   },
   (table) => [
