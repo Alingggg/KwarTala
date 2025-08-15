@@ -65,7 +65,7 @@ export function ExpenseCard({
             {/* Info button (mobile only) */}
             <button
               onClick={() => setShowDescription(true)}
-              className="md:hidden text-night-600 hover:text-night-500 hover:bg-night-600 transition-colors flex-shrink-0 p-1 rounded-full"
+              className="md:hidden text-night-600 hover:text-night-900 hover:bg-timberwolf-300 transition-colors flex-shrink-0 p-1 rounded-full"
               title="View details"
             >
               <FiInfo size={14} />
@@ -144,7 +144,7 @@ export function ExpenseCard({
                     date,
                   });
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-left hover:bg-timberwolf-900 text-night-700 rounded-md"
+                className="flex items-center gap-2 px-4 py-2 text-left rounded-md transition-colors text-night-700 hover:text-timberwolf-900 hover:bg-night-600"
               >
                 <FiEdit size={16} /> <span>Edit</span>
               </button>
@@ -159,7 +159,7 @@ export function ExpenseCard({
                     date,
                   });
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-left hover:bg-auburn-100 text-auburn-600 rounded-md"
+                className="flex items-center gap-2 px-4 py-2 text-left rounded-md transition-colors text-auburn-600 hover:text-white hover:bg-auburn-500"
               >
                 <FiTrash2 size={16} /> <span>Delete</span>
               </button>

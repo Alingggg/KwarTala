@@ -3,7 +3,7 @@ import { FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as z from "zod";
 import { expenseSchema } from "@/zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,6 +52,15 @@ function UpsertExpenseModal({
   const [categoryOption, setCategoryOption] = useState<"default" | "custom">(
     "default"
   );
+
+  useEffect(() => {
+    if (
+      category &&
+      !DEFAULT_CATEGORIES.some((categories) => categories.value === category)
+    ) {
+      setCategoryOption("custom");
+    }
+  }, [category]);
 
   function onSubmit(data: FormValues) {
     if (id) {
