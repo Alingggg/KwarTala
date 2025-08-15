@@ -56,7 +56,6 @@ function UpsertExpenseModal({
   description,
   date,
 }: UpsertExpenseModalProps) {
-  const formattedDate = date ? format(new Date(date), "yyyy-MM-dd") : "";
   const {
     register,
     handleSubmit,
@@ -67,7 +66,7 @@ function UpsertExpenseModal({
       category: category || "",
       amount: amount,
       description: description || "",
-      date: formattedDate || "",
+      date: date || "",
     },
   });
   const { mutate: addExpense, isPending: isAdding } = useAddExpense();
@@ -78,17 +77,13 @@ function UpsertExpenseModal({
   );
 
   function onSubmit(data: Omit<Expense, "id" | "userId">) {
-    const { date, ...restData } = data;
+    const { date: dateStr, ...restData } = data;
 
-    // Convert date to UTC with timestamp format from just YYYY-MM-DD
-    const dateStr =
-      typeof date === "string" ? date : format(new Date(date), "yyyy-MM-dd");
-    const [year, month, day] = dateStr.split("-").map(Number);
-    const dateWithTime = new Date(year, month - 1, day);
+    const date = new Date(dateStr);
 
     const finalData = {
       ...restData,
-      date: dateWithTime,
+      date,
     };
 
     if (id) {
