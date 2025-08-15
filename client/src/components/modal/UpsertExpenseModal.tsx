@@ -77,19 +77,10 @@ function UpsertExpenseModal({
   );
 
   function onSubmit(data: Omit<Expense, "id" | "userId">) {
-    const { date: dateStr, ...restData } = data;
-
-    const date = new Date(dateStr);
-
-    const finalData = {
-      ...restData,
-      date,
-    };
-
     if (id) {
-      editExpense({ id, ...finalData }, { onSuccess: () => onClose() });
+      editExpense({ id, ...data }, { onSuccess: () => onClose() });
     } else {
-      addExpense(finalData, { onSuccess: () => onClose() });
+      addExpense(data, { onSuccess: () => onClose() });
     }
   }
 

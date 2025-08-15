@@ -1,3 +1,10 @@
+import {
+  format,
+  lastDayOfMonth,
+  addDays,
+  isAfter,
+  differenceInCalendarDays,
+} from "date-fns";
 import { budgetService, expenseService } from "@/services/index";
 import type { Expense } from "@/types/index";
 
@@ -7,8 +14,8 @@ const dashboardService = {
     const monthNumber = today.getMonth() + 1;
     const year = today.getFullYear();
 
-    const startDate = new Date(year, today.getMonth(), 1);
-    const endDate = new Date(year, today.getMonth() + 1, 0);
+    const startDate = format(new Date(year, today.getMonth(), 1), "yyyy-MM-dd");
+    const endDate = format(lastDayOfMonth(today), "yyyy-MM-dd");
 
     const budget = await budgetService.getCurrentMonthBudget(userId);
 
@@ -58,8 +65,10 @@ const dashboardService = {
       year,
     });
 
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0);
+    const startDateObj = new Date(year, month - 1, 1);
+    const endDateObj = lastDayOfMonth(startDateObj);
+    const startDate = format(startDateObj, "yyyy-MM-dd");
+    const endDate = format(endDateObj, "yyyy-MM-dd");
 
     const monthlyTotalSpent = await expenseService.getTotalMonthlySpent({
       userId,
@@ -84,12 +93,13 @@ const dashboardService = {
         endDate,
       });
 
-    function getWeekNumber(date: Date): number {
+    function getWeekNumber(dateString: string): number {
+      const date = new Date(dateString);
       const dayOfMonth = date.getDate();
       return Math.ceil(dayOfMonth / 7);
     }
 
-    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInMonth = endDateObj.getDate();
     const dailyBudget = budget?.amount ? budget.amount / daysInMonth : 0;
 
     // Group transactions by week
@@ -97,8 +107,7 @@ const dashboardService = {
     allMonthlyTransactions.forEach((transaction: Expense | null) => {
       if (!transaction) return;
 
-      const transactionDate = new Date(transaction.date);
-      const weekNumber = getWeekNumber(transactionDate);
+      const weekNumber = getWeekNumber(transaction.date);
 
       if (!transactionsByWeek[weekNumber]) {
         transactionsByWeek[weekNumber] = [];
@@ -115,8 +124,14 @@ const dashboardService = {
       const weekEndDay = Math.min(weekNumber * 7, daysInMonth);
       const daysInWeek = weekEndDay - weekStartDay + 1;
 
-      const weekStartDate = new Date(year, month - 1, weekStartDay);
-      const weekEndDate = new Date(year, month - 1, weekEndDay);
+      const weekStartDate = format(
+        new Date(year, month - 1, weekStartDay),
+        "yyyy-MM-dd"
+      );
+      const weekEndDate = format(
+        new Date(year, month - 1, weekEndDay),
+        "yyyy-MM-dd"
+      );
 
       const weeklyBudget = Math.round(dailyBudget * daysInWeek * 100) / 100;
 
@@ -174,8 +189,10 @@ const dashboardService = {
       year,
     });
 
-    const startOfMonth = new Date(year, month - 1, 1);
-    const endOfMonth = new Date(year, month, 0);
+    const startOfMonthObj = new Date(year, month - 1, 1);
+    const endOfMonthObj = lastDayOfMonth(startOfMonthObj);
+    const startOfMonth = format(startOfMonthObj, "yyyy-MM-dd");
+    const endOfMonth = format(endOfMonthObj, "yyyy-MM-dd");
 
     const totalMonthlySpent = await expenseService.getTotalMonthlySpent({
       userId,
@@ -194,12 +211,12 @@ const dashboardService = {
     const today = new Date();
     const isCurrentMonth =
       today.getFullYear() === year && today.getMonth() + 1 === month;
-    const dayToday = isCurrentMonth ? today.getDate() : endOfMonth.getDate();
-    const lastDayOfMonth = endOfMonth.getDate();
+    const dayToday = isCurrentMonth ? today.getDate() : endOfMonthObj.getDate();
+    const lastDayOfMonthNum = endOfMonthObj.getDate();
 
     let remainingDays = 0;
     if (isCurrentMonth) {
-      remainingDays = lastDayOfMonth - dayToday + 1;
+      remainingDays = lastDayOfMonthNum - dayToday + 1;
     }
 
     const isPastMonth =
@@ -214,8 +231,7 @@ const dashboardService = {
     if (isCurrentMonth) {
       averageDailySpending = totalMonthlySpent / dayToday;
     } else {
-      const daysInMonth = endOfMonth.getDate();
-      averageDailySpending = totalMonthlySpent / daysInMonth;
+      averageDailySpending = totalMonthlySpent / lastDayOfMonthNum;
     }
 
     const recommendedDailyLimit = isCurrentMonth
@@ -266,13 +282,13 @@ const dashboardService = {
     year: number;
   }) {
     const today = new Date();
-    const startDate = new Date(year, month - 1, 1);
-    let endDate;
+    const startDate = format(new Date(year, month - 1, 1), "yyyy-MM-dd");
+    let endDate: string;
 
     if (today.getFullYear() === year && today.getMonth() === month - 1) {
-      endDate = today;
+      endDate = format(today, "yyyy-MM-dd");
     } else {
-      endDate = new Date(year, month, 0);
+      endDate = format(lastDayOfMonth(startDate), "yyyy-MM-dd");
     }
 
     const data = await expenseService.getTotalDailyExpenseInDateRange({
@@ -293,8 +309,10 @@ const dashboardService = {
     month: number;
     year: number;
   }) {
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0);
+    const startDateObj = new Date(year, month - 1, 1);
+    const endDateObj = lastDayOfMonth(startDateObj);
+    const startDate = format(startDateObj, "yyyy-MM-dd");
+    const endDate = format(endDateObj, "yyyy-MM-dd");
 
     const data = await expenseService.getTotalWeeklyExpenseInDateRange({
       userId,
@@ -303,18 +321,16 @@ const dashboardService = {
     });
 
     const formattedData = data.map((item: any, idx: number) => {
-      const weekStartDate = new Date(item.date);
-      let weekEndDate = new Date(weekStartDate);
-      weekEndDate.setDate(weekStartDate.getDate() + 6);
-      if (weekEndDate > endDate) {
-        weekEndDate = endDate;
+      const weekStartDate = item.date;
+
+      let weekEndDateObj = addDays(new Date(weekStartDate), 6);
+      if (isAfter(weekEndDateObj, endDateObj)) {
+        weekEndDateObj = endDateObj;
       }
+      const weekEndDateString = format(weekEndDateObj, "yyyy-MM-dd");
 
       const days =
-        Math.ceil(
-          (weekEndDate.getTime() - weekStartDate.getTime()) /
-            (1000 * 60 * 60 * 24)
-        ) + 1;
+        differenceInCalendarDays(weekEndDateObj, new Date(weekStartDate)) + 1;
 
       const dailyAverage =
         days > 0 ? Number((item.total / days).toFixed(2)) : 0;
@@ -322,7 +338,7 @@ const dashboardService = {
       return {
         weekNumber: idx + 1,
         weekStartDate,
-        weekEndDate,
+        weekEndDate: weekEndDateString,
         total: item.total,
         days,
         dailyAverage,

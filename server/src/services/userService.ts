@@ -7,7 +7,7 @@ import {
 import type { CustomError, User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
-import { addMinutes, subDays } from "date-fns";
+import { addMinutes, format, subDays } from "date-fns";
 import { eq } from "drizzle-orm";
 
 const userService = {
@@ -254,7 +254,7 @@ const userService = {
   }: {
     userId: number;
     userName: string;
-    userNameChangedAt: Date | string;
+    userNameChangedAt: string;
   }) {
     const CHANGE_COOLDOWN_DAYS = 30;
 
@@ -272,7 +272,7 @@ const userService = {
       .update(users)
       .set({
         userName,
-        userNameChangedAt: new Date(),
+        userNameChangedAt: format(new Date(), "yyyy-MM-dd"),
       })
       .where(eq(users.id, userId))
       .returning();
@@ -311,7 +311,7 @@ const userService = {
       .update(users)
       .set({
         email,
-        emailChangedAt: new Date(),
+        emailChangedAt: format(new Date(), "yyyy-MM-dd"),
       })
       .where(eq(users.id, user.id));
     await sessionService.deleteSessionByUserId(user.id);
@@ -366,7 +366,7 @@ const userService = {
       .update(users)
       .set({
         password: hashedPassword,
-        passwordChangedAt: new Date(),
+        passwordChangedAt: format(new Date(), "yyyy-MM-dd"),
       })
       .where(eq(users.id, user.id))
       .returning();

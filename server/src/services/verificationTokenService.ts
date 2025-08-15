@@ -9,7 +9,7 @@ const verificationTokenService = {
   }: {
     userId: number;
     token: string;
-    expiresAt: Date;
+    expiresAt: string;
   }) {
     const [verificationToken] = await db
       .insert(emailVerificationTokens)

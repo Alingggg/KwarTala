@@ -1,3 +1,4 @@
+import { format, isAfter } from "date-fns";
 import * as z from "zod";
 
 const createExpenseSchema = z.object({
@@ -8,14 +9,28 @@ const createExpenseSchema = z.object({
   description: z
     .string()
     .max(50, { error: "Description must be at most 50 characters" })
-    .optional(),
+    .transform((value) => (value === "" ? null : value)),
   amount: z
     .number({ error: "Amount must be a positive number" })
     .min(0)
     .max(10000000),
   date: z
-    .date({ error: "Date is required" })
-    .max(new Date(), { error: "Date cannot be in the future" }),
+    .union([z.string(), z.date()])
+    .transform((val) => {
+      const date = typeof val === "string" ? new Date(val) : val;
+
+      if (isNaN(date.getTime())) {
+        throw new Error("Invalid date");
+      }
+
+      return format(date, "yyyy-MM-dd");
+    })
+    .refine(
+      (date) => {
+        return !isAfter(new Date(date), new Date());
+      },
+      { error: "Date cannot be in the future" }
+    ),
 });
 
 const updateExpenseSchema = createExpenseSchema.extend({

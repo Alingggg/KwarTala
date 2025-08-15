@@ -2,9 +2,9 @@ interface Expense {
   id: number;
   userId: number;
   category: string;
-  description: string | undefined;
+  description: string | null;
   amount: number;
-  date: string | Date;
+  date: string;
 }
 
 export type { Expense };
