@@ -4,32 +4,17 @@ import { FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useEditBudget, useCurrencyContext, useGetBudget } from "@/hooks";
 import { format, subYears, addMonths } from "date-fns";
+import * as z from "zod";
+import { editBudgetSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const validation = {
-  budgetPeriod: {
-    required: "Budget Period is required",
-  },
-  budget: {
-    valueAsNumber: true,
-    required: "Budget is required",
-    min: {
-      value: 0,
-      message: "Budget cannot be negative",
-    },
-    max: 100000000,
-  },
-};
+type FormValues = z.infer<typeof editBudgetSchema>;
 
 interface EditBudgetModalProps {
   onClose: () => void;
   monthNumber: number;
   year: number;
   currentBudget: number;
-}
-
-interface EditBudgetFormValues {
-  budgetPeriod: string;
-  budget: number;
 }
 
 function EditBudgetModal({
@@ -47,7 +32,8 @@ function EditBudgetModal({
     reset,
     formState: { errors },
     setValue,
-  } = useForm<EditBudgetFormValues>({
+  } = useForm<FormValues>({
+    resolver: zodResolver(editBudgetSchema),
     defaultValues: {
       budgetPeriod: initialPeriod,
       budget: currentBudget,
@@ -115,7 +101,7 @@ function EditBudgetModal({
     };
   }, [budgetPeriod]);
 
-  function onSubmit({ budgetPeriod, budget }: EditBudgetFormValues) {
+  function onSubmit({ budgetPeriod, budget }: FormValues) {
     const [selectedYear, selectedMonth] = budgetPeriod.split("-").map(Number);
 
     editBudget(
@@ -188,7 +174,7 @@ function EditBudgetModal({
               type="month"
               min={dateInfo.minDate}
               max={dateInfo.maxDate}
-              {...register("budgetPeriod", validation.budgetPeriod)}
+              {...register("budgetPeriod")}
             />
             {errors.budgetPeriod && (
               <p className="text-xs text-auburn-600 mt-1 font-semibold">
@@ -223,7 +209,7 @@ function EditBudgetModal({
                     ? "border-auburn-600 focus:border-auburn-600"
                     : ""
                 }`}
-                {...register("budget", validation.budget)}
+                {...register("budget", { valueAsNumber: true })}
               />
             </div>
             {errors.budget && (

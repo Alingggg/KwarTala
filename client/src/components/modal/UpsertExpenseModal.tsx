@@ -3,36 +3,12 @@ import { FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
-import { format } from "date-fns";
 import { useState } from "react";
+import * as z from "zod";
+import { expenseSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const validation = {
-  category: {
-    required: "Category is required",
-    maxLength: {
-      value: 25,
-      message: "Category must be at most 25 characters",
-    },
-  },
-  description: {
-    maxLength: {
-      value: 50,
-      message: "Description must be at most 50 characters",
-    },
-  },
-  amount: {
-    valueAsNumber: true,
-    required: "Amount is required",
-    min: {
-      value: 0,
-      message: "Amount cannot be negative",
-    },
-    max: 10000000,
-  },
-  date: {
-    required: "Date is required",
-  },
-};
+type FormValues = z.infer<typeof expenseSchema>;
 
 const DEFAULT_CATEGORIES = [
   { value: "Bills", label: "Bills" },
@@ -61,7 +37,8 @@ function UpsertExpenseModal({
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<Omit<Expense, "id" | "userId">>({
+  } = useForm<FormValues>({
+    resolver: zodResolver(expenseSchema),
     defaultValues: {
       category: category || "",
       amount: amount,
@@ -76,7 +53,7 @@ function UpsertExpenseModal({
     "default"
   );
 
-  function onSubmit(data: Omit<Expense, "id" | "userId">) {
+  function onSubmit(data: FormValues) {
     if (id) {
       editExpense({ id, ...data }, { onSuccess: () => onClose() });
     } else {
@@ -143,7 +120,7 @@ function UpsertExpenseModal({
                 options={DEFAULT_CATEGORIES}
                 id="category"
                 placeholder="e.g. Food"
-                {...register("category", validation.category)}
+                {...register("category")}
                 classname={`${
                   watch("category") ? "text-night-500" : "text-night-500/50"
                 }`}
@@ -154,7 +131,7 @@ function UpsertExpenseModal({
                 type="text"
                 maxLength={25}
                 placeholder="e.g. Food"
-                {...register("category", validation.category)}
+                {...register("category")}
                 className={
                   errors.category
                     ? "border-auburn-600 focus:border-auburn-600"
@@ -180,7 +157,7 @@ function UpsertExpenseModal({
               type="text"
               maxLength={50}
               placeholder="e.g. Lunch at restaurant"
-              {...register("description", validation.description)}
+              {...register("description")}
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -199,7 +176,7 @@ function UpsertExpenseModal({
                 type="number"
                 placeholder="0.00"
                 max={10000000}
-                {...register("amount", validation.amount)}
+                {...register("amount", { valueAsNumber: true })}
                 className={`pl-8 ${
                   errors.amount
                     ? "border-auburn-600 focus:border-auburn-600"
@@ -223,7 +200,7 @@ function UpsertExpenseModal({
             <Input
               id="date"
               type="date"
-              {...register("date", validation.date)}
+              {...register("date")}
               className={
                 errors.date ? "border-auburn-600 focus:border-auburn-600" : ""
               }
