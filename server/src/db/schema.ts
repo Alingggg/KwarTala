@@ -21,18 +21,24 @@ export const users = pgTable(
     password: text().notNull(),
     userName: varchar("user_name", { length: 20 }).notNull(),
     isVerified: boolean("is_verified").default(false).notNull(),
-    usernameChangedAt: timestamp("username_changed_at", {
+    userNameChangedAt: timestamp("username_changed_at", {
       withTimezone: true,
       mode: "date",
-    }).default(sql`(now() AT TIME ZONE 'utc'::text)`),
+    })
+      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
+      .notNull(),
     emailChangedAt: timestamp("email_changed_at", {
       withTimezone: true,
       mode: "date",
-    }).default(sql`(now() AT TIME ZONE 'utc'::text)`),
+    })
+      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
+      .notNull(),
     passwordChangedAt: timestamp("password_changed_at", {
       withTimezone: true,
       mode: "date",
-    }).default(sql`(now() AT TIME ZONE 'utc'::text)`),
+    })
+      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
+      .notNull(),
   },
   (table) => [
     unique("users_email_key").on(table.email),
@@ -82,7 +88,7 @@ export const emailVerificationTokens = pgTable(
   "email_verification_tokens",
   {
     id: serial().primaryKey().notNull(),
-    userId: integer("user_id"),
+    userId: integer("user_id").notNull(),
     token: text().notNull(),
     expiresAt: timestamp("expires_at", {
       withTimezone: true,
