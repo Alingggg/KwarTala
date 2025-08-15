@@ -4,9 +4,9 @@ interface User {
   email: string;
   password: string;
   isVerified: boolean;
-  userNameChangedAt: Date | string;
-  emailChangedAt: Date | string;
-  passwordChangedAt: Date | string;
+  userNameChangedAt: Date;
+  emailChangedAt: Date;
+  passwordChangedAt: Date;
 }
 
 interface UserPayload extends Omit<User, "id" | "password"> {
