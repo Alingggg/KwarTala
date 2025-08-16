@@ -169,7 +169,6 @@ const dashboardService = {
 
     const pagination = {
       currentPage: page,
-      totalPages,
       hasNextPage: page < totalPages,
     };
 
