@@ -1,7 +1,13 @@
 import { api } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
-function useDailyChartsData({ month, year }: { month: number; year: number }) {
+function useGetDailyChartsData({
+  month,
+  year,
+}: {
+  month: number;
+  year: number;
+}) {
   return useQuery({
     queryKey: ["dailyChartsData", month, year],
     queryFn: async () => {
@@ -13,7 +19,13 @@ function useDailyChartsData({ month, year }: { month: number; year: number }) {
   });
 }
 
-function useWeeklyChartsData({ month, year }: { month: number; year: number }) {
+function useGetWeeklyChartsData({
+  month,
+  year,
+}: {
+  month: number;
+  year: number;
+}) {
   return useQuery({
     queryKey: ["weeklyChartsData", month, year],
     queryFn: async () => {
@@ -25,4 +37,4 @@ function useWeeklyChartsData({ month, year }: { month: number; year: number }) {
   });
 }
 
-export { useDailyChartsData, useWeeklyChartsData };
+export { useGetDailyChartsData, useGetWeeklyChartsData };

@@ -8,9 +8,11 @@ import {
   useModalContext,
   useCurrencyContext,
   useUser,
-  useHomeData,
-  useWeeklyChartsData,
-  useDailyChartsData,
+  useGetHomeData,
+  useGetWeeklyChartsData,
+  useGetDailyChartsData,
+  useGetExpenses,
+  useFetchOnScroll,
 } from "@/hooks";
 import type { Expense } from "@/types";
 import { assignCategoryColors } from "@/utils";
@@ -21,27 +23,48 @@ function Home() {
   const { openModal } = useModalContext();
   const { currency } = useCurrencyContext();
 
-  const currentMonthNumber = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
+  const today = new Date();
+  const currentMonthNumber = today.getMonth() + 1;
+  const currentYear = today.getFullYear();
+
+  const getTransactionsOptions = {
+    startDate: format(today, "yyyy-MM-dd"),
+    endDate: format(today, "yyyy-MM-dd"),
+    limit: 10,
+    orderBy: "desc" as "desc" | "asc",
+  };
 
   const { userName } = useUser();
-  const { data: homeData, isLoading: isHomeLoading } = useHomeData();
+  const { data: homeData, isLoading: isHomeLoading } = useGetHomeData();
+  const {
+    data: transactionsData,
+    isLoading: isTransactionsLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetExpenses(getTransactionsOptions);
 
-  const transactionsWithColors = assignCategoryColors(
-    homeData?.todaysTransactions
-  );
+  const allTransactions =
+    transactionsData?.pages.flatMap((page) => page.transactions) ?? [];
+  const transactionsWithColors = assignCategoryColors(allTransactions);
 
   const { data: dailyChartsData, isLoading: isDailyLoading } =
-    useDailyChartsData({
+    useGetDailyChartsData({
       month: currentMonthNumber,
       year: currentYear,
     });
 
   const { data: weeklyChartsData, isLoading: isWeeklyLoading } =
-    useWeeklyChartsData({
+    useGetWeeklyChartsData({
       month: currentMonthNumber,
       year: currentYear,
     });
+
+  const sentinelRef = useFetchOnScroll(
+    fetchNextPage,
+    hasNextPage ?? false,
+    isFetchingNextPage
+  );
 
   if (isHomeLoading || isDailyLoading || isWeeklyLoading) {
     return <LoadingSpinner message="Loading home data..." />;
@@ -162,7 +185,7 @@ function Home() {
       </div>
 
       {/* Today's Transactions */}
-      <div className="mb-4 md:mb-6">
+      <div>
         <div className="flex items-center mb-4 md:mb-6">
           <span className="text-lg md:text-xl font-bold text-night-600">
             Today's Transactions
@@ -170,25 +193,37 @@ function Home() {
           <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
         </div>
         <div className="space-y-3 md:space-y-4">
-          {transactionsWithColors &&
+          {isTransactionsLoading ? (
+            <LoadingSpinner message="Loading transactions..." />
+          ) : (
+            transactionsWithColors &&
             transactionsWithColors.map((transaction: Expense) => (
               <ExpenseCard key={transaction.id} {...transaction} />
-            ))}
+            ))
+          )}
+          <div ref={sentinelRef}>
+            {isFetchingNextPage && (
+              <div className="flex justify-center">
+                <LoadingSpinner message="Loading more..." />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* No Transactions Message */}
-        {(!transactionsWithColors || transactionsWithColors.length === 0) && (
-          <div className="text-center py-12 md:py-16 text-ash-gray-500">
-            <FiCalendar
-              size={48}
-              className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
-            />
-            <p className="text-lg md:text-xl font-semibold mb-2">
-              No transactions found
-            </p>
-            <p className="text-sm">No expenses recorded for today.</p>
-          </div>
-        )}
+        {!isTransactionsLoading &&
+          (!transactionsWithColors || transactionsWithColors.length === 0) && (
+            <div className="text-center py-12 md:py-16 text-ash-gray-500">
+              <FiCalendar
+                size={48}
+                className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
+              />
+              <p className="text-lg md:text-xl font-semibold mb-2">
+                No transactions found
+              </p>
+              <p className="text-sm">No expenses recorded for today.</p>
+            </div>
+          )}
       </div>
     </div>
   );

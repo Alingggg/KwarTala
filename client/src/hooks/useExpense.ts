@@ -1,6 +1,10 @@
 import { api } from "@/api";
 import type { Expense } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 function useAddExpense() {
   const queryClient = useQueryClient();
@@ -27,7 +31,19 @@ function useAddExpense() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["transactionsData", expenseMonth, expenseYear],
+        predicate: (query) => {
+          if (query.queryKey[0] !== "expenses") return false;
+
+          const [, startDate, endDate] = query.queryKey as [
+            "expenses",
+            string,
+            string,
+            number,
+            "desc" | "asc"
+          ];
+
+          return expenseDate >= startDate && expenseDate <= endDate;
+        },
       });
 
       queryClient.invalidateQueries({
@@ -44,6 +60,44 @@ function useAddExpense() {
     },
     onError: (error: any) => {
       console.error("Failed to add expense:", error?.response?.data?.message);
+    },
+  });
+}
+
+function useGetExpenses({
+  startDate,
+  endDate,
+  limit,
+  orderBy,
+}: {
+  startDate: string;
+  endDate: string;
+  limit: number;
+  orderBy: "desc" | "asc";
+}) {
+  return useInfiniteQuery({
+    queryKey: ["expenses", startDate, endDate, limit, orderBy],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await api.get("/dashboard/transactions", {
+        params: { startDate, endDate, page: pageParam, limit, orderBy },
+      });
+      return response.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasNextPage
+        ? lastPage.pagination.currentPage + 1
+        : undefined,
+    select: (data) => {
+      const flatTransactions = data.pages.flatMap((page) => page.transactions);
+      const uniqueTransactions = Array.from(
+        new Map(flatTransactions.map((item) => [item.id, item])).values()
+      );
+
+      return {
+        pages: [{ transactions: uniqueTransactions }],
+        pageParams: data.pageParams,
+      };
     },
   });
 }
@@ -73,7 +127,19 @@ function useEditExpense() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["transactionsData", expenseMonth, expenseYear],
+        predicate: (query) => {
+          if (query.queryKey[0] !== "expenses") return false;
+
+          const [, startDate, endDate] = query.queryKey as [
+            "expenses",
+            string,
+            string,
+            number,
+            "desc" | "asc"
+          ];
+
+          return expenseDate >= startDate && expenseDate <= endDate;
+        },
       });
 
       queryClient.invalidateQueries({
@@ -125,7 +191,19 @@ function useDeleteExpense() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["transactionsData", expenseMonth, expenseYear],
+        predicate: (query) => {
+          if (query.queryKey[0] !== "expenses") return false;
+
+          const [, startDate, endDate] = query.queryKey as [
+            "expenses",
+            string,
+            string,
+            number,
+            "desc" | "asc"
+          ];
+
+          return expenseDate >= startDate && expenseDate <= endDate;
+        },
       });
 
       queryClient.invalidateQueries({
@@ -149,4 +227,4 @@ function useDeleteExpense() {
   });
 }
 
-export { useAddExpense, useEditExpense, useDeleteExpense };
+export { useAddExpense, useGetExpenses, useEditExpense, useDeleteExpense };

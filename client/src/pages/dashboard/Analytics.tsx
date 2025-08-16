@@ -3,10 +3,10 @@ import { ExpenseChart, LoadingSpinner } from "@/components";
 import { FiCalendar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
-  useAnalyticsData,
+  useGetAnalyticsData,
   useCurrencyContext,
-  useDailyChartsData,
-  useWeeklyChartsData,
+  useGetDailyChartsData,
+  useGetWeeklyChartsData,
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
 import type { Expense } from "@/types";
@@ -49,17 +49,18 @@ function Analytics() {
 
   const { month, year } = getMonthYear(currentMonthIndex);
 
-  const { data: monthData, isLoading: isAnalyticsLoading } = useAnalyticsData({
-    month,
-    year,
-  });
+  const { data: monthData, isLoading: isAnalyticsLoading } =
+    useGetAnalyticsData({
+      month,
+      year,
+    });
   const { data: dailyChartsData, isLoading: isDailyLoading } =
-    useDailyChartsData({
+    useGetDailyChartsData({
       month,
       year,
     });
   const { data: weeklyChartsData, isLoading: isWeeklyLoading } =
-    useWeeklyChartsData({
+    useGetWeeklyChartsData({
       month,
       year,
     });
