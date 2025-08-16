@@ -6,7 +6,6 @@ import {
   differenceInCalendarDays,
 } from "date-fns";
 import { budgetService, expenseService } from "@/services/index";
-import type { Expense } from "@/types/index";
 
 const dashboardService = {
   async getHomeData(userId: number) {
@@ -35,10 +34,6 @@ const dashboardService = {
         ? Math.round((totalMonthlySpent / budget.amount) * 100 * 100) / 100
         : 0;
 
-    const todaysTransactions = await expenseService.getTodaysTransactions(
-      userId
-    );
-
     return {
       monthNumber,
       year,
@@ -46,11 +41,10 @@ const dashboardService = {
       remainingBudget,
       budgetUsedPercentage,
       spentToday,
-      todaysTransactions,
     };
   },
 
-  async getMonthlyTransactions({
+  async getTransactionsSummary({
     userId,
     month,
     year,
@@ -86,35 +80,8 @@ const dashboardService = {
         endDate,
       });
 
-    const allMonthlyTransactions =
-      await expenseService.getExpensesByUserIdAndDateRange({
-        userId,
-        startDate,
-        endDate,
-      });
-
-    function getWeekNumber(dateString: string): number {
-      const date = new Date(dateString);
-      const dayOfMonth = date.getDate();
-      return Math.ceil(dayOfMonth / 7);
-    }
-
     const daysInMonth = endDateObj.getDate();
     const dailyBudget = budget?.amount ? budget.amount / daysInMonth : 0;
-
-    // Group transactions by week
-    const transactionsByWeek: { [key: number]: Expense[] } = {};
-    allMonthlyTransactions.forEach((transaction: Expense | null) => {
-      if (!transaction) return;
-
-      const weekNumber = getWeekNumber(transaction.date);
-
-      if (!transactionsByWeek[weekNumber]) {
-        transactionsByWeek[weekNumber] = [];
-      }
-
-      transactionsByWeek[weekNumber].push(transaction);
-    });
 
     // Create weeks array with weekly spending data
     const weeks = [];
@@ -146,13 +113,6 @@ const dashboardService = {
       const weeklyRemainingBudget =
         Math.round((weeklyBudget - weeklyTotalSpent) * 100) / 100;
 
-      const transactions = (transactionsByWeek[weekNumber] || []).map(
-        (transaction) => ({
-          ...transaction,
-          amount: Math.round(transaction.amount * 100) / 100,
-        })
-      );
-
       weeks.push({
         weekNumber,
         weekStartDate,
@@ -160,7 +120,6 @@ const dashboardService = {
         weeklyBudget,
         weeklyTotalSpent,
         weeklyRemainingBudget,
-        transactions,
       });
     }
 
@@ -171,6 +130,52 @@ const dashboardService = {
       monthlyTotalSpent: Math.round(monthlyTotalSpent * 100) / 100,
       monthlyRemainingBudget: Math.round(monthlyRemainingBudget * 100) / 100,
       weeks,
+    };
+  },
+
+  async getTransactions({
+    userId,
+    startDate,
+    endDate,
+    page,
+    limit,
+    orderBy,
+  }: {
+    userId: number;
+    startDate: string;
+    endDate: string;
+    page: number;
+    limit: number;
+    orderBy: "desc" | "asc";
+  }) {
+    const expenses =
+      await expenseService.getExpensesByUserIdAndDateRangeWithPageAndLimit({
+        userId,
+        startDate,
+        endDate,
+        page,
+        limit,
+        orderBy,
+      });
+
+    const numberOfExpenses =
+      await expenseService.getNumberOfExpensesByUserIdAndDateRange({
+        userId,
+        startDate,
+        endDate,
+      });
+
+    const totalPages = Math.ceil(numberOfExpenses / limit);
+
+    const pagination = {
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+    };
+
+    return {
+      transactions: expenses,
+      pagination,
     };
   },
 

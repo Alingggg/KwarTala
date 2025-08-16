@@ -1,6 +1,6 @@
 import db, { expenses } from "@/db/index";
 import type { Expense } from "@/types/index";
-import { and, between, desc, eq, sql, sum } from "drizzle-orm";
+import { and, between, count, desc, eq, sql } from "drizzle-orm";
 import { format } from "date-fns";
 
 const expenseService = {
@@ -43,6 +43,58 @@ const expenseService = {
           between(expenses.date, startDate, endDate)
         )
       );
+  },
+
+  async getExpensesByUserIdAndDateRangeWithPageAndLimit({
+    userId,
+    startDate,
+    endDate,
+    page,
+    limit,
+    orderBy,
+  }: {
+    userId: number;
+    startDate: string;
+    endDate: string;
+    page: number;
+    limit: number;
+    orderBy: "desc" | "asc";
+  }) {
+    const offset = (page - 1) * limit;
+    return db
+      .select()
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      )
+      .offset(offset)
+      .limit(limit)
+      .orderBy(orderBy === "desc" ? desc(expenses.date) : expenses.date);
+  },
+
+  async getNumberOfExpensesByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: string;
+    endDate: string;
+  }) {
+    const [data] = await db
+      .select({ count: count() })
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      );
+
+    return data.count ?? 0;
   },
 
   async getTodaysTransactions(userId: number) {
