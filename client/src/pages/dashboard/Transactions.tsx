@@ -106,10 +106,6 @@ function Transactions() {
     isFetchingNextPage
   );
 
-  if (isSummaryLoading) {
-    return <LoadingSpinner message="Loading transactions..." />;
-  }
-
   return (
     <div className="p-3 md:p-8">
       {/* Header */}
@@ -164,10 +160,12 @@ function Transactions() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {format(
-                new Date(monthSummary.year, monthSummary.monthNumber - 1),
-                "MMMM yyyy"
-              )}
+              {monthSummary
+                ? format(
+                    new Date(monthSummary.year, monthSummary.monthNumber - 1),
+                    "MMMM yyyy"
+                  )
+                : ""}
             </h2>
           </div>
         </div>
@@ -175,54 +173,58 @@ function Transactions() {
 
       {/* Monthly Summary Section */}
       <div className="bg-night-500 p-4 md:p-8 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-          <div className="text-center">
-            <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              Monthly Budget
-            </p>
-            <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
-              {currency}
-              {monthSummary?.monthlyBudget}
-            </p>
+        {isSummaryLoading ? (
+          <LoadingSpinner message="Loading summary..." />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            <div className="text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                Monthly Budget
+              </p>
+              <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
+                {currency}
+                {monthSummary?.monthlyBudget}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                Total Spent
+              </p>
+              <p
+                className={`text-xl md:text-3xl font-bold ${
+                  monthSummary?.monthlyTotalSpent > monthSummary?.monthlyBudget
+                    ? "text-auburn-500"
+                    : "text-timberwolf-900"
+                }`}
+              >
+                {currency}
+                {monthSummary?.monthlyTotalSpent}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                {isPreviousMonthYear(
+                  monthSummary?.monthNumber - 1,
+                  monthSummary?.year
+                )
+                  ? "Remaining"
+                  : monthSummary?.monthlyRemainingBudget >= 0
+                  ? "Savings"
+                  : "Deficit"}
+              </p>
+              <p
+                className={`text-xl md:text-3xl font-bold ${
+                  monthSummary?.monthlyRemainingBudget >= 0
+                    ? "text-emerald-500"
+                    : "text-auburn-500"
+                }`}
+              >
+                {currency}
+                {monthSummary?.monthlyRemainingBudget}
+              </p>
+            </div>
           </div>
-          <div className="text-center">
-            <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              Total Spent
-            </p>
-            <p
-              className={`text-xl md:text-3xl font-bold ${
-                monthSummary?.monthlyTotalSpent > monthSummary?.monthlyBudget
-                  ? "text-auburn-500"
-                  : "text-timberwolf-900"
-              }`}
-            >
-              {currency}
-              {monthSummary?.monthlyTotalSpent}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              {isPreviousMonthYear(
-                monthSummary.monthNumber - 1,
-                monthSummary.year
-              )
-                ? "Remaining"
-                : monthSummary?.monthlyRemainingBudget >= 0
-                ? "Savings"
-                : "Deficit"}
-            </p>
-            <p
-              className={`text-xl md:text-3xl font-bold ${
-                monthSummary?.monthlyRemainingBudget >= 0
-                  ? "text-emerald-500"
-                  : "text-auburn-500"
-              }`}
-            >
-              {currency}
-              {monthSummary?.monthlyRemainingBudget}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Week Filter */}
@@ -368,10 +370,14 @@ function Transactions() {
               </span>
             </>
           ) : (
-            `All ${format(
-              new Date(monthSummary.year, monthSummary.monthNumber - 1),
-              "MMMM"
-            )} Transactions`
+            `All ${
+              monthSummary
+                ? format(
+                    new Date(monthSummary.year, monthSummary.monthNumber - 1),
+                    "MMMM"
+                  )
+                : ""
+            } Transactions`
           )}
         </h3>
 
@@ -445,10 +451,17 @@ function Transactions() {
                   selectedWeekData.weekStartDate,
                   selectedWeekData.weekEndDate
                 )})`
-              : `No expenses recorded for ${format(
-                  new Date(monthSummary.year, monthSummary.monthNumber - 1),
-                  "MMMM yyyy"
-                )}`}
+              : `No expenses recorded for ${
+                  monthSummary
+                    ? format(
+                        new Date(
+                          monthSummary.year,
+                          monthSummary.monthNumber - 1
+                        ),
+                        "MMMM yyyy"
+                      )
+                    : ""
+                }`}
           </p>
         </div>
       )}
