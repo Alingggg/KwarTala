@@ -5,6 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { isWithinInterval } from "date-fns";
 
 function useAddExpense() {
   const queryClient = useQueryClient();
@@ -16,46 +17,63 @@ function useAddExpense() {
       return response.data.data;
     },
     onSuccess: (_, variables) => {
-      const expenseDate = variables.date;
-      const expenseMonth = new Date(expenseDate).getMonth() + 1;
+      const expenseDate = new Date(variables.date);
+      const expenseMonthNumber = new Date(expenseDate).getMonth() + 1;
       const expenseYear = new Date(expenseDate).getFullYear();
 
       const today = new Date();
       const currentMonthNumber = today.getMonth() + 1;
       const currentYear = today.getFullYear();
 
-      if (expenseMonth === currentMonthNumber && expenseYear === currentYear) {
-        queryClient.invalidateQueries({
-          queryKey: ["homeData"],
-        });
-      }
-
       queryClient.invalidateQueries({
         predicate: (query) => {
-          if (query.queryKey[0] !== "expenses") return false;
+          if (query.queryKey[0] === "homeData") {
+            return (
+              expenseMonthNumber === currentMonthNumber &&
+              expenseYear === currentYear
+            );
+          }
 
-          const [, startDate, endDate] = query.queryKey as [
-            "expenses",
-            string,
-            string,
-            number,
-            "desc" | "asc"
-          ];
+          if (query.queryKey[0] === "expenses") {
+            const [, startDateStr, endDateStr] = query.queryKey as [
+              "expenses",
+              string,
+              string,
+              number,
+              "desc" | "asc"
+            ];
 
-          return expenseDate >= startDate && expenseDate <= endDate;
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+
+            return isWithinInterval(expenseDate, {
+              start: startDate,
+              end: endDate,
+            });
+          }
+
+          if (
+            query.queryKey[0] === "monthlyTransactionsSummaryData" ||
+            query.queryKey[0] === "analyticsData" ||
+            query.queryKey[0] === "dailyChartsData" ||
+            query.queryKey[0] === "weeklyChartsData"
+          ) {
+            const [_, month, year] = query.queryKey as [
+              (
+                | "monthlyTransactionsSummaryData"
+                | "analyticsData"
+                | "dailyChartsData"
+                | "weeklyChartsData"
+              ),
+              number,
+              number
+            ];
+
+            return month === expenseMonthNumber && year === expenseYear;
+          }
+
+          return false;
         },
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["analyticsData", expenseMonth, expenseYear],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["dailyChartsData", expenseMonth, expenseYear],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["weeklyChartsData", expenseMonth, expenseYear],
       });
     },
     onError: (error: any) => {
@@ -113,45 +131,62 @@ function useEditExpense() {
     },
     onSuccess: (_, variables) => {
       const expenseDate = variables.date;
-      const expenseMonth = new Date(expenseDate).getMonth() + 1;
+      const expenseMonthNumber = new Date(expenseDate).getMonth() + 1;
       const expenseYear = new Date(expenseDate).getFullYear();
 
       const today = new Date();
       const currentMonthNumber = today.getMonth() + 1;
       const currentYear = today.getFullYear();
 
-      if (expenseMonth === currentMonthNumber && expenseYear === currentYear) {
-        queryClient.invalidateQueries({
-          queryKey: ["homeData"],
-        });
-      }
-
       queryClient.invalidateQueries({
         predicate: (query) => {
-          if (query.queryKey[0] !== "expenses") return false;
+          if (query.queryKey[0] === "homeData") {
+            return (
+              expenseMonthNumber === currentMonthNumber &&
+              expenseYear === currentYear
+            );
+          }
 
-          const [, startDate, endDate] = query.queryKey as [
-            "expenses",
-            string,
-            string,
-            number,
-            "desc" | "asc"
-          ];
+          if (query.queryKey[0] === "expenses") {
+            const [, startDateStr, endDateStr] = query.queryKey as [
+              "expenses",
+              string,
+              string,
+              number,
+              "desc" | "asc"
+            ];
 
-          return expenseDate >= startDate && expenseDate <= endDate;
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+
+            return isWithinInterval(expenseDate, {
+              start: startDate,
+              end: endDate,
+            });
+          }
+
+          if (
+            query.queryKey[0] === "monthlyTransactionsSummaryData" ||
+            query.queryKey[0] === "analyticsData" ||
+            query.queryKey[0] === "dailyChartsData" ||
+            query.queryKey[0] === "weeklyChartsData"
+          ) {
+            const [_, month, year] = query.queryKey as [
+              (
+                | "monthlyTransactionsSummaryData"
+                | "analyticsData"
+                | "dailyChartsData"
+                | "weeklyChartsData"
+              ),
+              number,
+              number
+            ];
+
+            return month === expenseMonthNumber && year === expenseYear;
+          }
+
+          return false;
         },
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["analyticsData", expenseMonth, expenseYear],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["dailyChartsData", expenseMonth, expenseYear],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["weeklyChartsData", expenseMonth, expenseYear],
       });
     },
     onError: (error: any) => {
@@ -177,45 +212,62 @@ function useDeleteExpense() {
     },
     onSuccess: (_, variables) => {
       const expenseDate = variables.date;
-      const expenseMonth = new Date(expenseDate).getMonth() + 1;
+      const expenseMonthNumber = new Date(expenseDate).getMonth() + 1;
       const expenseYear = new Date(expenseDate).getFullYear();
 
       const today = new Date();
       const currentMonthNumber = today.getMonth() + 1;
       const currentYear = today.getFullYear();
 
-      if (expenseMonth === currentMonthNumber && expenseYear === currentYear) {
-        queryClient.invalidateQueries({
-          queryKey: ["homeData"],
-        });
-      }
-
       queryClient.invalidateQueries({
         predicate: (query) => {
-          if (query.queryKey[0] !== "expenses") return false;
+          if (query.queryKey[0] === "homeData") {
+            return (
+              expenseMonthNumber === currentMonthNumber &&
+              expenseYear === currentYear
+            );
+          }
 
-          const [, startDate, endDate] = query.queryKey as [
-            "expenses",
-            string,
-            string,
-            number,
-            "desc" | "asc"
-          ];
+          if (query.queryKey[0] === "expenses") {
+            const [, startDateStr, endDateStr] = query.queryKey as [
+              "expenses",
+              string,
+              string,
+              number,
+              "desc" | "asc"
+            ];
 
-          return expenseDate >= startDate && expenseDate <= endDate;
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+
+            return isWithinInterval(expenseDate, {
+              start: startDate,
+              end: endDate,
+            });
+          }
+
+          if (
+            query.queryKey[0] === "monthlyTransactionsSummaryData" ||
+            query.queryKey[0] === "analyticsData" ||
+            query.queryKey[0] === "dailyChartsData" ||
+            query.queryKey[0] === "weeklyChartsData"
+          ) {
+            const [_, month, year] = query.queryKey as [
+              (
+                | "monthlyTransactionsSummaryData"
+                | "analyticsData"
+                | "dailyChartsData"
+                | "weeklyChartsData"
+              ),
+              number,
+              number
+            ];
+
+            return month === expenseMonthNumber && year === expenseYear;
+          }
+
+          return false;
         },
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["analyticsData", expenseMonth, expenseYear],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["dailyChartsData", expenseMonth, expenseYear],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["weeklyChartsData", expenseMonth, expenseYear],
       });
     },
     onError: (error: any) => {

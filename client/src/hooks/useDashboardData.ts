@@ -19,7 +19,7 @@ function useGetMonthlyTransactionsSummary({
   year: number;
 }) {
   return useQuery({
-    queryKey: ["transactionsData", month, year],
+    queryKey: ["monthlyTransactionsSummaryData", month, year],
     queryFn: async () => {
       const response = await api("/dashboard/transactions/summary", {
         params: { month, year },
