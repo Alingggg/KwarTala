@@ -24,6 +24,9 @@ function CustomPieTooltip({ active, payload }: any) {
         <p className="text-night-600 font-semibold mb-1">{data.name}</p>
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
+            <span className="font-extrabold">{data.category}</span>
+          </p>
+          <p className="text-night-500 text-sm">
             <span className="font-medium">Amount:</span> {currency}
             {data.total}
           </p>
