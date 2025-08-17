@@ -224,7 +224,7 @@ const authController = {
         throw error;
       }
 
-      const { userId, userNameChangedAt } = req.user;
+      const { userId } = req.user;
 
       const validationResult = userNameSchema.safeParse(req.body.userName);
       if (!validationResult.success) {
@@ -238,7 +238,6 @@ const authController = {
       const updatedUser = await userService.updateUserName({
         userId,
         userName,
-        userNameChangedAt,
       });
 
       res

@@ -4,7 +4,6 @@ interface User {
   email: string;
   password: string;
   isVerified: boolean;
-  userNameChangedAt: string;
   emailChangedAt: string;
   passwordChangedAt: string;
 }

@@ -250,29 +250,14 @@ const userService = {
   async updateUserName({
     userId,
     userName,
-    userNameChangedAt,
   }: {
     userId: number;
     userName: string;
-    userNameChangedAt: string;
   }) {
-    const CHANGE_COOLDOWN_DAYS = 30;
-
-    if (
-      new Date(userNameChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
-    ) {
-      const error: CustomError = new Error(
-        "Username can only be changed once every 30 days."
-      );
-      error.statusCode = 400;
-      throw error;
-    }
-
     const [user] = await db
       .update(users)
       .set({
         userName,
-        userNameChangedAt: format(new Date(), "yyyy-MM-dd"),
       })
       .where(eq(users.id, userId))
       .returning();

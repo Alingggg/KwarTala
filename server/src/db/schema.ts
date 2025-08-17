@@ -21,9 +21,6 @@ export const users = pgTable(
     password: text().notNull(),
     userName: varchar("user_name", { length: 20 }).notNull(),
     isVerified: boolean("is_verified").default(false).notNull(),
-    userNameChangedAt: date("userName_changed_at")
-      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
-      .notNull(),
     emailChangedAt: date("email_changed_at")
       .default(sql`(now() AT TIME ZONE 'utc'::text)`)
       .notNull(),
