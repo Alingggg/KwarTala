@@ -268,16 +268,35 @@ const authController = {
         newPassword,
       });
 
-      const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none" as const,
-      };
-
-      res.clearCookie("accessToken", cookieOptions);
-      res.clearCookie("refreshToken", cookieOptions);
-
       res.status(200).json({ message: "Password reset successfully" });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async checkHasToReLogIn(req: Request, res: Response, next: NextFunction) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      if (!req.user) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      const userId = req.user.userId;
+
+      const hasToReLogIn = await userService.hasToReLogIn({
+        userId,
+        refreshToken,
+      });
+
+      res.status(200).json({ hasToReLogIn });
     } catch (error) {
       next(error);
     }

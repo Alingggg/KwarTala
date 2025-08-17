@@ -61,6 +61,9 @@ export const sessions = pgTable(
     id: serial().primaryKey().notNull(),
     userId: integer("user_id").notNull(),
     refreshToken: text("refresh_token").notNull(),
+    createdAt: date("created_at")
+      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
+      .notNull(),
   },
   (table) => [
     foreignKey({

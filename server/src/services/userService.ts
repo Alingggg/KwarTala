@@ -7,7 +7,7 @@ import {
 import type { CustomError, User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
-import { addMinutes, format, subDays } from "date-fns";
+import { addMinutes, format, isBefore, subDays } from "date-fns";
 import { eq } from "drizzle-orm";
 
 const userService = {
@@ -368,7 +368,6 @@ const userService = {
       })
       .where(eq(users.id, user.id))
       .returning();
-    await sessionService.deleteSessionByUserId(user.id);
   },
 
   canChangeEmail(user: User) {
@@ -386,6 +385,36 @@ const userService = {
       new Date(user.passwordChangedAt) >
       subDays(new Date(), CHANGE_COOLDOWN_DAYS)
     );
+  },
+
+  async hasToReLogIn({
+    userId,
+    refreshToken,
+  }: {
+    userId: number;
+    refreshToken: string;
+  }) {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      const error: CustomError = new Error("User not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const session = await sessionService.getSessionByToken(refreshToken);
+    if (!session) {
+      const error: CustomError = new Error("Invalid or expired session.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (
+      isBefore(session.createdAt, user.emailChangedAt) ||
+      isBefore(session.createdAt, user.passwordChangedAt)
+    )
+      return true;
+
+    return false;
   },
 
   async getUserById(id: number) {

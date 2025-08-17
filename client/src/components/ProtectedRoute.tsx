@@ -1,11 +1,20 @@
 import { Navigate, Outlet } from "react-router";
-import { useUser } from "@/hooks";
+import { useCheckHasToReLogIn, useLogout, useUser } from "@/hooks";
 import { AppLoading } from "@/components";
+import { useEffect } from "react";
 
 function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useUser();
+  const { isAuthenticated, isLoading: isUserLoading } = useUser();
+  const { hasToReLogIn } = useCheckHasToReLogIn(isUserLoading);
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
-  if (isLoading) return <AppLoading />;
+  useEffect(() => {
+    if (isAuthenticated && hasToReLogIn) {
+      logout();
+    }
+  }, [isAuthenticated, hasToReLogIn, logout]);
+
+  if (isUserLoading || isLoggingOut) return <AppLoading />;
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }

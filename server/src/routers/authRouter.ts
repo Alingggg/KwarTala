@@ -31,5 +31,10 @@ router.post(
   passwordResetRateLimit,
   authController.resetPassword
 );
+router.post(
+  "/has-to-re-login",
+  authMiddleware,
+  authController.checkHasToReLogIn
+);
 
 export default router;
