@@ -142,7 +142,7 @@ function Transactions() {
         <button
           onClick={() => navigateMonth("prev")}
           disabled={currentMonthIndex >= MAX_MONTHS - 1}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
           <FiChevronLeft size={20} className="md:w-6 md:h-6" />
         </button>
@@ -150,7 +150,7 @@ function Transactions() {
         <button
           onClick={() => navigateMonth("next")}
           disabled={currentMonthIndex === 0}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
           <FiChevronRight size={20} className="md:w-6 md:h-6" />
         </button>
@@ -245,7 +245,7 @@ function Transactions() {
               selectedWeek === null
                 ? "bg-night-600 text-timberwolf-900 shadow-md"
                 : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
-            }`}
+            } cursor-pointer`}
           >
             <div className="text-xs md:text-sm font-semibold">All Weeks</div>
           </button>
@@ -260,7 +260,7 @@ function Transactions() {
                 selectedWeek === week.weekNumber
                   ? "bg-night-600 text-timberwolf-900 shadow-md"
                   : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
-              }`}
+              } cursor-pointer`}
             >
               <div className="text-center space-y-1.5">
                 {/* Week Header */}
@@ -390,7 +390,7 @@ function Transactions() {
               sortOrder === "desc"
                 ? "bg-night-600 text-timberwolf-900"
                 : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
-            }`}
+            } cursor-pointer`}
           >
             <span>Newest</span>
             <FiChevronDown size={12} className="md:w-3.5 md:h-3.5" />
@@ -401,7 +401,7 @@ function Transactions() {
               sortOrder === "asc"
                 ? "bg-night-600 text-timberwolf-900"
                 : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
-            }`}
+            } cursor-pointer`}
           >
             <span>Oldest</span>
             <FiChevronUp size={12} className="md:w-3.5 md:h-3.5" />

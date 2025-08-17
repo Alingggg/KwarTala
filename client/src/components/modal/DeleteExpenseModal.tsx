@@ -31,7 +31,7 @@ function DeleteExpenseModal({
       <div className="bg-ash-gray-900 p-5 md:p-7 rounded-lg w-full max-w-sm text-night-500 relative text-center">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500"
+          className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 cursor-pointer"
           disabled={isPending}
         >
           <FiX size={20} className="md:w-6 md:h-6" />
