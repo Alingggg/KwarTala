@@ -172,7 +172,7 @@ function Transactions() {
       </div>
 
       {/* Monthly Summary Section */}
-      <div className="bg-night-500 p-4 md:p-8 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="bg-night-500 p-4 md:p-8 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-2xl transition-shadow duration-300">
         {isSummaryLoading ? (
           <LoadingSpinner message="Loading summary..." />
         ) : (
@@ -228,7 +228,7 @@ function Transactions() {
       </div>
 
       {/* Week Filter */}
-      <div className="mb-6 md:mb-8 bg-timberwolf-900 p-4 rounded-lg shadow-lg">
+      <div className="mb-6 md:mb-8 bg-timberwolf-900 p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
         <div className="flex items-center justify-center mb-3 md:mb-4">
           <FiFilter className="mr-2 text-night-600" size={16} />
           <span className="text-base md:text-lg font-bold text-night-600">
@@ -301,7 +301,7 @@ function Transactions() {
 
       {/* Weekly Budget Info */}
       {selectedWeekData && (
-        <div className="bg-night-500 p-4 md:p-6 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="bg-night-500 p-4 md:p-6 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
             <div className="text-center">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
