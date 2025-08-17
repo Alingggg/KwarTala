@@ -153,6 +153,28 @@ const userService = {
       throw error;
     }
 
+    if (type === "change-email") {
+      const allowed = this.canChangeEmail(user);
+      if (!allowed) {
+        const error: CustomError = new Error(
+          "Email can only be changed once every 30 days."
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+    }
+
+    if (type === "reset-password") {
+      const allowed = this.canChangePassword(user);
+      if (!allowed) {
+        const error: CustomError = new Error(
+          "Password can only be changed once every 30 days."
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+    }
+
     const { password, ...userWithoutPassword } = user;
 
     const payload = {
@@ -266,8 +288,6 @@ const userService = {
   },
 
   async updateEmail({ token, email }: { token: string; email: string }) {
-    const CHANGE_COOLDOWN_DAYS = 30;
-
     const tokenPayload = verifyToken(token, "access-token");
     if (!tokenPayload) {
       const error: CustomError = new Error("Token is invalid or expired.");
@@ -282,9 +302,7 @@ const userService = {
       throw error;
     }
 
-    if (
-      new Date(user.emailChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
-    ) {
+    if (!this.canChangeEmail(user)) {
       const error: CustomError = new Error(
         "Email can only be changed once every 30 days."
       );
@@ -309,8 +327,6 @@ const userService = {
     token: string;
     newPassword: string;
   }) {
-    const CHANGE_COOLDOWN_DAYS = 30;
-
     const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
       const error: CustomError = new Error("Invalid or expired token.");
@@ -334,10 +350,7 @@ const userService = {
       throw error;
     }
 
-    if (
-      new Date(user.passwordChangedAt) >
-      subDays(new Date(), CHANGE_COOLDOWN_DAYS)
-    ) {
+    if (!this.canChangePassword(user)) {
       const error: CustomError = new Error(
         "Password can only be changed once every 30 days."
       );
@@ -356,6 +369,23 @@ const userService = {
       .where(eq(users.id, user.id))
       .returning();
     await sessionService.deleteSessionByUserId(user.id);
+  },
+
+  canChangeEmail(user: User) {
+    const CHANGE_COOLDOWN_DAYS = 30;
+
+    return !(
+      new Date(user.emailChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+    );
+  },
+
+  canChangePassword(user: User) {
+    const CHANGE_COOLDOWN_DAYS = 30;
+
+    return !(
+      new Date(user.passwordChangedAt) >
+      subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+    );
   },
 
   async getUserById(id: number) {
