@@ -5,36 +5,11 @@ import { useForm } from "react-hook-form";
 import { useGetVerificationEmail, useLogin, useModalContext } from "@/hooks";
 import { AppLogo } from "@/assets/images";
 import { useState } from "react";
+import * as z from "zod";
+import { loginSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface FormValues {
-  email: string;
-  password: string;
-}
-
-const validation = {
-  email: {
-    required: "Email is required",
-    pattern: {
-      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      message: "Invalid email format",
-    },
-  },
-  password: {
-    required: "Password is required",
-    minLength: {
-      value: 8,
-      message: "Password must be at least 8 characters",
-    },
-    maxLength: {
-      value: 64,
-      message: "Password must be under 64 characters",
-    },
-    pattern: {
-      value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/,
-      message: "Must include upper & lowercase letters, a number, and a symbol",
-    },
-  },
-};
+type FormValues = z.infer<typeof loginSchema>;
 
 function Login() {
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +19,7 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({ resolver: zodResolver(loginSchema) });
   const { mutate: login, isPending } = useLogin();
   const {
     mutate: sendVerification,
@@ -156,7 +131,7 @@ function Login() {
                       ? "border-auburn-600 focus:border-auburn-600"
                       : ""
                   }`}
-                  {...register("email", validation.email)}
+                  {...register("email")}
                 />
               </div>
               {errors.email && (
@@ -186,7 +161,7 @@ function Login() {
                       ? "border-auburn-600 focus:border-auburn-600"
                       : ""
                   }`}
-                  {...register("password", validation.password)}
+                  {...register("password")}
                 />
               </div>
               {errors.password && (

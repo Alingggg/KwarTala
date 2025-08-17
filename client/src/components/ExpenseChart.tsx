@@ -185,7 +185,7 @@ function ExpenseChart({
         <div className="flex bg-timberwolf-700 rounded-lg p-1">
           <button
             onClick={() => setChartView("daily")}
-            className={`px-2 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
+            className={`cursor-pointer px-2 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
               chartView === "daily"
                 ? "bg-night-600 text-timberwolf-900"
                 : "text-night-500 hover:bg-timberwolf-600"
@@ -195,7 +195,7 @@ function ExpenseChart({
           </button>
           <button
             onClick={() => setChartView("weekly")}
-            className={`px-2 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
+            className={`cursor-pointer px-2 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
               chartView === "weekly"
                 ? "bg-night-600 text-timberwolf-900"
                 : "text-night-500 hover:bg-timberwolf-600"

@@ -65,7 +65,7 @@ export function ExpenseCard({
             {/* Info button (mobile only) */}
             <button
               onClick={() => setShowDescription(true)}
-              className="md:hidden text-night-600 hover:text-night-500 hover:bg-night-600 transition-colors flex-shrink-0 p-1 rounded-full"
+              className="md:hidden text-night-600 hover:text-night-900 hover:bg-timberwolf-300 transition-colors flex-shrink-0 p-1 rounded-full cursor-pointer"
               title="View details"
             >
               <FiInfo size={14} />
@@ -98,7 +98,7 @@ export function ExpenseCard({
                 date,
               })
             }
-            className="p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors"
+            className="p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors cursor-pointer"
             title="Edit expense"
           >
             <FiEdit size={16} className="md:w-[18px] md:h-[18px]" />
@@ -113,7 +113,7 @@ export function ExpenseCard({
                 date,
               })
             }
-            className="p-2 text-auburn-600 hover:text-white hover:bg-auburn-500 rounded-full transition-colors"
+            className="p-2 text-auburn-600 hover:text-white hover:bg-auburn-500 rounded-full transition-colors cursor-pointer"
             title="Delete expense"
           >
             <FiTrash2 size={16} className="md:w-[18px] md:h-[18px]" />
@@ -126,7 +126,7 @@ export function ExpenseCard({
         >
           <button
             onClick={() => setShowOptions((prev) => !prev)}
-            className="p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors"
+            className="p-2 text-night-700 hover:text-timberwolf-900 hover:bg-night-600 rounded-full transition-colors cursor-pointer"
             title="Options"
           >
             <FiMoreHorizontal size={18} />
@@ -144,7 +144,7 @@ export function ExpenseCard({
                     date,
                   });
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-left hover:bg-timberwolf-900 text-night-700 rounded-md"
+                className="flex items-center gap-2 px-4 py-2 text-left rounded-md transition-colors text-night-700 hover:text-timberwolf-900 hover:bg-night-600 cursor-pointer"
               >
                 <FiEdit size={16} /> <span>Edit</span>
               </button>
@@ -159,7 +159,7 @@ export function ExpenseCard({
                     date,
                   });
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-left hover:bg-auburn-100 text-auburn-600 rounded-md"
+                className="flex items-center gap-2 px-4 py-2 text-left rounded-md transition-colors text-auburn-600 hover:text-white hover:bg-auburn-500 cursor-pointer"
               >
                 <FiTrash2 size={16} /> <span>Delete</span>
               </button>

@@ -1,42 +1,7 @@
+import { budgetSchema, datePeriodSchema } from "@/zod-schemas/index";
 import { budgetService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
-
-function validateBudget({
-  month,
-  year,
-  amount,
-}: {
-  month?: number;
-  year?: number;
-  amount?: number;
-}) {
-  if (!month || !year) {
-    const error: CustomError = new Error("Budget Period is required");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (amount === undefined || amount === null) {
-    const error: CustomError = new Error("Budget is required");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (typeof amount !== "number" || isNaN(amount)) {
-    const error: CustomError = new Error("Budget must be a number");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (amount < 0) {
-    const error: CustomError = new Error("Budget cannot be negative");
-    error.statusCode = 400;
-    throw error;
-  }
-  if (amount > 100000000) {
-    const error: CustomError = new Error("Budget must not exceed 100,000,000");
-    error.statusCode = 400;
-    throw error;
-  }
-}
 
 const budgetController = {
   async getBudget(req: Request, res: Response, next: NextFunction) {
@@ -51,13 +16,18 @@ const budgetController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
-      const budget = await budgetService.findBudgetByUserIdAndDate({
+      const budget = await budgetService.getBudgetByUserIdAndDate({
         userId,
         month,
         year,
@@ -84,7 +54,17 @@ const budgetController = {
       const year = Number(req.query.year);
       const { amount } = req.body;
 
-      validateBudget({ month, year, amount });
+      const validationResult = budgetSchema.safeParse({
+        month,
+        year,
+        amount,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
+        error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
+        throw error;
+      }
 
       const budget = await budgetService.updateBudgetByUserIdAndDate({
         userId,

@@ -1,3 +1,4 @@
+import { datePeriodSchema, getTransactionsSchema } from "@/zod-schemas/index";
 import { dashboardService } from "@/services/index";
 import type { CustomError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
@@ -35,9 +36,14 @@ const dashboardController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
@@ -69,9 +75,14 @@ const dashboardController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
@@ -90,7 +101,11 @@ const dashboardController = {
     }
   },
 
-  async getTransactionsData(req: Request, res: Response, next: NextFunction) {
+  async getTransactionsSummary(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       if (!req.user) {
         const error: CustomError = new Error("User not authenticated");
@@ -100,16 +115,23 @@ const dashboardController = {
 
       const { userId } = req.user;
 
-      const month = Number(req.query.month);
-      const year = Number(req.query.year);
+      const rawMonth = Number(req.query.month);
+      const rawYear = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month: rawMonth,
+        year: rawYear,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 
-      const transactionsData = await dashboardService.getMonthlyTransactions({
+      const { month, year } = validationResult.data;
+
+      const transactionsData = await dashboardService.getTransactionsSummary({
         userId,
         month,
         year,
@@ -119,6 +141,60 @@ const dashboardController = {
         data: transactionsData,
         message: "Monthly transactions data retrieved successfully",
       });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getTransactions(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      const { userId } = req.user;
+
+      const rawStartDate = req.query.startDate;
+      const rawEndDate = req.query.endDate;
+      const rawPage = Number(req.query.page);
+      const rawLimit = Number(req.query.limit);
+      const rawOrderBy = req.query.orderBy;
+
+      const validationResult = getTransactionsSchema.safeParse({
+        startDate: rawStartDate,
+        endDate: rawEndDate,
+        page: rawPage,
+        limit: rawLimit,
+        orderBy: rawOrderBy,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
+        error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
+        throw error;
+      }
+
+      const { startDate, endDate, page, limit, orderBy } =
+        validationResult.data;
+
+      const transactions = await dashboardService.getTransactions({
+        userId,
+        startDate,
+        endDate,
+        page,
+        limit,
+        orderBy,
+      });
+
+      if (!transactions) {
+        const error: CustomError = new Error("No transactions found");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      res.status(200).json(transactions);
     } catch (error) {
       next(error);
     }
@@ -137,9 +213,14 @@ const dashboardController = {
       const month = Number(req.query.month);
       const year = Number(req.query.year);
 
-      if (!month || !year) {
-        const error: CustomError = new Error("Month and year are required");
+      const validationResult = datePeriodSchema.safeParse({
+        month,
+        year,
+      });
+      if (!validationResult.success) {
+        const error: CustomError = new Error();
         error.statusCode = 400;
+        error.message = validationResult.error.issues[0].message;
         throw error;
       }
 

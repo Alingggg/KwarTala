@@ -32,7 +32,7 @@ function ExpenseDescriptionModal({
         {/* Close Button */}
         <button
           onClick={() => setShowDescription(false)}
-          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-night-400 hover:text-night-600 hover:bg-ash-gray-200 rounded-full text-lg transition-colors duration-200"
+          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-night-400 hover:text-night-600 hover:bg-ash-gray-200 rounded-full text-lg transition-colors duration-200 cursor-pointer"
           aria-label="Close"
         >
           <FiX size={18} className="md:w-5 md:h-5" />

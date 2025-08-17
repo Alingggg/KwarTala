@@ -1,7 +1,7 @@
 import { api } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
-function useHomeData() {
+function useGetHomeData() {
   return useQuery({
     queryKey: ["homeData"],
     queryFn: async () => {
@@ -11,11 +11,17 @@ function useHomeData() {
   });
 }
 
-function useTransactionsData({ month, year }: { month: number; year: number }) {
+function useGetMonthlyTransactionsSummary({
+  month,
+  year,
+}: {
+  month: number;
+  year: number;
+}) {
   return useQuery({
-    queryKey: ["transactionsData", month, year],
+    queryKey: ["monthlyTransactionsSummaryData", month, year],
     queryFn: async () => {
-      const response = await api("/dashboard/transactions", {
+      const response = await api("/dashboard/transactions/summary", {
         params: { month, year },
       });
       return response.data.data;
@@ -23,7 +29,7 @@ function useTransactionsData({ month, year }: { month: number; year: number }) {
   });
 }
 
-function useAnalyticsData({ month, year }: { month: number; year: number }) {
+function useGetAnalyticsData({ month, year }: { month: number; year: number }) {
   return useQuery({
     queryKey: ["analyticsData", month, year],
     queryFn: async () => {
@@ -35,4 +41,8 @@ function useAnalyticsData({ month, year }: { month: number; year: number }) {
   });
 }
 
-export { useHomeData, useTransactionsData, useAnalyticsData };
+export {
+  useGetHomeData,
+  useGetMonthlyTransactionsSummary,
+  useGetAnalyticsData,
+};

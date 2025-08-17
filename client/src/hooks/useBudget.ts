@@ -40,29 +40,59 @@ function useEditBudget() {
       const currentMonthNumber = today.getMonth() + 1;
       const currentYear = today.getFullYear();
 
-      if (
-        variables.month === currentMonthNumber &&
-        variables.year === currentYear
-      ) {
-        queryClient.invalidateQueries({
-          queryKey: ["homeData"],
-        });
-      }
+      const budgetMonthNumber = variables.month;
+      const budgetYear = variables.year;
 
       queryClient.invalidateQueries({
-        queryKey: ["transactionsData", variables.month, variables.year],
-      });
+        predicate: (query) => {
+          if (query.queryKey[0] === "homeData") {
+            return (
+              budgetMonthNumber === currentMonthNumber &&
+              budgetYear === currentYear
+            );
+          }
 
-      queryClient.invalidateQueries({
-        queryKey: ["analyticsData", variables.month, variables.year],
-      });
+          if (query.queryKey[0] === "expenses") {
+            const [, startDateStr] = query.queryKey as [
+              "expenses",
+              string,
+              string,
+              number,
+              "desc" | "asc"
+            ];
 
-      queryClient.invalidateQueries({
-        queryKey: ["dailyChartsData", variables.month, variables.year],
-      });
+            const startDate = new Date(startDateStr);
 
-      queryClient.invalidateQueries({
-        queryKey: ["weeklyChartsData", variables.month, variables.year],
+            const queryMonthNumber = startDate.getMonth() + 1;
+            const queryYear = startDate.getFullYear();
+
+            return (
+              queryMonthNumber === budgetMonthNumber && queryYear === budgetYear
+            );
+          }
+
+          if (
+            query.queryKey[0] === "monthlyTransactionsSummaryData" ||
+            query.queryKey[0] === "analyticsData" ||
+            query.queryKey[0] === "dailyChartsData" ||
+            query.queryKey[0] === "weeklyChartsData"
+          ) {
+            const [_, month, year] = query.queryKey as [
+              (
+                | "monthlyTransactionsSummaryData"
+                | "analyticsData"
+                | "dailyChartsData"
+                | "weeklyChartsData"
+              ),
+              number,
+              number
+            ];
+
+            return month === budgetMonthNumber && year === budgetYear;
+          }
+
+          return false;
+        },
       });
     },
   });

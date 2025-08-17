@@ -11,16 +11,16 @@ interface ButtonProps {
 }
 
 const buttonStyles = {
-  base: "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 hover:cursor-pointer",
+  base: "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
   variants: {
     primary:
-      "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500",
+      "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500 disabled:hover:bg-auburn-500",
     secondary:
-      "bg-ash-gray-300 text-timberwolf-900 hover:bg-ash-gray-400 focus:ring-ash-gray-400 font-semibold",
+      "bg-ash-gray-300 text-timberwolf-900 hover:bg-ash-gray-400 focus:ring-ash-gray-400 font-semibold disabled:hover:bg-ash-gray-300",
     success:
-      "bg-night-600 text-timberwolf-900 hover:bg-night-700 focus:ring-night-600 font-semibold",
+      "bg-night-600 text-timberwolf-900 hover:bg-night-700 focus:ring-night-600 font-semibold disabled:hover:bg-night-600",
     danger:
-      "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500 font-semibold",
+      "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500 font-semibold disabled:hover:bg-auburn-500",
   },
   sizes: {
     default: "h-10 py-2 px-4",

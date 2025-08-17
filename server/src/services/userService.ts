@@ -1,4 +1,4 @@
-import { userRepository } from "@/repositories/index";
+import db, { users } from "@/db/index";
 import {
   emailService,
   sessionService,
@@ -7,7 +7,8 @@ import {
 import type { CustomError, User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
-import { addMinutes, subDays } from "date-fns";
+import { addMinutes, format, isBefore, subDays } from "date-fns";
+import { eq } from "drizzle-orm";
 
 const userService = {
   async registerUser({
@@ -15,13 +16,10 @@ const userService = {
     email,
     password,
   }: Pick<User, "userName" | "email" | "password">) {
-    if (!userName || !email || !password) {
-      const error: CustomError = new Error("All fields are required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const existingUser = await userRepository.findByEmail(email);
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
     if (existingUser) {
       const error: CustomError = new Error("User already exists");
       error.statusCode = 409;
@@ -30,12 +28,14 @@ const userService = {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await userRepository.create({
-      userName,
-      email,
-      password: hashedPassword,
-    });
-
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        userName,
+        email,
+        password: hashedPassword,
+      })
+      .returning();
     if (!newUser) {
       const error: CustomError = new Error("Failed to create user.");
       error.statusCode = 500;
@@ -48,13 +48,7 @@ const userService = {
   },
 
   async loginUser({ email, password }: { email: string; password: string }) {
-    if (!email || !password) {
-      const error: CustomError = new Error("Email and password are required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const user = await userRepository.findByEmail(email);
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     if (!user) {
       const error: CustomError = new Error("Invalid email or password.");
       error.statusCode = 401;
@@ -96,13 +90,7 @@ const userService = {
   },
 
   async refreshAccessToken(refreshToken: string) {
-    if (!refreshToken) {
-      const error: CustomError = new Error("Refresh token is required.");
-      error.statusCode = 401;
-      throw error;
-    }
-
-    const session = await sessionService.findSessionByToken(refreshToken);
+    const session = await sessionService.getSessionByToken(refreshToken);
     if (!session) {
       const error: CustomError = new Error("Invalid refresh token.");
       error.statusCode = 401;
@@ -133,23 +121,11 @@ const userService = {
   },
 
   async logoutUser(refreshToken: string) {
-    if (!refreshToken) {
-      const error: CustomError = new Error("Refresh token is required.");
-      error.statusCode = 401;
-      throw error;
-    }
-
     await sessionService.deleteSessionByToken(refreshToken);
   },
 
   async getUserProfile(userId: number) {
-    if (!userId) {
-      const error: CustomError = new Error("User ID is required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const user = await userRepository.findById(userId);
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -170,17 +146,33 @@ const userService = {
     type: "register" | "change-email" | "reset-password";
     newEmail?: string;
   }) {
-    if (!email) {
-      const error: CustomError = new Error("Email is required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const user = await userRepository.findByEmail(email);
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
       throw error;
+    }
+
+    if (type === "change-email") {
+      const allowed = this.canChangeEmail(user);
+      if (!allowed) {
+        const error: CustomError = new Error(
+          "Email can only be changed once every 30 days."
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+    }
+
+    if (type === "reset-password") {
+      const allowed = this.canChangePassword(user);
+      if (!allowed) {
+        const error: CustomError = new Error(
+          "Password can only be changed once every 30 days."
+        );
+        error.statusCode = 400;
+        throw error;
+      }
     }
 
     const { password, ...userWithoutPassword } = user;
@@ -195,7 +187,7 @@ const userService = {
     await verificationTokenService.createVerificationToken({
       userId: user.id,
       token,
-      expiresAt: addMinutes(new Date(), 15),
+      expiresAt: format(addMinutes(new Date(), 15), "yyyy-MM-dd"),
     });
 
     let subject;
@@ -239,13 +231,7 @@ const userService = {
   },
 
   async verifyEmail({ token, newEmail }: { token: string; newEmail?: string }) {
-    if (!token) {
-      const error: CustomError = new Error("Token is required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const verificationToken = await verificationTokenService.findByToken(token);
+    const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
       const error: CustomError = new Error("Invalid or expired token.");
       error.statusCode = 401;
@@ -261,7 +247,7 @@ const userService = {
 
     await verificationTokenService.deleteVerificationToken(token);
 
-    const user = await this.findUserByEmail(tokenPayload.email);
+    const user = await this.getUserByEmail(tokenPayload.email);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
@@ -269,10 +255,12 @@ const userService = {
     }
 
     if (!newEmail) {
-      await userRepository.updateVerificationStatus({
-        id: user.id,
-        isVerified: true,
-      });
+      await db
+        .update(users)
+        .set({
+          isVerified: true,
+        })
+        .where(eq(users.id, user.id));
     } else {
       await this.updateEmail({
         token,
@@ -284,44 +272,22 @@ const userService = {
   async updateUserName({
     userId,
     userName,
-    userNameChangedAt,
   }: {
     userId: number;
     userName: string;
-    userNameChangedAt: Date | string;
   }) {
-    const CHANGE_COOLDOWN_DAYS = 30;
+    const [user] = await db
+      .update(users)
+      .set({
+        userName,
+      })
+      .where(eq(users.id, userId))
+      .returning();
 
-    if (!userId || !userName || !userNameChangedAt) {
-      const error: CustomError = new Error(
-        "ID, username, and username changed date are required."
-      );
-      error.statusCode = 400;
-      throw error;
-    }
-
-    if (
-      new Date(userNameChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
-    ) {
-      const error: CustomError = new Error(
-        "Username can only be changed once every 30 days."
-      );
-      error.statusCode = 400;
-      throw error;
-    }
-
-    return await userRepository.updateUserName({ id: userId, userName });
+    return user;
   },
 
   async updateEmail({ token, email }: { token: string; email: string }) {
-    const CHANGE_COOLDOWN_DAYS = 30;
-
-    if (!token || !email) {
-      const error: CustomError = new Error("Token and email are required.");
-      error.statusCode = 400;
-      throw error;
-    }
-
     const tokenPayload = verifyToken(token, "access-token");
     if (!tokenPayload) {
       const error: CustomError = new Error("Token is invalid or expired.");
@@ -329,16 +295,14 @@ const userService = {
       throw error;
     }
 
-    const user = await this.findUserById(tokenPayload.userId);
+    const user = await this.getUserById(tokenPayload.userId);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
       throw error;
     }
 
-    if (
-      new Date(user.emailChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
-    ) {
+    if (!this.canChangeEmail(user)) {
       const error: CustomError = new Error(
         "Email can only be changed once every 30 days."
       );
@@ -346,7 +310,13 @@ const userService = {
       throw error;
     }
 
-    await userRepository.updateEmail({ id: user.id, email });
+    await db
+      .update(users)
+      .set({
+        email,
+        emailChangedAt: format(new Date(), "yyyy-MM-dd"),
+      })
+      .where(eq(users.id, user.id));
     await sessionService.deleteSessionByUserId(user.id);
   },
 
@@ -357,17 +327,7 @@ const userService = {
     token: string;
     newPassword: string;
   }) {
-    const CHANGE_COOLDOWN_DAYS = 30;
-
-    if (!token || !newPassword) {
-      const error: CustomError = new Error(
-        "Token and new password are required."
-      );
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const verificationToken = await verificationTokenService.findByToken(token);
+    const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
       const error: CustomError = new Error("Invalid or expired token.");
       error.statusCode = 401;
@@ -383,17 +343,14 @@ const userService = {
 
     await verificationTokenService.deleteVerificationToken(token);
 
-    const user = await this.findUserById(tokenPayload.userId);
+    const user = await this.getUserById(tokenPayload.userId);
     if (!user) {
       const error: CustomError = new Error("User not found.");
       error.statusCode = 404;
       throw error;
     }
 
-    if (
-      new Date(user.passwordChangedAt) >
-      subDays(new Date(), CHANGE_COOLDOWN_DAYS)
-    ) {
+    if (!this.canChangePassword(user)) {
       const error: CustomError = new Error(
         "Password can only be changed once every 30 days."
       );
@@ -403,23 +360,79 @@ const userService = {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await userRepository.updatePassword({
-      id: user.id,
-      password: hashedPassword,
-    });
-    await sessionService.deleteSessionByUserId(user.id);
+    await db
+      .update(users)
+      .set({
+        password: hashedPassword,
+        passwordChangedAt: format(new Date(), "yyyy-MM-dd"),
+      })
+      .where(eq(users.id, user.id))
+      .returning();
   },
 
-  async findUserById(id: number) {
-    return await userRepository.findById(id);
+  canChangeEmail(user: User) {
+    const CHANGE_COOLDOWN_DAYS = 30;
+
+    return !(
+      new Date(user.emailChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+    );
   },
 
-  async findUserByEmail(email: string) {
-    return await userRepository.findByEmail(email);
+  canChangePassword(user: User) {
+    const CHANGE_COOLDOWN_DAYS = 30;
+
+    return !(
+      new Date(user.passwordChangedAt) >
+      subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+    );
+  },
+
+  async hasToReLogIn({
+    userId,
+    refreshToken,
+  }: {
+    userId: number;
+    refreshToken: string;
+  }) {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      const error: CustomError = new Error("User not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const session = await sessionService.getSessionByToken(refreshToken);
+    if (!session) {
+      const error: CustomError = new Error("Invalid or expired session.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (
+      isBefore(session.createdAt, user.emailChangedAt) ||
+      isBefore(session.createdAt, user.passwordChangedAt)
+    )
+      return true;
+
+    return false;
+  },
+
+  async getUserById(id: number) {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+
+    return user;
+  },
+
+  async getUserByEmail(email: string) {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+
+    return user;
   },
 
   async deleteUser(id: number) {
-    return userRepository.delete(id);
+    const [user] = await db.delete(users).where(eq(users.id, id)).returning();
+
+    return user;
   },
 };
 

@@ -4,26 +4,11 @@ import { Button, Input, LoadingOverlay } from "@/components";
 import { FiAlertCircle, FiCheckCircle, FiLock } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useResetPassword } from "@/hooks";
+import * as z from "zod";
+import { resetPasswordSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface FormValues {
-  password: string;
-  confirmPassword: string;
-}
-
-const validation = {
-  password: {
-    required: "Password is required",
-    minLength: {
-      value: 8,
-      message: "Password must be at least 8 characters",
-    },
-  },
-  confirmPassword: {
-    required: "Please confirm your password",
-    validate: (value: string, values: FormValues) =>
-      value === values.password || "Passwords do not match",
-  },
-};
+type FormValues = z.infer<typeof resetPasswordSchema>;
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -33,8 +18,7 @@ function ResetPassword() {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({ resolver: zodResolver(resetPasswordSchema) });
 
   const {
     mutate: resetPassword,
@@ -153,7 +137,7 @@ function ResetPassword() {
                       ? "border-auburn-600 focus:border-auburn-600"
                       : ""
                   }`}
-                  {...register("password", validation.password)}
+                  {...register("password")}
                 />
               </div>
               {errors.password && (
@@ -182,11 +166,7 @@ function ResetPassword() {
                       ? "border-auburn-600 focus:border-auburn-600"
                       : ""
                   }`}
-                  {...register("confirmPassword", {
-                    ...validation.confirmPassword,
-                    validate: (value) =>
-                      value === watch("password") || "Passwords do not match",
-                  })}
+                  {...register("confirmPassword")}
                 />
               </div>
               {errors.confirmPassword && (

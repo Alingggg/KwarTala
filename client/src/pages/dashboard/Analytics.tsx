@@ -3,10 +3,10 @@ import { ExpenseChart, LoadingSpinner } from "@/components";
 import { FiCalendar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
-  useAnalyticsData,
+  useGetAnalyticsData,
   useCurrencyContext,
-  useDailyChartsData,
-  useWeeklyChartsData,
+  useGetDailyChartsData,
+  useGetWeeklyChartsData,
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
 import type { Expense } from "@/types";
@@ -23,6 +23,9 @@ function CustomPieTooltip({ active, payload }: any) {
       <div className="bg-ash-gray-900 border border-night-700 p-3 rounded-lg shadow-lg">
         <p className="text-night-600 font-semibold mb-1">{data.name}</p>
         <div className="space-y-1">
+          <p className="text-night-500 text-sm">
+            <span className="font-extrabold">{data.category}</span>
+          </p>
           <p className="text-night-500 text-sm">
             <span className="font-medium">Amount:</span> {currency}
             {data.total}
@@ -49,17 +52,18 @@ function Analytics() {
 
   const { month, year } = getMonthYear(currentMonthIndex);
 
-  const { data: monthData, isLoading: isAnalyticsLoading } = useAnalyticsData({
-    month,
-    year,
-  });
+  const { data: monthData, isLoading: isAnalyticsLoading } =
+    useGetAnalyticsData({
+      month,
+      year,
+    });
   const { data: dailyChartsData, isLoading: isDailyLoading } =
-    useDailyChartsData({
+    useGetDailyChartsData({
       month,
       year,
     });
   const { data: weeklyChartsData, isLoading: isWeeklyLoading } =
-    useWeeklyChartsData({
+    useGetWeeklyChartsData({
       month,
       year,
     });
@@ -77,10 +81,6 @@ function Analytics() {
     }
   }
 
-  if (isAnalyticsLoading || isDailyLoading || isWeeklyLoading) {
-    return <LoadingSpinner message="Loading analytics data..." />;
-  }
-
   return (
     <div className="p-3 md:p-8">
       {/* Page Header */}
@@ -96,7 +96,7 @@ function Analytics() {
         <button
           onClick={() => navigateMonth("prev")}
           disabled={currentMonthIndex >= MAX_MONTHS - 1}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
           <FiChevronLeft size={20} className="md:w-6 md:h-6" />
         </button>
@@ -104,7 +104,7 @@ function Analytics() {
         <button
           onClick={() => navigateMonth("next")}
           disabled={currentMonthIndex === 0}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
           <FiChevronRight size={20} className="md:w-6 md:h-6" />
         </button>
@@ -114,125 +114,135 @@ function Analytics() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {format(
-                new Date(monthData.year, monthData.monthNumber - 1, 1),
-                "MMMM yyyy"
-              )}
+              {monthData
+                ? format(
+                    new Date(monthData.year, monthData.monthNumber - 1, 1),
+                    "MMMM yyyy"
+                  )
+                : ""}
             </h2>
           </div>
         </div>
       </div>
 
       {/* Budget Overview */}
-      <div className="bg-night-500 p-4 md:p-8 rounded-xl shadow-lg mb-6 md:mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-          {/* Progress and Remaining Budget */}
-          <div className="flex flex-col justify-center">
-            <div className="flex flex-col sm:flex-row sm:items-baseline space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
-              <div>
-                <p className="text-xs md:text-sm text-ash-gray-400">
-                  Budget Remaining
-                </p>
-                <p
-                  className={`text-xl md:text-3xl font-bold ${
-                    monthData.monthlyRemainingBudget >= 0
-                      ? "text-timberwolf-900"
-                      : "text-auburn-500"
-                  }`}
-                >
-                  {currency}
-                  {monthData.monthlyRemainingBudget}
-                </p>
+      <div className="bg-night-500 p-4 md:p-8 rounded-xl shadow-lg mb-6 md:mb-8 hover:shadow-2xl transition-shadow duration-300">
+        {isAnalyticsLoading ? (
+          <LoadingSpinner message="Loading analytics data..." />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+            {/* Progress and Remaining Budget */}
+            <div className="flex flex-col justify-center">
+              <div className="flex flex-col sm:flex-row sm:items-baseline space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
+                <div>
+                  <p className="text-xs md:text-sm text-ash-gray-400">
+                    Budget Remaining
+                  </p>
+                  <p
+                    className={`text-xl md:text-3xl font-bold ${
+                      monthData.monthlyRemainingBudget >= 0
+                        ? "text-timberwolf-900"
+                        : "text-auburn-500"
+                    }`}
+                  >
+                    {currency}
+                    {monthData.monthlyRemainingBudget}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs md:text-sm text-ash-gray-400">
+                    Monthly Budget
+                  </p>
+                  <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
+                    {currency}
+                    {monthData.monthlyBudget}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs md:text-sm text-ash-gray-400">
-                  Monthly Budget
-                </p>
-                <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
-                  {currency}
-                  {monthData.monthlyBudget}
-                </p>
+
+              <div className="mt-4 md:mt-6">
+                <div className="w-full bg-night-600 rounded-full h-2 md:h-3 shadow-inner">
+                  <div
+                    className={`${
+                      monthData.monthlyRemainingBudget >= 0
+                        ? "bg-night-700"
+                        : "bg-auburn-500"
+                    } h-2 md:h-3 rounded-full shadow-sm`}
+                    style={{
+                      width: `${Math.min(
+                        monthData.monthlyBudgetUsedPercentage,
+                        100
+                      )}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
+                  <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
+                  {monthData.remainingDays > 0 && (
+                    <span>{`${monthData.remainingDays} Days Remaining`}</span>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="mt-4 md:mt-6">
-              <div className="w-full bg-night-600 rounded-full h-2 md:h-3 shadow-inner">
-                <div
-                  className={`${
-                    monthData.monthlyRemainingBudget >= 0
-                      ? "bg-night-700"
-                      : "bg-auburn-500"
-                  } h-2 md:h-3 rounded-full shadow-sm`}
-                  style={{
-                    width: `${Math.min(
-                      monthData.monthlyBudgetUsedPercentage,
-                      100
-                    )}%`,
-                  }}
-                ></div>
+            {/* Key Metrics & Limits */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 justify-items-center text-center">
+              <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
+                <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                  Total Spent
+                </p>
+                <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
+                  {currency}
+                  {monthData.monthlyTotalSpent}
+                </p>
               </div>
-              <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
-                <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
-                {monthData.remainingDays > 0 && (
-                  <span>{`${monthData.remainingDays} Days Remaining`}</span>
-                )}
+              <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
+                <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                  Daily Average
+                </p>
+                <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
+                  {currency}
+                  {monthData.averageDailySpending}
+                </p>
+                <p className="text-xs text-ash-gray-500 mt-1">
+                  Avg. spend per day
+                </p>
+              </div>
+              <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
+                <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                  Daily Limit
+                </p>
+                <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
+                  {currency}
+                  {monthData.recommendedDailyLimit > 0
+                    ? monthData.recommendedDailyLimit
+                    : "0"}
+                </p>
+                <p className="text-xs text-ash-gray-500 mt-1">
+                  To stay on budget
+                </p>
               </div>
             </div>
           </div>
-
-          {/* Key Metrics & Limits */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 justify-items-center text-center">
-            <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-                Total Spent
-              </p>
-              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
-                {currency}
-                {monthData.monthlyTotalSpent}
-              </p>
-            </div>
-            <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-                Daily Average
-              </p>
-              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
-                {currency}
-                {monthData.averageDailySpending}
-              </p>
-              <p className="text-xs text-ash-gray-500 mt-1">
-                Avg. spend per day
-              </p>
-            </div>
-            <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-                Daily Limit
-              </p>
-              <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
-                {currency}
-                {monthData.recommendedDailyLimit > 0
-                  ? monthData.recommendedDailyLimit
-                  : "0"}
-              </p>
-              <p className="text-xs text-ash-gray-500 mt-1">
-                To stay on budget
-              </p>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Charts and Category Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
         {/* Expense Chart */}
-        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg">
-          <ExpenseChart
-            dailyChartsData={dailyChartsData}
-            weeklyChartsData={weeklyChartsData}
-          />
+        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+          {isDailyLoading || isWeeklyLoading ? (
+            <LoadingSpinner message="Loading charts..." />
+          ) : (
+            <ExpenseChart
+              dailyChartsData={dailyChartsData}
+              weeklyChartsData={weeklyChartsData}
+            />
+          )}
         </div>
 
         {/* Category Breakdown */}
-        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg">
+        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Expenses by Category
           </h3>
@@ -315,7 +325,7 @@ function Analytics() {
 
       {/* Top Expenses */}
       <div className="grid grid-cols-1 gap-6 md:gap-8 mb-6 md:mb-8">
-        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg">
+        <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Top Expenses
           </h3>

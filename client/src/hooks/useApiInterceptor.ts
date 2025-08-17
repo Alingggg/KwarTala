@@ -1,9 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { api } from "@/api";
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
-
-const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+import { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 interface QueueItem {
   resolve: (value?: any) => void;
@@ -65,18 +63,14 @@ function useApiInterceptor(queryClient: QueryClient) {
           isRefreshing = true;
 
           try {
-            await axios.post(
-              `${BASE_URL}/auth/refresh-token`,
-              {},
-              { withCredentials: true }
-            );
+            await api.post("/auth/refresh-token");
 
             processQueue(null);
             return api(originalRequest);
           } catch (refreshError) {
             processQueue(refreshError as AxiosError);
 
-            queryClient.setQueryData(["me"], null);
+            queryClient.removeQueries({ queryKey: ["me"] });
 
             return Promise.reject(refreshError);
           } finally {

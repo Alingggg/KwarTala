@@ -3,36 +3,12 @@ import { FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
-import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import * as z from "zod";
+import { expenseSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const validation = {
-  category: {
-    required: "Category is required",
-    maxLength: {
-      value: 25,
-      message: "Category must be at most 25 characters",
-    },
-  },
-  description: {
-    maxLength: {
-      value: 50,
-      message: "Description must be at most 50 characters",
-    },
-  },
-  amount: {
-    valueAsNumber: true,
-    required: "Amount is required",
-    min: {
-      value: 0,
-      message: "Amount cannot be negative",
-    },
-    max: 10000000,
-  },
-  date: {
-    required: "Date is required",
-  },
-};
+type FormValues = z.infer<typeof expenseSchema>;
 
 const DEFAULT_CATEGORIES = [
   { value: "Bills", label: "Bills" },
@@ -56,18 +32,18 @@ function UpsertExpenseModal({
   description,
   date,
 }: UpsertExpenseModalProps) {
-  const formattedDate = date ? format(new Date(date), "yyyy-MM-dd") : "";
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<Omit<Expense, "id" | "userId">>({
+  } = useForm<FormValues>({
+    resolver: zodResolver(expenseSchema),
     defaultValues: {
       category: category || "",
       amount: amount,
       description: description || "",
-      date: formattedDate || "",
+      date: date || "",
     },
   });
   const { mutate: addExpense, isPending: isAdding } = useAddExpense();
@@ -77,24 +53,20 @@ function UpsertExpenseModal({
     "default"
   );
 
-  function onSubmit(data: Omit<Expense, "id" | "userId">) {
-    const { date, ...restData } = data;
+  useEffect(() => {
+    if (
+      category &&
+      !DEFAULT_CATEGORIES.some((categories) => categories.value === category)
+    ) {
+      setCategoryOption("custom");
+    }
+  }, [category]);
 
-    // Convert date to UTC with timestamp format from just YYYY-MM-DD
-    const dateStr =
-      typeof date === "string" ? date : format(new Date(date), "yyyy-MM-dd");
-    const [year, month, day] = dateStr.split("-").map(Number);
-    const dateWithTime = new Date(year, month - 1, day);
-
-    const finalData = {
-      ...restData,
-      date: dateWithTime,
-    };
-
+  function onSubmit(data: FormValues) {
     if (id) {
-      editExpense({ id, ...finalData }, { onSuccess: () => onClose() });
+      editExpense({ id, ...data }, { onSuccess: () => onClose() });
     } else {
-      addExpense(finalData, { onSuccess: () => onClose() });
+      addExpense(data, { onSuccess: () => onClose() });
     }
   }
 
@@ -103,7 +75,7 @@ function UpsertExpenseModal({
       <div className="bg-ash-gray-900 p-5 md:p-7 rounded-lg w-full max-w-sm md:max-w-md text-night-500 relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 z-10"
+          className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 z-10 cursor-pointer"
           disabled={isAdding || isEditing}
         >
           <FiX size={18} className="md:w-5 md:h-5" />
@@ -157,7 +129,7 @@ function UpsertExpenseModal({
                 options={DEFAULT_CATEGORIES}
                 id="category"
                 placeholder="e.g. Food"
-                {...register("category", validation.category)}
+                {...register("category")}
                 classname={`${
                   watch("category") ? "text-night-500" : "text-night-500/50"
                 }`}
@@ -168,7 +140,7 @@ function UpsertExpenseModal({
                 type="text"
                 maxLength={25}
                 placeholder="e.g. Food"
-                {...register("category", validation.category)}
+                {...register("category")}
                 className={
                   errors.category
                     ? "border-auburn-600 focus:border-auburn-600"
@@ -194,7 +166,7 @@ function UpsertExpenseModal({
               type="text"
               maxLength={50}
               placeholder="e.g. Lunch at restaurant"
-              {...register("description", validation.description)}
+              {...register("description")}
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -213,7 +185,7 @@ function UpsertExpenseModal({
                 type="number"
                 placeholder="0.00"
                 max={10000000}
-                {...register("amount", validation.amount)}
+                {...register("amount", { valueAsNumber: true })}
                 className={`pl-8 ${
                   errors.amount
                     ? "border-auburn-600 focus:border-auburn-600"
@@ -237,7 +209,7 @@ function UpsertExpenseModal({
             <Input
               id="date"
               type="date"
-              {...register("date", validation.date)}
+              {...register("date")}
               className={
                 errors.date ? "border-auburn-600 focus:border-auburn-600" : ""
               }

@@ -1,5 +1,7 @@
-import { expenseRepository } from "@/repositories/index";
+import db, { expenses } from "@/db/index";
 import type { Expense } from "@/types/index";
+import { and, between, count, desc, eq, sql } from "drizzle-orm";
+import { format } from "date-fns";
 
 const expenseService = {
   async createExpense({
@@ -9,13 +11,18 @@ const expenseService = {
     amount,
     date,
   }: Omit<Expense, "id">) {
-    return expenseRepository.create({
-      userId,
-      category,
-      description,
-      amount,
-      date,
-    });
+    const [expense] = await db
+      .insert(expenses)
+      .values({
+        userId,
+        category,
+        description,
+        amount,
+        date,
+      })
+      .returning();
+
+    return expense;
   },
 
   async getExpensesByUserIdAndDateRange({
@@ -24,70 +31,92 @@ const expenseService = {
     endDate,
   }: {
     userId: number;
-    startDate: Date | string;
-    endDate: Date | string;
+    startDate: string;
+    endDate: string;
   }) {
-    return expenseRepository.findByUserIdAndDateRange({
-      userId,
-      startDate,
-      endDate,
-    });
+    return db
+      .select()
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      );
+  },
+
+  async getExpensesByUserIdAndDateRangeWithPageAndLimit({
+    userId,
+    startDate,
+    endDate,
+    page,
+    limit,
+    orderBy,
+  }: {
+    userId: number;
+    startDate: string;
+    endDate: string;
+    page: number;
+    limit: number;
+    orderBy: "desc" | "asc";
+  }) {
+    const offset = (page - 1) * limit;
+    return db
+      .select()
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      )
+      .offset(offset)
+      .limit(limit)
+      .orderBy(orderBy === "desc" ? desc(expenses.date) : expenses.date);
+  },
+
+  async getNumberOfExpensesByUserIdAndDateRange({
+    userId,
+    startDate,
+    endDate,
+  }: {
+    userId: number;
+    startDate: string;
+    endDate: string;
+  }) {
+    const [data] = await db
+      .select({ count: count() })
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      );
+
+    return data.count ?? 0;
   },
 
   async getTodaysTransactions(userId: number) {
-    const today = new Date();
+    const today = format(new Date(), "yyyy-MM-dd");
 
-    const startDate = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      0,
-      0,
-      0,
-      0
-    );
-    const endDate = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      59,
-      59,
-      999
-    );
-    return expenseRepository.findByUserIdAndDateRange({
-      userId,
-      startDate,
-      endDate,
-    });
+    return db
+      .select()
+      .from(expenses)
+      .where(and(eq(expenses.userId, userId), eq(expenses.date, today)));
   },
 
   async getTotalSpentToday(userId: number) {
-    const today = new Date();
+    const today = format(new Date(), "yyyy-MM-dd");
 
-    const startDate = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      0,
-      0,
-      0,
-      0
-    );
-    const endDate = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      59,
-      59,
-      999
-    );
-    return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
-      userId,
-      startDate,
-      endDate,
-    });
+    const [result] = await db
+      .select({
+        total: sql<number>`COALESCE(SUM(${expenses.amount}), 0)::float`,
+      })
+      .from(expenses)
+      .where(and(eq(expenses.userId, userId), eq(expenses.date, today)));
+
+    return result.total ?? 0;
   },
 
   async getTotalMonthlySpent({
@@ -96,14 +125,22 @@ const expenseService = {
     endDate,
   }: {
     userId: number;
-    startDate: Date | string;
-    endDate: Date | string;
+    startDate: string;
+    endDate: string;
   }) {
-    return expenseRepository.getTotalExpensesAmountByUserIdAndDateRange({
-      userId,
-      startDate,
-      endDate,
-    });
+    const [result] = await db
+      .select({
+        total: sql<number>`COALESCE(SUM(${expenses.amount}), 0)::float`,
+      })
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      );
+
+    return result?.total ?? 0;
   },
 
   async getTotalDailyExpenseInDateRange({
@@ -112,14 +149,21 @@ const expenseService = {
     endDate,
   }: {
     userId: number;
-    startDate: Date | string;
-    endDate: Date | string;
+    startDate: string;
+    endDate: string;
   }) {
-    return expenseRepository.getTotalDailyExpensesByUserIdAndDateRange({
-      userId,
-      startDate,
-      endDate,
-    });
+    const { rows } = await db.execute(
+      sql`WITH date_range AS (
+         SELECT generate_series(${startDate}, ${endDate}, INTERVAL '1 day')::date AS date
+       )
+       SELECT dr.date, COALESCE(SUM(e.amount), 0)::float AS total
+       FROM date_range dr
+       LEFT JOIN expenses e ON dr.date = e.date AND e.user_id = ${userId}
+       GROUP BY dr.date
+       ORDER BY dr.date`
+    );
+
+    return rows;
   },
 
   async getTotalWeeklyExpenseInDateRange({
@@ -128,14 +172,24 @@ const expenseService = {
     endDate,
   }: {
     userId: number;
-    startDate: Date | string;
-    endDate: Date | string;
+    startDate: string;
+    endDate: string;
   }) {
-    return expenseRepository.getTotalWeeklyExpensesByUserIdAndDateRange({
-      userId,
-      startDate,
-      endDate,
-    });
+    const { rows } = await db.execute(
+      sql`WITH date_range AS (
+         SELECT generate_series(${startDate}, ${endDate}, INTERVAL '1 week')::date AS week_start
+       )
+       SELECT dr.week_start AS date, COALESCE(SUM(e.amount), 0)::float AS total
+       FROM date_range dr
+       LEFT JOIN expenses e
+         ON e.date >= dr.week_start
+         AND e.date < LEAST(dr.week_start + INTERVAL '1 week', ${endDate}::date + INTERVAL '1 day')
+         AND e.user_id = ${userId}
+       GROUP BY dr.week_start
+       ORDER BY dr.week_start`
+    );
+
+    return rows;
   },
 
   async getHighestExpenses({
@@ -145,16 +199,21 @@ const expenseService = {
     limit,
   }: {
     userId: number;
-    startDate: Date | string;
-    endDate: Date | string;
+    startDate: string;
+    endDate: string;
     limit: number;
   }) {
-    return expenseRepository.getHighestExpensesByUserIdAndDateRange({
-      userId,
-      startDate,
-      endDate,
-      limit,
-    });
+    return await db
+      .select()
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      )
+      .limit(limit)
+      .orderBy(desc(expenses.amount));
   },
 
   async getTotalSpentPerCategory({
@@ -163,14 +222,22 @@ const expenseService = {
     endDate,
   }: {
     userId: number;
-    startDate: Date | string;
-    endDate: Date | string;
+    startDate: string;
+    endDate: string;
   }) {
-    return expenseRepository.getTotalSpentPerCategory({
-      userId,
-      startDate,
-      endDate,
-    });
+    return await db
+      .select({
+        category: expenses.category,
+        total: sql<number>`COALESCE(SUM(${expenses.amount}), 0)::float`,
+      })
+      .from(expenses)
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate)
+        )
+      )
+      .groupBy(expenses.category);
   },
 
   async updateExpense({
@@ -180,17 +247,27 @@ const expenseService = {
     amount,
     date,
   }: Omit<Expense, "userId">) {
-    return expenseRepository.update({
-      id,
-      category,
-      description,
-      amount,
-      date,
-    });
+    const [expense] = await db
+      .update(expenses)
+      .set({
+        category,
+        description,
+        amount,
+        date,
+      })
+      .where(eq(expenses.id, id))
+      .returning();
+
+    return expense;
   },
 
   async deleteExpense(id: number) {
-    return expenseRepository.delete(id);
+    const [expense] = await db
+      .delete(expenses)
+      .where(eq(expenses.id, id))
+      .returning();
+
+    return expense;
   },
 };
 

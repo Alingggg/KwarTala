@@ -113,7 +113,7 @@ function EditGoalModal({ onClose, goal }: EditGoalModalProps) {
       <div className="bg-ash-gray-900 p-8 rounded-lg w-full max-w-md text-night-500 relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-night-700 hover:text-night-500"
+          className="absolute top-4 right-4 text-night-700 hover:text-night-500 cursor-pointer"
         >
           <FiX size={24} />
         </button>

@@ -4,26 +4,11 @@ import { Button, Input, LoadingOverlay } from "@/components";
 import { FiAlertCircle, FiCheckCircle, FiMail } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useGetVerificationEmail } from "@/hooks";
+import * as z from "zod";
+import { changeEmailSchema } from "@/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface FormValues {
-  newEmail: string;
-  confirmEmail: string;
-}
-
-const validation = {
-  newEmail: {
-    required: "Email is required",
-    pattern: {
-      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      message: "Invalid email format",
-    },
-  },
-  confirmEmail: {
-    required: "Please confirm your email",
-    validate: (value: string, values: FormValues) =>
-      value === values.newEmail || "Emails do not match",
-  },
-};
+type FormValues = z.infer<typeof changeEmailSchema>;
 
 function EditEmail() {
   const navigate = useNavigate();
@@ -34,8 +19,7 @@ function EditEmail() {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({ resolver: zodResolver(changeEmailSchema) });
 
   const {
     mutate: sendVerificationEmail,
@@ -153,7 +137,7 @@ function EditEmail() {
                     ? "border-auburn-600 focus:border-auburn-600"
                     : ""
                 }`}
-                {...register("newEmail", validation.newEmail)}
+                {...register("newEmail")}
               />
             </div>
             {errors.newEmail && (
@@ -182,11 +166,7 @@ function EditEmail() {
                     ? "border-auburn-600 focus:border-auburn-600"
                     : ""
                 }`}
-                {...register("confirmEmail", {
-                  ...validation.confirmEmail,
-                  validate: (value) =>
-                    value === watch("newEmail") || "Emails do not match",
-                })}
+                {...register("confirmEmail")}
               />
             </div>
             {errors.confirmEmail && (

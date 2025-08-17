@@ -31,13 +31,6 @@ const emailTemplates = {
           ${buttonLabel}
           </a>
         </div>
-        
-        <p style="color: #2C3E50; font-size: 14px; margin: 20px 0 0 0;">
-          If the button doesn't work, you can copy and paste this link into your browser:
-        </p>
-        <p style="word-break: break-all; color: #2C3E50; font-size: 12px; background: white; padding: 10px; border-radius: 4px; margin: 10px 0;">
-          ${verificationLink}
-        </p>
         </div>
         
         <!-- General Security Notice -->

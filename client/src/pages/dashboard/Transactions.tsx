@@ -11,7 +11,9 @@ import {
 import {
   useModalContext,
   useCurrencyContext,
-  useTransactionsData,
+  useGetMonthlyTransactionsSummary,
+  useGetExpenses,
+  useFetchOnScroll,
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
 import { format, subMonths } from "date-fns";
@@ -42,10 +44,43 @@ function Transactions() {
 
   const { month, year } = getMonthYear(currentMonthIndex);
 
-  const { data: monthData, isLoading } = useTransactionsData({
-    month,
-    year,
-  });
+  const { data: monthSummary, isLoading: isSummaryLoading } =
+    useGetMonthlyTransactionsSummary({
+      month,
+      year,
+    });
+
+  const allWeeks = monthSummary?.weeks || [];
+
+  const selectedWeekData = selectedWeek
+    ? allWeeks.find((w: any) => w.weekNumber === selectedWeek)
+    : null;
+
+  const startDate = selectedWeekData
+    ? selectedWeekData.weekStartDate
+    : format(new Date(year, month - 1), "yyyy-MM-dd");
+  const endDate = selectedWeekData
+    ? selectedWeekData.weekEndDate
+    : format(new Date(year, month, 0), "yyyy-MM-dd");
+
+  const getTransactionsOptions = {
+    startDate,
+    endDate,
+    limit: 10,
+    orderBy: sortOrder,
+  };
+
+  const {
+    data: transactionsData,
+    isLoading: isTransactionsLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetExpenses(getTransactionsOptions);
+
+  const allTransactions =
+    transactionsData?.pages.flatMap((page) => page.transactions) ?? [];
+  const transactionsWithColors = assignCategoryColors(allTransactions);
 
   function navigateMonth(direction: "prev" | "next") {
     if (direction === "prev" && currentMonthIndex < MAX_MONTHS - 1) {
@@ -53,37 +88,9 @@ function Transactions() {
     } else if (direction === "next" && currentMonthIndex > 0) {
       setCurrentMonthIndex(currentMonthIndex - 1);
     }
+    setSortOrder("desc");
     setSelectedWeek(null);
   }
-
-  const allWeeks = monthData?.weeks || [];
-
-  function sortTransactions(transactions: any[]) {
-    return [...transactions].sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      if (sortOrder === "asc") {
-        return dateA.getTime() - dateB.getTime();
-      } else {
-        return dateB.getTime() - dateA.getTime();
-      }
-    });
-  }
-
-  function getFilteredTransactions() {
-    const transactions = selectedWeek
-      ? allWeeks.find((w: any) => w.weekNumber === selectedWeek)
-          ?.transactions || []
-      : allWeeks.flatMap((week: any) => week.transactions);
-
-    const transactionsWithColors = assignCategoryColors(transactions);
-
-    return sortTransactions(transactionsWithColors);
-  }
-
-  const selectedWeekData = selectedWeek
-    ? allWeeks.find((w: any) => w.weekNumber === selectedWeek)
-    : null;
 
   function isPreviousMonthYear(month: number, year: number) {
     const now = new Date();
@@ -93,9 +100,11 @@ function Transactions() {
     return month === prevMonth + 1 && year === prevYear;
   }
 
-  if (isLoading) {
-    return <LoadingSpinner message="Loading transactions..." />;
-  }
+  const sentinelRef = useFetchOnScroll(
+    fetchNextPage,
+    hasNextPage ?? false,
+    isFetchingNextPage
+  );
 
   return (
     <div className="p-3 md:p-8">
@@ -109,9 +118,9 @@ function Transactions() {
             variant="secondary"
             onClick={() =>
               openModal("EDIT_BUDGET", {
-                monthNumber: monthData?.monthNumber,
-                year: monthData?.year,
-                currentBudget: monthData?.monthlyBudget,
+                monthNumber: monthSummary?.monthNumber,
+                year: monthSummary?.year,
+                currentBudget: monthSummary?.monthlyBudget,
               })
             }
             className="shadow-sm text-sm md:text-base w-full sm:w-auto"
@@ -133,7 +142,7 @@ function Transactions() {
         <button
           onClick={() => navigateMonth("prev")}
           disabled={currentMonthIndex >= MAX_MONTHS - 1}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
           <FiChevronLeft size={20} className="md:w-6 md:h-6" />
         </button>
@@ -141,7 +150,7 @@ function Transactions() {
         <button
           onClick={() => navigateMonth("next")}
           disabled={currentMonthIndex === 0}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
           <FiChevronRight size={20} className="md:w-6 md:h-6" />
         </button>
@@ -151,66 +160,75 @@ function Transactions() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {format(
-                new Date(monthData.year, monthData.monthNumber - 1),
-                "MMMM yyyy"
-              )}
+              {monthSummary
+                ? format(
+                    new Date(monthSummary.year, monthSummary.monthNumber - 1),
+                    "MMMM yyyy"
+                  )
+                : ""}
             </h2>
           </div>
         </div>
       </div>
 
       {/* Monthly Summary Section */}
-      <div className="bg-night-500 p-4 md:p-8 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-          <div className="text-center">
-            <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              Monthly Budget
-            </p>
-            <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
-              {currency}
-              {monthData?.monthlyBudget}
-            </p>
+      <div className="bg-night-500 p-4 md:p-8 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+        {isSummaryLoading ? (
+          <LoadingSpinner message="Loading summary..." />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            <div className="text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                Monthly Budget
+              </p>
+              <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
+                {currency}
+                {monthSummary?.monthlyBudget}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                Total Spent
+              </p>
+              <p
+                className={`text-xl md:text-3xl font-bold ${
+                  monthSummary?.monthlyTotalSpent > monthSummary?.monthlyBudget
+                    ? "text-auburn-500"
+                    : "text-timberwolf-900"
+                }`}
+              >
+                {currency}
+                {monthSummary?.monthlyTotalSpent}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                {isPreviousMonthYear(
+                  monthSummary?.monthNumber - 1,
+                  monthSummary?.year
+                )
+                  ? "Remaining"
+                  : monthSummary?.monthlyRemainingBudget >= 0
+                  ? "Savings"
+                  : "Deficit"}
+              </p>
+              <p
+                className={`text-xl md:text-3xl font-bold ${
+                  monthSummary?.monthlyRemainingBudget >= 0
+                    ? "text-emerald-500"
+                    : "text-auburn-500"
+                }`}
+              >
+                {currency}
+                {monthSummary?.monthlyRemainingBudget}
+              </p>
+            </div>
           </div>
-          <div className="text-center">
-            <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              Total Spent
-            </p>
-            <p
-              className={`text-xl md:text-3xl font-bold ${
-                monthData?.monthlyTotalSpent > monthData?.monthlyBudget
-                  ? "text-auburn-500"
-                  : "text-timberwolf-900"
-              }`}
-            >
-              {currency}
-              {monthData?.monthlyTotalSpent}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-              {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
-                ? "Remaining"
-                : monthData?.monthlyRemainingBudget >= 0
-                ? "Savings"
-                : "Deficit"}
-            </p>
-            <p
-              className={`text-xl md:text-3xl font-bold ${
-                monthData?.monthlyRemainingBudget >= 0
-                  ? "text-emerald-500"
-                  : "text-auburn-500"
-              }`}
-            >
-              {currency}
-              {monthData?.monthlyRemainingBudget}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Week Filter */}
-      <div className="mb-6 md:mb-8 bg-timberwolf-900 p-4 rounded-lg shadow-lg">
+      <div className="mb-6 md:mb-8 bg-timberwolf-900 p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
         <div className="flex items-center justify-center mb-3 md:mb-4">
           <FiFilter className="mr-2 text-night-600" size={16} />
           <span className="text-base md:text-lg font-bold text-night-600">
@@ -219,28 +237,30 @@ function Transactions() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3 max-w-5xl mx-auto">
           <button
-            onClick={() => setSelectedWeek(null)}
+            onClick={() => {
+              if (selectedWeek !== null) setSortOrder("desc");
+              setSelectedWeek(null);
+            }}
             className={`px-2 md:px-3 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 text-center shadow-sm hover:shadow-md ${
               selectedWeek === null
                 ? "bg-night-600 text-timberwolf-900 shadow-md"
                 : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
-            }`}
+            } cursor-pointer`}
           >
             <div className="text-xs md:text-sm font-semibold">All Weeks</div>
           </button>
           {allWeeks.map((week: any) => (
             <button
               key={week.weekNumber}
-              onClick={() =>
-                setSelectedWeek(
-                  selectedWeek === week.weekNumber ? null : week.weekNumber
-                )
-              }
+              onClick={() => {
+                if (selectedWeek !== week.weekNumber) setSortOrder("desc");
+                setSelectedWeek(week.weekNumber);
+              }}
               className={`px-2 md:px-3 py-3 md:py-4 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
                 selectedWeek === week.weekNumber
                   ? "bg-night-600 text-timberwolf-900 shadow-md"
                   : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
-              }`}
+              } cursor-pointer`}
             >
               <div className="text-center space-y-1.5">
                 {/* Week Header */}
@@ -281,7 +301,7 @@ function Transactions() {
 
       {/* Weekly Budget Info */}
       {selectedWeekData && (
-        <div className="bg-night-500 p-4 md:p-6 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="bg-night-500 p-4 md:p-6 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
             <div className="text-center">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
@@ -310,9 +330,12 @@ function Transactions() {
             </div>
             <div className="text-center">
               <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
-                {isPreviousMonthYear(monthData.monthNumber - 1, monthData.year)
+                {isPreviousMonthYear(
+                  monthSummary.monthNumber - 1,
+                  monthSummary.year
+                )
                   ? "Remaining"
-                  : monthData?.monthlyRemainingBudget >= 0
+                  : monthSummary?.monthlyRemainingBudget >= 0
                   ? "Savings"
                   : "Deficit"}
               </p>
@@ -347,10 +370,14 @@ function Transactions() {
               </span>
             </>
           ) : (
-            `All ${format(
-              new Date(monthData.year, monthData.monthNumber - 1),
-              "MMMM"
-            )} Transactions`
+            `All ${
+              monthSummary
+                ? format(
+                    new Date(monthSummary.year, monthSummary.monthNumber - 1),
+                    "MMMM"
+                  )
+                : ""
+            } Transactions`
           )}
         </h3>
 
@@ -358,23 +385,23 @@ function Transactions() {
         <div className="flex items-center space-x-2">
           <span className="text-xs md:text-sm text-ash-gray-300">Sort:</span>
           <button
-            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+            onClick={() => setSortOrder("desc")}
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "desc"
                 ? "bg-night-600 text-timberwolf-900"
                 : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
-            }`}
+            } cursor-pointer`}
           >
             <span>Newest</span>
             <FiChevronDown size={12} className="md:w-3.5 md:h-3.5" />
           </button>
           <button
-            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+            onClick={() => setSortOrder("asc")}
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "asc"
                 ? "bg-night-600 text-timberwolf-900"
                 : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
-            }`}
+            } cursor-pointer`}
           >
             <span>Oldest</span>
             <FiChevronUp size={12} className="md:w-3.5 md:h-3.5" />
@@ -383,22 +410,33 @@ function Transactions() {
       </div>
 
       {/* Transactions List */}
-      <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-        {getFilteredTransactions().map((transaction: any) => (
-          <ExpenseCard
-            key={transaction.id}
-            id={transaction.id}
-            category={transaction.category}
-            amount={transaction.amount}
-            description={transaction.description}
-            color={transaction.color}
-            date={transaction.date}
-          />
-        ))}
+      <div className="space-y-3 md:space-y-4">
+        {isTransactionsLoading ? (
+          <LoadingSpinner message="Loading transactions..." />
+        ) : (
+          transactionsWithColors.map((transaction: any) => (
+            <ExpenseCard
+              key={transaction.id}
+              id={transaction.id}
+              category={transaction.category}
+              amount={transaction.amount}
+              description={transaction.description}
+              color={transaction.color}
+              date={transaction.date}
+            />
+          ))
+        )}
+        <div ref={sentinelRef}>
+          {isFetchingNextPage && (
+            <div className="flex justify-center">
+              <LoadingSpinner message="Loading more..." />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* No Transactions Message */}
-      {getFilteredTransactions().length === 0 && (
+      {!isTransactionsLoading && transactionsWithColors.length === 0 && (
         <div className="text-center py-12 md:py-16 text-ash-gray-500">
           <FiCalendar
             size={48}
@@ -413,10 +451,17 @@ function Transactions() {
                   selectedWeekData.weekStartDate,
                   selectedWeekData.weekEndDate
                 )})`
-              : `No expenses recorded for ${format(
-                  new Date(monthData.year, monthData.monthNumber - 1),
-                  "MMMM yyyy"
-                )}`}
+              : `No expenses recorded for ${
+                  monthSummary
+                    ? format(
+                        new Date(
+                          monthSummary.year,
+                          monthSummary.monthNumber - 1
+                        ),
+                        "MMMM yyyy"
+                      )
+                    : ""
+                }`}
           </p>
         </div>
       )}

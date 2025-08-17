@@ -3,13 +3,11 @@ import { api } from "@/api";
 import { useNavigate } from "react-router";
 
 function useRegister() {
-  const navigate = useNavigate();
   return useMutation({
     mutationFn: async (data: {
       userName: string;
       email: string;
       password: string;
-      confirmPassword: string;
     }) => {
       await api.post("/auth/register", data);
     },
@@ -60,11 +58,13 @@ function useUser() {
     data: user,
     isError,
     error,
+    isLoading,
+    isFetched,
   } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
       const response = await api.get("/auth/me");
-      return response.data;
+      return response.data.data;
     },
   });
 
@@ -80,6 +80,7 @@ function useUser() {
     userName: user?.userName,
     email: user?.email,
     isAuthenticated: !!user,
+    isLoading: isLoading || !isFetched,
   };
 }
 
@@ -151,6 +152,19 @@ function useEditUsername() {
   });
 }
 
+function useCheckHasToReLogIn(isLoading: boolean) {
+  const { data } = useQuery({
+    queryKey: ["hasToReLogIn"],
+    queryFn: async () => {
+      const response = await api.post("/auth/has-to-re-login");
+      return response.data;
+    },
+    enabled: !isLoading,
+  });
+
+  return { hasToReLogIn: data?.hasToReLogIn };
+}
+
 export {
   useRegister,
   useLogin,
@@ -160,4 +174,5 @@ export {
   useVerifyEmail,
   useResetPassword,
   useEditUsername,
+  useCheckHasToReLogIn,
 };
