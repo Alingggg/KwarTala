@@ -64,7 +64,6 @@ function useUser() {
       const response = await api.get("/auth/me");
       return response.data.data;
     },
-    staleTime: 1000 * 60 * 15,
   });
 
   if (isError) {
