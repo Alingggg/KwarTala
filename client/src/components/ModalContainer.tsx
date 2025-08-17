@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useModalContext } from "@/hooks";
 import {
   UpsertExpenseModal,
@@ -30,5 +31,9 @@ export default function ModalContainer() {
     ),
   };
 
-  return modalMap[modalType] || null;
+  const modalElement = document.getElementById("modal-root");
+
+  if (!modalElement) return null;
+
+  return createPortal(modalMap[modalType] || null, modalElement);
 }
