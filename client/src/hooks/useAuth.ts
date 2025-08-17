@@ -59,7 +59,6 @@ function useUser() {
     isError,
     error,
     isLoading,
-    isFetching,
     isFetched,
   } = useQuery({
     queryKey: ["me"],
@@ -82,7 +81,6 @@ function useUser() {
     email: user?.email,
     isAuthenticated: !!user,
     isLoading: isLoading || !isFetched,
-    isFetching,
   };
 }
 
