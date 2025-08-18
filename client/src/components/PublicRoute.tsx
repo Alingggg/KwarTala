@@ -7,6 +7,8 @@ function PublicRoute() {
 
   if (isLoading) return <AppLoading />;
 
+  console.log("PUBLIC isAuthenticated value:", isAuthenticated);
+
   return isAuthenticated ? <Navigate to="/home" replace /> : <Outlet />;
 }
 

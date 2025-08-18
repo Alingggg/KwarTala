@@ -16,6 +16,8 @@ function ProtectedRoute() {
 
   if (isUserLoading || isLoggingOut) return <AppLoading />;
 
+  console.log("PROTECTED isAuthenticated value:", isAuthenticated);
+
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
