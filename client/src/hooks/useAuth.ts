@@ -59,7 +59,7 @@ function useUser() {
     isError,
     error,
     isLoading,
-    isFetched,
+    isFetching,
   } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
@@ -81,7 +81,8 @@ function useUser() {
     userName: user?.userName,
     email: user?.email,
     isAuthenticated: !!user,
-    isLoading: isLoading || !isFetched,
+    isLoading,
+    isFetching,
   };
 }
 

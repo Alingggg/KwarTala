@@ -34,7 +34,7 @@ function Home() {
     orderBy: "desc" as "desc" | "asc",
   };
 
-  const { userName, isLoading: isUserLoading } = useUser();
+  const { userName, isFetching: isUserLoading } = useUser();
   const { data: homeData, isLoading: isHomeLoading } = useGetHomeData();
   const {
     data: transactionsData,

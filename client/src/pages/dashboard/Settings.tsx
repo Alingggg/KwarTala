@@ -3,7 +3,7 @@ import { Button, LoadingSpinner } from "@/components";
 import { FiUser, FiMail, FiLogOut } from "react-icons/fi";
 
 function Settings() {
-  const { userName, email, isLoading: isUserLoading } = useUser();
+  const { userName, email, isFetching: isUserLoading } = useUser();
   const { mutate: logout } = useLogout();
   const { openModal } = useModalContext();
 

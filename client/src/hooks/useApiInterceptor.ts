@@ -70,7 +70,7 @@ function useApiInterceptor(queryClient: QueryClient) {
           } catch (refreshError) {
             processQueue(refreshError as AxiosError);
 
-            queryClient.removeQueries({ queryKey: ["me"] });
+            queryClient.setQueryData(["me"], null);
 
             return Promise.reject(refreshError);
           } finally {
