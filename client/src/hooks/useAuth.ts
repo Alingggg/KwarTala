@@ -66,6 +66,7 @@ function useUser() {
       const response = await api.get("/auth/me");
       return response.data.data;
     },
+    retry: false,
   });
 
   if (isError) {
