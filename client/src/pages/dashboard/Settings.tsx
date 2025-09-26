@@ -3,7 +3,7 @@ import { Button, LoadingSpinner } from "@/components";
 import { FiUser, FiMail, FiLogOut } from "react-icons/fi";
 
 function Settings() {
-  const { userName, email, isFetching: isUserLoading } = useUser();
+  const { userName, email, isLoading: isUserLoading } = useUser();
   const { mutate: logout } = useLogout();
   const { openModal } = useModalContext();
 
@@ -32,11 +32,7 @@ function Settings() {
                   Username
                 </label>
                 <div className="text-base md:text-lg font-semibold text-night-600 break-all">
-                  {isUserLoading ? (
-                    <LoadingSpinner message="Loading username..." />
-                  ) : (
-                    userName
-                  )}
+                  userName
                 </div>
               </div>
               <Button
