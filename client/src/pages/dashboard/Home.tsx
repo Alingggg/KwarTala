@@ -34,7 +34,7 @@ function Home() {
     orderBy: "desc" as "desc" | "asc",
   };
 
-  const { userName, isFetching: isUserLoading } = useUser();
+  const { userName } = useUser();
   const { data: homeData, isLoading: isHomeLoading } = useGetHomeData();
   const {
     data: transactionsData,
@@ -72,11 +72,7 @@ function Home() {
       <div className="mb-5 md:mb-8 mt-1 mb:mt-0">
         <div className="flex items-baseline justify-between gap-2">
           <h1 className="text-xl md:text-3xl font-bold text-night-600">
-            {isUserLoading ? (
-              <LoadingSpinner message="Loading user..." />
-            ) : (
-              `Hello, ${userName}`
-            )}
+            Hello, {`${userName ?? "User"}`}!
           </h1>
           {isHomeLoading ? (
             <LoadingSpinner message="Loading summary..." />

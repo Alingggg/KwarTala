@@ -5,7 +5,8 @@ import { useEffect } from "react";
 
 function ProtectedRoute() {
   const { isAuthenticated, isLoading: isUserLoading } = useUser();
-  const { hasToReLogIn } = useCheckHasToReLogIn(isUserLoading);
+  const { hasToReLogIn, isLoading: isReLoginLoading } =
+    useCheckHasToReLogIn(isUserLoading);
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
   useEffect(() => {
@@ -14,9 +15,7 @@ function ProtectedRoute() {
     }
   }, [isAuthenticated, hasToReLogIn, logout]);
 
-  if (isUserLoading || isLoggingOut) return <AppLoading />;
-
-  console.log("PROTECTED isAuthenticated value:", isAuthenticated);
+  if (isUserLoading || isLoggingOut || isReLoginLoading) return <AppLoading />;
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }

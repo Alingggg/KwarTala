@@ -59,7 +59,6 @@ function useUser() {
     isError,
     error,
     isLoading,
-    isFetching,
   } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
@@ -82,7 +81,6 @@ function useUser() {
     email: user?.email,
     isAuthenticated: !!user,
     isLoading,
-    isFetching,
   };
 }
 
@@ -155,7 +153,7 @@ function useEditUsername() {
 }
 
 function useCheckHasToReLogIn(isLoading: boolean) {
-  const { data } = useQuery({
+  const { data, isLoading: isQueryLoading } = useQuery({
     queryKey: ["hasToReLogIn"],
     queryFn: async () => {
       const response = await api.post("/auth/has-to-re-login");
@@ -164,7 +162,7 @@ function useCheckHasToReLogIn(isLoading: boolean) {
     enabled: !isLoading,
   });
 
-  return { hasToReLogIn: data?.hasToReLogIn };
+  return { hasToReLogIn: data?.hasToReLogIn, isLoading: isQueryLoading };
 }
 
 export {
