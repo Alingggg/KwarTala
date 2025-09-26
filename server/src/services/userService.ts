@@ -292,6 +292,8 @@ const userService = {
       .where(eq(users.id, userId))
       .returning();
 
+    await cacheService.delete(`user:${userId}`);
+
     return user;
   },
 

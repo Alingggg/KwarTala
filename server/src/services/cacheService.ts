@@ -18,6 +18,14 @@ const cacheService = {
       console.error("Cache error:", error);
     }
   },
+
+  async delete(key: string): Promise<void> {
+    try {
+      await redis.del(key);
+    } catch (error) {
+      console.error("Cache error:", error);
+    }
+  },
 };
 
 export default cacheService;
