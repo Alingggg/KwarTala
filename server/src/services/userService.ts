@@ -1,6 +1,5 @@
 import db, { users } from "@/db/index";
 import {
-  cacheService,
   emailService,
   sessionService,
   verificationTokenService,
@@ -126,11 +125,6 @@ const userService = {
   },
 
   async getUserProfile(userId: number) {
-    const cachedUser = await cacheService.get<User>(`user:${userId}`);
-    if (cachedUser) {
-      return cachedUser;
-    }
-
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (!user) {
       const error: CustomError = new Error("User not found.");
@@ -139,8 +133,6 @@ const userService = {
     }
 
     const { password, ...userWithoutPassword } = user;
-
-    await cacheService.set(`user:${userId}`, userWithoutPassword);
 
     return userWithoutPassword;
   },
@@ -291,8 +283,6 @@ const userService = {
       })
       .where(eq(users.id, userId))
       .returning();
-
-    await cacheService.delete(`user:${userId}`);
 
     return user;
   },

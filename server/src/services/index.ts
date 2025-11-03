@@ -5,4 +5,3 @@ export { default as budgetService } from "./budgetService";
 export { default as dashboardService } from "./dashboardService";
 export { default as verificationTokenService } from "./verificationTokenService";
 export { default as emailService } from "./emailService";
-export { default as cacheService } from "./cacheService";
