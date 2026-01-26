@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router";
-import { useUser } from "@/hooks";
+import { useUserContext } from "@/hooks";
 import { AppLoading } from "@/components";
 
 function PublicRoute() {
-  const { isAuthenticated, isLoading } = useUser();
+  const { isAuthenticated, isLoading } = useUserContext();
 
   if (isLoading) return <AppLoading />;
 

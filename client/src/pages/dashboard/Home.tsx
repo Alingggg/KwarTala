@@ -7,12 +7,12 @@ import {
 import {
   useModalContext,
   useCurrencyContext,
-  useUser,
   useGetHomeData,
   useGetWeeklyChartsData,
   useGetDailyChartsData,
   useGetExpenses,
   useFetchOnScroll,
+  useUserContext,
 } from "@/hooks";
 import type { Expense } from "@/types";
 import { assignCategoryColors } from "@/utils";
@@ -34,7 +34,7 @@ function Home() {
     orderBy: "desc" as "desc" | "asc",
   };
 
-  const { userName } = useUser();
+  const { user } = useUserContext();
   const { data: homeData, isLoading: isHomeLoading } = useGetHomeData();
   const {
     data: transactionsData,
@@ -63,7 +63,7 @@ function Home() {
   const sentinelRef = useFetchOnScroll(
     fetchNextPage,
     hasNextPage ?? false,
-    isFetchingNextPage
+    isFetchingNextPage,
   );
 
   return (
@@ -72,7 +72,7 @@ function Home() {
       <div className="mb-5 md:mb-8 mt-1 mb:mt-0">
         <div className="flex items-baseline justify-between gap-2">
           <h1 className="text-xl md:text-3xl font-bold text-night-600">
-            Hello, {`${userName ?? "User"}`}!
+            Hello, {`${user.userName ?? "User"}`}!
           </h1>
           {isHomeLoading ? (
             <LoadingSpinner message="Loading summary..." />
@@ -81,7 +81,7 @@ function Home() {
               {homeData &&
                 format(
                   new Date(homeData.year, homeData.monthNumber - 1),
-                  "MMMM yyyy"
+                  "MMMM yyyy",
                 )}
             </p>
           )}
@@ -148,7 +148,7 @@ function Home() {
                           style={{
                             width: `${Math.min(
                               homeData.budgetUsedPercentage,
-                              100
+                              100,
                             )}%`,
                           }}
                         ></div>

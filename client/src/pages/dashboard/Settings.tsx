@@ -1,9 +1,9 @@
-import { useLogout, useModalContext, useUser } from "@/hooks";
+import { useLogout, useModalContext, useUserContext } from "@/hooks";
 import { Button, LoadingSpinner } from "@/components";
 import { FiUser, FiMail, FiLogOut } from "react-icons/fi";
 
 function Settings() {
-  const { userName, email, isLoading: isUserLoading } = useUser();
+  const { user, isLoading: isUserLoading } = useUserContext();
   const { mutate: logout } = useLogout();
   const { openModal } = useModalContext();
 
@@ -32,7 +32,7 @@ function Settings() {
                   Username
                 </label>
                 <div className="text-base md:text-lg font-semibold text-night-600 break-all">
-                  userName
+                  {user.userName}
                 </div>
               </div>
               <Button
@@ -40,7 +40,9 @@ function Settings() {
                 className="text-xs md:text-sm px-4 py-2 w-auto"
                 disabled={isUserLoading}
                 onClick={() =>
-                  openModal("EDIT_USERNAME", { currentUsername: userName })
+                  openModal("EDIT_USERNAME", {
+                    currentUsername: user.userName,
+                  })
                 }
               >
                 Edit
@@ -57,7 +59,7 @@ function Settings() {
                   {isUserLoading ? (
                     <LoadingSpinner message="Loading email..." />
                   ) : (
-                    email
+                    user.email
                   )}
                 </div>
               </div>
@@ -66,7 +68,7 @@ function Settings() {
                 className="text-xs md:text-sm px-4 py-2 w-auto"
                 disabled={isUserLoading}
                 onClick={() =>
-                  openModal("REQUEST_EDIT_EMAIL", { currentEmail: email })
+                  openModal("REQUEST_EDIT_EMAIL", { currentEmail: user.email })
                 }
               >
                 Edit

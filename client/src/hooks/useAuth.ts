@@ -54,12 +54,7 @@ function useLogout() {
 }
 
 function useUser() {
-  const {
-    data: user,
-    isError,
-    error,
-    isLoading,
-  } = useQuery({
+  return useQuery({
     queryKey: ["me"],
     queryFn: async () => {
       const response = await api.get("/auth/me");
@@ -67,21 +62,6 @@ function useUser() {
     },
     retry: false,
   });
-
-  if (isError) {
-    console.error(
-      "Failed to fetch user data:",
-      (error as any)?.response?.data?.message
-    );
-  }
-
-  return {
-    id: user?.id,
-    userName: user?.userName,
-    email: user?.email,
-    isAuthenticated: !!user,
-    isLoading,
-  };
 }
 
 function useGetVerificationEmail() {
@@ -100,7 +80,7 @@ function useGetVerificationEmail() {
     onError: (error: any) => {
       console.error(
         "Failed to send verification email:",
-        error?.response?.data?.message
+        error?.response?.data?.message,
       );
     },
   });
@@ -120,7 +100,7 @@ function useVerifyEmail() {
     onError: (error: any) => {
       console.error(
         "Email verification failed:",
-        error?.response?.data?.message
+        error?.response?.data?.message,
       );
     },
   });
