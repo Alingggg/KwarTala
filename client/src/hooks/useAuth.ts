@@ -25,7 +25,7 @@ function useLogin() {
     mutationFn: async (credentials: { email: string; password: string }) => {
       await api.post("/auth/login", credentials);
       const userResponse = await api.get("/auth/me");
-      return userResponse.data;
+      return userResponse.data.data;
     },
     onSuccess: (userData) => {
       queryClient.setQueryData(["me"], userData);
