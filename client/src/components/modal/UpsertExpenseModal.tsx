@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import * as z from "zod";
 import { expenseSchema } from "@/zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 
 type FormValues = z.infer<typeof expenseSchema>;
 
@@ -43,14 +44,14 @@ function UpsertExpenseModal({
       category: category || "",
       amount: amount,
       description: description || "",
-      date: date || "",
+      date: date || format(new Date(), "yyyy-MM-dd"),
     },
   });
   const { mutate: addExpense, isPending: isAdding } = useAddExpense();
   const { mutate: editExpense, isPending: isEditing } = useEditExpense();
   const { currency } = useCurrencyContext();
   const [categoryOption, setCategoryOption] = useState<"default" | "custom">(
-    "default"
+    "default",
   );
 
   useEffect(() => {
