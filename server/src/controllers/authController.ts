@@ -114,7 +114,10 @@ const authController = {
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
+        sameSite:
+          process.env.NODE_ENV === "production"
+            ? ("none" as const)
+            : ("lax" as const),
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
 
@@ -137,7 +140,10 @@ const authController = {
       const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "none" as const,
+        sameSite:
+          process.env.NODE_ENV === "production"
+            ? ("none" as const)
+            : ("lax" as const),
       };
 
       res.clearCookie("accessToken", cookieOptions);
