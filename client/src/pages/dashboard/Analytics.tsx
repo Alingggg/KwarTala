@@ -20,7 +20,7 @@ function CustomPieTooltip({ active, payload }: any) {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-ash-gray-900 border border-night-700 p-3 rounded-lg shadow-lg">
+      <div className="bg-timberwolf-900 border border-night-700 p-3 rounded-lg shadow-lg">
         <p className="text-night-600 font-semibold mb-1">{data.name}</p>
         <div className="space-y-1">
           <p className="text-night-500 text-sm">
@@ -135,14 +135,14 @@ function Analytics() {
             <div className="flex flex-col justify-center">
               <div className="flex flex-col sm:flex-row sm:items-baseline space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
                 <div>
-                  <p className="text-xs md:text-sm text-ash-gray-400">
+                  <p className="text-xs md:text-sm text-night-800">
                     Budget Remaining
                   </p>
                   <p
                     className={`text-xl md:text-3xl font-bold ${
                       monthData.monthlyRemainingBudget >= 0
                         ? "text-timberwolf-900"
-                        : "text-auburn-500"
+                        : "text-auburn-700"
                     }`}
                   >
                     {currency}
@@ -150,7 +150,7 @@ function Analytics() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs md:text-sm text-ash-gray-400">
+                  <p className="text-xs md:text-sm text-night-800">
                     Monthly Budget
                   </p>
                   <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
@@ -165,7 +165,7 @@ function Analytics() {
                   <div
                     className={`${
                       monthData.monthlyRemainingBudget >= 0
-                        ? "bg-night-700"
+                        ? "bg-emerald-500"
                         : "bg-auburn-500"
                     } h-2 md:h-3 rounded-full shadow-sm`}
                     style={{
@@ -176,7 +176,7 @@ function Analytics() {
                     }}
                   ></div>
                 </div>
-                <div className="flex justify-between text-xs text-ash-gray-400 font-medium mt-2">
+                <div className="flex justify-between text-xs text-night-800 font-medium mt-2">
                   <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
                   {monthData.remainingDays > 0 && (
                     <span>{`${monthData.remainingDays} Days Remaining`}</span>
@@ -188,7 +188,7 @@ function Analytics() {
             {/* Key Metrics & Limits */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 justify-items-center text-center">
               <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
-                <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                <p className="text-xs md:text-sm text-night-800 mb-2">
                   Total Spent
                 </p>
                 <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
@@ -197,19 +197,19 @@ function Analytics() {
                 </p>
               </div>
               <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
-                <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                <p className="text-xs md:text-sm text-night-800 mb-2">
                   Daily Average
                 </p>
                 <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
                   {currency}
                   {monthData.averageDailySpending}
                 </p>
-                <p className="text-xs text-ash-gray-500 mt-1">
+                <p className="text-xs text-night-800 mt-1">
                   Avg. spend per day
                 </p>
               </div>
               <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
-                <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+                <p className="text-xs md:text-sm text-night-800 mb-2">
                   Daily Limit
                 </p>
                 <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
@@ -218,7 +218,7 @@ function Analytics() {
                     ? monthData.recommendedDailyLimit
                     : "0"}
                 </p>
-                <p className="text-xs text-ash-gray-500 mt-1">
+                <p className="text-xs text-night-800 mt-1">
                   To stay on budget
                 </p>
               </div>
@@ -266,7 +266,7 @@ function Analytics() {
                           <Cell
                             key={`cell-${index}`}
                             fill={entry.color}
-                            stroke="var(--color-ash-gray-900)"
+                            stroke="var(--color-timberwolf-900)"
                             strokeWidth={2}
                             style={{ cursor: "pointer" }}
                           />
@@ -299,7 +299,7 @@ function Analytics() {
                           {currency}
                           {category.total}
                         </p>
-                        <p className="text-xs text-ash-gray-400 font-medium">
+                        <p className="text-xs text-night-700 font-medium">
                           {category.percentageOfTotal}%
                         </p>
                       </div>
@@ -309,7 +309,7 @@ function Analytics() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-12 md:py-16 text-ash-gray-500">
+            <div className="text-center py-12 md:py-16 text-night-700">
               <FiCalendar
                 size={48}
                 className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"
@@ -335,7 +335,7 @@ function Analytics() {
                 (expense: Expense & { color: string }, index: number) => (
                   <div
                     key={expense.id || index}
-                    className="flex items-center justify-between py-2 md:py-3 border-b border-ash-gray-700"
+                    className="flex items-center justify-between py-2 md:py-3 border-b border-timberwolf-500"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-night-600 text-sm md:text-base truncate">
@@ -343,7 +343,7 @@ function Analytics() {
                           <span className="italic">[No Description]</span>
                         )}
                       </p>
-                      <p className="text-xs md:text-sm text-ash-gray-400">
+                      <p className="text-xs md:text-sm text-night-700">
                         {expense.category} •{" "}
                         {format(new Date(expense.date), "MMMM d")}
                       </p>
@@ -357,7 +357,7 @@ function Analytics() {
               )}
             </div>
           ) : (
-            <div className="text-center py-12 text-ash-gray-500">
+            <div className="text-center py-12 text-night-700">
               <FiCalendar
                 size={48}
                 className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"

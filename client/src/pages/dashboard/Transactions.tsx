@@ -115,7 +115,7 @@ function Transactions() {
         </h1>
         <div className="flex flex-row items-center gap-2 sm:gap-4 justify-center sm:justify-end w-full sm:w-auto">
           <Button
-            variant="secondary"
+            variant="success"
             onClick={() =>
               openModal("EDIT_BUDGET", {
                 monthNumber: monthSummary?.monthNumber,
@@ -178,7 +178,7 @@ function Transactions() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
             <div className="text-center">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+              <p className="text-xs md:text-sm text-night-800 mb-2">
                 Monthly Budget
               </p>
               <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
@@ -187,13 +187,13 @@ function Transactions() {
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+              <p className="text-xs md:text-sm text-night-800 mb-2">
                 Total Spent
               </p>
               <p
                 className={`text-xl md:text-3xl font-bold ${
                   monthSummary?.monthlyTotalSpent > monthSummary?.monthlyBudget
-                    ? "text-auburn-500"
+                    ? "text-auburn-700"
                     : "text-timberwolf-900"
                 }`}
               >
@@ -202,7 +202,7 @@ function Transactions() {
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+              <p className="text-xs md:text-sm text-night-800 mb-2">
                 {isPreviousMonthYear(
                   monthSummary?.monthNumber - 1,
                   monthSummary?.year
@@ -216,7 +216,7 @@ function Transactions() {
                 className={`text-xl md:text-3xl font-bold ${
                   monthSummary?.monthlyRemainingBudget >= 0
                     ? "text-emerald-500"
-                    : "text-auburn-500"
+                    : "text-auburn-700"
                 }`}
               >
                 {currency}
@@ -244,7 +244,7 @@ function Transactions() {
             className={`px-2 md:px-3 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 text-center shadow-sm hover:shadow-md ${
               selectedWeek === null
                 ? "bg-night-600 text-timberwolf-900 shadow-md"
-                : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
+                : "bg-timberwolf-700 text-night-600 hover:bg-timberwolf-600"
             } cursor-pointer`}
           >
             <div className="text-xs md:text-sm font-semibold">All Weeks</div>
@@ -259,7 +259,7 @@ function Transactions() {
               className={`px-2 md:px-3 py-3 md:py-4 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
                 selectedWeek === week.weekNumber
                   ? "bg-night-600 text-timberwolf-900 shadow-md"
-                  : "bg-ash-gray-800 text-night-600 hover:bg-timberwolf-700"
+                  : "bg-timberwolf-700 text-night-600 hover:bg-timberwolf-600"
               } cursor-pointer`}
             >
               <div className="text-center space-y-1.5">
@@ -281,12 +281,24 @@ function Transactions() {
                   </div>
                   <div className="text-xs font-semibold mt-0.5">
                     {week.weeklyRemainingBudget >= 0 ? (
-                      <span className="text-emerald-500">
+                      <span
+                        className={
+                          selectedWeek === week.weekNumber
+                            ? "text-timberwolf-900"
+                            : "text-emerald-400"
+                        }
+                      >
                         +{currency}
                         {week.weeklyRemainingBudget}
                       </span>
                     ) : (
-                      <span className="text-auburn-500">
+                      <span
+                        className={
+                          selectedWeek === week.weekNumber
+                            ? "text-timberwolf-900"
+                            : "text-auburn-500"
+                        }
+                      >
                         -{currency}
                         {Math.abs(week.weeklyRemainingBudget)}
                       </span>
@@ -304,7 +316,7 @@ function Transactions() {
         <div className="bg-night-500 p-4 md:p-6 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
             <div className="text-center">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+              <p className="text-xs md:text-sm text-night-800 mb-2">
                 Weekly Budget
               </p>
               <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
@@ -313,14 +325,14 @@ function Transactions() {
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+              <p className="text-xs md:text-sm text-night-800 mb-2">
                 Week {selectedWeek} Spent
               </p>
               <p
                 className={`text-lg md:text-2xl font-bold ${
                   selectedWeekData.weeklyTotalSpent >
                   selectedWeekData.weeklyBudget
-                    ? "text-auburn-500"
+                    ? "text-auburn-700"
                     : "text-timberwolf-900"
                 }`}
               >
@@ -329,7 +341,7 @@ function Transactions() {
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs md:text-sm text-ash-gray-400 mb-2">
+              <p className="text-xs md:text-sm text-night-800 mb-2">
                 {isPreviousMonthYear(
                   monthSummary.monthNumber - 1,
                   monthSummary.year
@@ -343,7 +355,7 @@ function Transactions() {
                 className={`text-lg md:text-2xl font-bold ${
                   selectedWeekData.weeklyRemainingBudget >= 0
                     ? "text-emerald-500"
-                    : "text-auburn-500"
+                    : "text-auburn-700"
                 }`}
               >
                 {currency}
@@ -360,7 +372,7 @@ function Transactions() {
           {selectedWeek ? (
             <>
               Week {selectedWeek} Transactions{" "}
-              <span className="text-sm md:text-base font-normal text-ash-gray-400">
+              <span className="text-sm md:text-base font-normal text-night-700">
                 (
                 {formatWeekRange(
                   selectedWeekData.weekStartDate,
@@ -383,13 +395,13 @@ function Transactions() {
 
         {/* Sort Toggle */}
         <div className="flex items-center space-x-2">
-          <span className="text-xs md:text-sm text-ash-gray-300">Sort:</span>
+          <span className="text-xs md:text-sm text-night-700">Sort:</span>
           <button
             onClick={() => setSortOrder("desc")}
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "desc"
                 ? "bg-night-600 text-timberwolf-900"
-                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
+                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-500"
             } cursor-pointer`}
           >
             <span>Newest</span>
@@ -400,7 +412,7 @@ function Transactions() {
             className={`flex items-center space-x-1 px-2 md:px-3 py-1 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               sortOrder === "asc"
                 ? "bg-night-600 text-timberwolf-900"
-                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-600"
+                : "bg-timberwolf-600 text-night-500 hover:bg-timberwolf-500"
             } cursor-pointer`}
           >
             <span>Oldest</span>
@@ -437,7 +449,7 @@ function Transactions() {
 
       {/* No Transactions Message */}
       {!isTransactionsLoading && transactionsWithColors.length === 0 && (
-        <div className="text-center py-12 md:py-16 text-ash-gray-500">
+        <div className="text-center py-12 md:py-16 text-night-700">
           <FiCalendar
             size={48}
             className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"

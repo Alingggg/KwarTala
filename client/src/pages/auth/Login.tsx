@@ -61,7 +61,7 @@ function Login() {
           </p>
         </div>
 
-        <div className="relative bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7">
+        <div className="relative bg-timberwolf-900 rounded-xl shadow-2xl p-6 md:p-7">
           <div className="mb-5">
             <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-1">
               Sign In
@@ -73,8 +73,8 @@ function Login() {
 
           {error && (
             <div className="mb-4 text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
-                <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-900 border border-auburn-900">
+                <FiAlertCircle className="w-5 h-5 text-auburn-500" />
                 <span className="text-base text-auburn-100 font-semibold">
                   {error}
                 </span>
@@ -82,7 +82,7 @@ function Login() {
               {error === "Email not verified." && (
                 <div className="mt-3 flex flex-col items-center">
                   {isSuccess ? (
-                    <span className="text-emerald-700 text-xs font-semibold">
+                    <span className="text-night-700 text-xs font-semibold">
                       Verification email sent to {email}. Please check your
                       inbox.
                     </span>

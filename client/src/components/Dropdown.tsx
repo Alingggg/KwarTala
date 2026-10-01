@@ -18,7 +18,7 @@ function Dropdown({
     <div className="relative">
       <select
         id={id}
-        className={`w-full bg-timberwolf-800 border border-ash-gray-700 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${classname}`}
+        className={`w-full bg-timberwolf-800 border border-timberwolf-500 rounded-md p-2 px-3 text-night-500 focus:ring-2 focus:ring-night-600 outline-none ${classname}`}
         {...restProps}
       >
         <option value="" disabled hidden>

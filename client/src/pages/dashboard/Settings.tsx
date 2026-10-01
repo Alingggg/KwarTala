@@ -23,7 +23,7 @@ function Settings() {
             <FiUser className="w-5 h-5 md:w-6 md:h-6 text-night-600" />
             Profile Information
           </h2>
-          <div className="divide-y divide-ash-gray-200">
+          <div className="divide-y divide-timberwolf-500">
             {/* Username */}
             <div className="py-4 flex flex-row items-center justify-between gap-2 md:gap-4">
               <div className="flex-1">

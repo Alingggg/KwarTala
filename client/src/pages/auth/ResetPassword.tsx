@@ -44,8 +44,8 @@ function ResetPassword() {
   if (!token) {
     return (
       <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
-          <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-900 border border-auburn-900">
+          <FiAlertCircle className="w-5 h-5 text-auburn-500" />
           <span className="text-base text-auburn-100 font-semibold">
             Invalid or expired reset link
           </span>
@@ -57,8 +57,8 @@ function ResetPassword() {
   if (isError) {
     return (
       <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
-          <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-900 border border-auburn-900">
+          <FiAlertCircle className="w-5 h-5 text-auburn-500" />
           <span className="text-base text-auburn-100 font-semibold">
             {error?.response?.data?.message ||
               "Password reset failed. Please try again."}
@@ -72,11 +72,11 @@ function ResetPassword() {
     return (
       <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <div className="bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7 text-center">
+          <div className="bg-timberwolf-900 rounded-xl shadow-2xl p-6 md:p-7 text-center">
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-4">
-                <FiCheckCircle className="w-5 h-5 text-emerald-100" />
-                <span className="text-base text-emerald-100 font-semibold">
+                <FiCheckCircle className="w-5 h-5 text-emerald-400" />
+                <span className="text-base text-night-500 font-semibold">
                   Password reset successfully!
                 </span>
               </div>
@@ -104,7 +104,7 @@ function ResetPassword() {
   return (
     <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7 text-center">
+        <div className="bg-timberwolf-900 rounded-xl shadow-2xl p-6 md:p-7 text-center">
           <div className="mb-6">
             <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-2">
               Reset Your Password

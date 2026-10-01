@@ -65,7 +65,7 @@ export function ExpenseCard({
             {/* Info button (mobile only) */}
             <button
               onClick={() => setShowDescription(true)}
-              className="md:hidden text-night-600 hover:text-night-900 hover:bg-timberwolf-300 transition-colors flex-shrink-0 p-1 rounded-full cursor-pointer"
+              className="md:hidden text-night-600 hover:text-night-500 hover:bg-timberwolf-600 transition-colors flex-shrink-0 p-1 rounded-full cursor-pointer"
               title="View details"
             >
               <FiInfo size={14} />
@@ -132,7 +132,7 @@ export function ExpenseCard({
             <FiMoreHorizontal size={18} />
           </button>
           {showOptions && (
-            <div className="absolute right-0 bottom-14 bg-white rounded-lg shadow-lg z-20 flex flex-col min-w-[120px] py-2">
+            <div className="absolute right-0 bottom-14 bg-timberwolf-900 rounded-lg shadow-lg z-20 flex flex-col min-w-[120px] py-2">
               <button
                 onClick={() => {
                   setShowOptions(false);

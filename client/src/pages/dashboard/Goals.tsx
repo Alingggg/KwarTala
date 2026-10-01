@@ -38,7 +38,7 @@ const goalsData: MonthGoals[] = [
         category: "Food",
         targetAmount: 4000,
         currentSpent: 3500,
-        color: "#54876e",
+        color: "#6aa384",
       },
       {
         id: "2",
@@ -59,21 +59,21 @@ const goalsData: MonthGoals[] = [
         category: "Shopping",
         targetAmount: 3000,
         currentSpent: 2000,
-        color: "#902923",
+        color: "#d4a043",
       },
       {
         id: "5",
         category: "Bills",
         targetAmount: 1000,
         currentSpent: 800,
-        color: "#757759",
+        color: "#8f8567",
       },
       {
         id: "6",
         category: "Others",
         targetAmount: 1500,
         currentSpent: 700,
-        color: "#999b7a",
+        color: "#7fa08e",
       },
     ],
   },
@@ -88,7 +88,7 @@ const goalsData: MonthGoals[] = [
         category: "Food",
         targetAmount: 3500,
         currentSpent: 2800,
-        color: "#54876e",
+        color: "#6aa384",
       },
       {
         id: "2",
@@ -109,21 +109,21 @@ const goalsData: MonthGoals[] = [
         category: "Shopping",
         targetAmount: 2500,
         currentSpent: 1800,
-        color: "#902923",
+        color: "#d4a043",
       },
       {
         id: "5",
         category: "Bills",
         targetAmount: 1500,
         currentSpent: 1200,
-        color: "#757759",
+        color: "#8f8567",
       },
       {
         id: "6",
         category: "Others",
         targetAmount: 800,
         currentSpent: 400,
-        color: "#999b7a",
+        color: "#7fa08e",
       },
     ],
   },
@@ -147,8 +147,8 @@ function Goals() {
   };
 
   const getProgressColor = (percentage: number) => {
-    if (percentage <= 70) return "#54876e"; // Green - safe
-    if (percentage <= 90) return "#999b7a"; // Yellow - warning
+    if (percentage <= 70) return "#196539"; // Green - safe
+    if (percentage <= 90) return "#d4a043"; // Yellow - warning
     return "#a22c29"; // Red - over/close to limit
   };
 
@@ -220,7 +220,7 @@ function Goals() {
       </div>
 
       {/* Overall Progress */}
-      <div className="bg-ash-gray-900 p-8 rounded-xl mb-8 shadow-lg">
+      <div className="bg-timberwolf-900 p-8 rounded-xl mb-8 shadow-lg">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Overall Budget Progress */}
           <div className="lg:col-span-2">
@@ -229,7 +229,7 @@ function Goals() {
                 <h3 className="text-xl font-bold text-night-600 mb-2">
                   Overall Budget Progress
                 </h3>
-                <p className="text-ash-gray-400">
+                <p className="text-night-700">
                   P{currentData.totalSpent.toLocaleString()} of P
                   {currentData.totalBudget.toLocaleString()} used
                 </p>
@@ -238,12 +238,12 @@ function Goals() {
                 <p className="text-3xl font-bold text-night-600">
                   {overallProgress.toFixed(1)}%
                 </p>
-                <p className="text-sm text-ash-gray-400">completed</p>
+                <p className="text-sm text-night-700">completed</p>
               </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-ash-gray-700 rounded-full h-6 mb-3 shadow-inner">
+            <div className="w-full bg-timberwolf-500 rounded-full h-6 mb-3 shadow-inner">
               <div
                 className="h-6 rounded-full transition-all duration-700 ease-out shadow-sm"
                 style={{
@@ -253,7 +253,7 @@ function Goals() {
               ></div>
             </div>
 
-            <div className="flex justify-between text-sm text-ash-gray-400">
+            <div className="flex justify-between text-sm text-night-700">
               <span>P0</span>
               <span>P{currentData.totalBudget.toLocaleString()}</span>
             </div>
@@ -262,7 +262,7 @@ function Goals() {
           {/* Quick Stats */}
           <div className="space-y-6">
             <div className="text-center bg-timberwolf-700 p-4 rounded-lg">
-              <p className="text-sm text-ash-gray-400 mb-1">Remaining Budget</p>
+              <p className="text-sm text-night-700 mb-1">Remaining Budget</p>
               <p
                 className={`text-2xl font-bold ${
                   remainingBudget >= 0 ? "text-night-700" : "text-auburn-500"
@@ -272,7 +272,7 @@ function Goals() {
               </p>
             </div>
             <div className="text-center bg-timberwolf-700 p-4 rounded-lg">
-              <p className="text-sm text-ash-gray-400 mb-1">Active Goals</p>
+              <p className="text-sm text-night-700 mb-1">Active Goals</p>
               <p className="text-2xl font-bold text-night-600">
                 {currentData.goals.length}
               </p>
@@ -293,7 +293,7 @@ function Goals() {
           return (
             <div
               key={goal.id}
-              className="bg-ash-gray-900 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="bg-timberwolf-900 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center flex-1">
@@ -305,7 +305,7 @@ function Goals() {
                     <h3 className="text-lg font-bold text-night-600 mb-1">
                       {goal.category}
                     </h3>
-                    <p className="text-sm text-ash-gray-400">
+                    <p className="text-sm text-night-700">
                       P{goal.currentSpent.toLocaleString()} of P
                       {goal.targetAmount.toLocaleString()}
                     </p>
@@ -320,7 +320,7 @@ function Goals() {
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-ash-gray-700 rounded-full h-4 mb-4 shadow-inner">
+              <div className="w-full bg-timberwolf-500 rounded-full h-4 mb-4 shadow-inner">
                 <div
                   className="h-4 rounded-full transition-all duration-700 ease-out shadow-sm"
                   style={{

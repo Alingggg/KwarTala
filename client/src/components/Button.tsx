@@ -16,7 +16,7 @@ const buttonStyles = {
     primary:
       "bg-auburn-500 text-white hover:bg-auburn-600 focus:ring-auburn-500 disabled:hover:bg-auburn-500",
     secondary:
-      "bg-ash-gray-300 text-timberwolf-900 hover:bg-ash-gray-400 focus:ring-ash-gray-400 font-semibold disabled:hover:bg-ash-gray-300",
+      "bg-transparent border border-night-600 text-night-600 hover:bg-timberwolf-600 focus:ring-night-600 font-semibold disabled:hover:bg-transparent",
     success:
       "bg-night-600 text-timberwolf-900 hover:bg-night-700 focus:ring-night-600 font-semibold disabled:hover:bg-night-600",
     danger:

@@ -29,7 +29,7 @@ const NavItem = ({ to, icon, label, onClick }: NavItemProps) => (
       `flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
         isActive
           ? "bg-timberwolf-800 text-night-500"
-          : "text-ash-gray-500 hover:bg-night-600 hover:text-timberwolf-900"
+          : "text-night-800 hover:bg-night-600 hover:text-timberwolf-900"
       }`
     }
   >
@@ -70,7 +70,7 @@ function Sidebar() {
         </div>
 
         <div className="bg-night-600 p-4 rounded-lg mb-8">
-          <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
+          <p className="text-xs text-night-800 uppercase tracking-wide">
             Today
           </p>
           <p className="text-sm font-medium text-timberwolf-900 mt-1">
@@ -109,7 +109,7 @@ function Sidebar() {
           </div>
 
           <div className="text-right">
-            <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
+            <p className="text-xs text-night-800 uppercase tracking-wide">
               Today
             </p>
             <p className="text-sm font-medium text-timberwolf-900">
@@ -153,7 +153,7 @@ function Sidebar() {
 
               {/* Date Info */}
               <div className="bg-night-600 p-4 rounded-lg mb-8">
-                <p className="text-xs text-ash-gray-400 uppercase tracking-wide">
+                <p className="text-xs text-night-800 uppercase tracking-wide">
                   Today
                 </p>
                 <p className="text-sm font-medium text-timberwolf-900 mt-1">

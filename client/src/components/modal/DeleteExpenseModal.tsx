@@ -28,7 +28,7 @@ function DeleteExpenseModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-ash-gray-900 p-5 md:p-7 rounded-lg w-full max-w-sm text-night-500 relative text-center">
+      <div className="bg-timberwolf-900 p-5 md:p-7 rounded-lg w-full max-w-sm text-night-500 relative text-center">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 cursor-pointer"

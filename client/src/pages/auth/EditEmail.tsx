@@ -53,8 +53,8 @@ function EditEmail() {
   if (!token) {
     return (
       <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
-          <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-900 border border-auburn-900">
+          <FiAlertCircle className="w-5 h-5 text-auburn-500" />
           <span className="text-base text-auburn-100 font-semibold">
             Invalid or expired change email link
           </span>
@@ -66,10 +66,10 @@ function EditEmail() {
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
-        <div className="bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7 text-center max-w-md w-full">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-4 bg-emerald-800 border border-emerald-800">
-            <FiCheckCircle className="w-5 h-5 text-emerald-100" />
-            <span className="text-base text-emerald-100 font-semibold">
+        <div className="bg-timberwolf-900 rounded-xl shadow-2xl p-6 md:p-7 text-center max-w-md w-full">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-4 bg-emerald-900 border border-emerald-900">
+            <FiCheckCircle className="w-5 h-5 text-emerald-400" />
+            <span className="text-base text-night-500 font-semibold">
               Verification link sent!
             </span>
           </div>
@@ -95,7 +95,7 @@ function EditEmail() {
 
   return (
     <div className="min-h-screen bg-timberwolf-800 flex items-center justify-center p-4">
-      <div className="bg-ash-gray-900 rounded-xl shadow-2xl p-6 md:p-7 text-center max-w-md w-full">
+      <div className="bg-timberwolf-900 rounded-xl shadow-2xl p-6 md:p-7 text-center max-w-md w-full">
         <div className="mb-6">
           <h2 className="text-xl md:text-2xl font-bold text-night-600 mb-2">
             Change Your Email
@@ -103,8 +103,8 @@ function EditEmail() {
           <p className="text-night-500 text-sm">Enter your new email</p>
         </div>
         {isError && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-2 bg-auburn-800 border border-auburn-800 justify-center">
-            <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-2 bg-auburn-900 border border-auburn-900 justify-center">
+            <FiAlertCircle className="w-5 h-5 text-auburn-500" />
             <span className="text-base text-auburn-100 font-semibold">
               {error?.response?.data?.message ||
                 "Request email change failed. Please try again."}

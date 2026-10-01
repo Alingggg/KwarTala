@@ -4,12 +4,12 @@ import { Button } from "@/components";
 import { useCurrencyContext } from "@/hooks";
 
 const categories = [
-  { name: "Food", color: "#54876e" },
+  { name: "Food", color: "#6aa384" },
   { name: "Transportation", color: "#a22c29" },
   { name: "Entertainment", color: "#832221" },
-  { name: "Shopping", color: "#902923" },
-  { name: "Bills", color: "#757759" },
-  { name: "Others", color: "#999b7a" },
+  { name: "Shopping", color: "#d4a043" },
+  { name: "Bills", color: "#8f8567" },
+  { name: "Others", color: "#7fa08e" },
 ];
 
 function AddGoalModal({ onClose }: { onClose: () => void }) {
@@ -75,7 +75,7 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-ash-gray-900 p-8 rounded-lg w-full max-w-md text-night-500 relative">
+      <div className="bg-timberwolf-900 p-8 rounded-lg w-full max-w-md text-night-500 relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-night-700 hover:text-night-500 cursor-pointer"
@@ -103,7 +103,7 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
                   className={`p-3 rounded-lg border-2 transition-all ${
                     formData.category === category.name
                       ? "border-night-600 bg-timberwolf-700"
-                      : "border-ash-gray-700 hover:border-ash-gray-600"
+                      : "border-timberwolf-500 hover:border-timberwolf-400"
                   }`}
                 >
                   <div className="flex items-center">
@@ -130,17 +130,17 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-ash-gray-400 text-base">{currency}</span>
+                <span className="text-night-700 text-base">{currency}</span>
               </div>
               <input
                 type="text"
                 value={formData.targetAmount}
                 onChange={handleAmountChange}
                 placeholder="0"
-                className={`w-full pl-8 pr-4 py-3 bg-timberwolf-700 border rounded-lg text-night-600 placeholder-ash-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+                className={`w-full pl-8 pr-4 py-3 bg-timberwolf-700 border rounded-lg text-night-600 placeholder-night-700 focus:outline-none focus:ring-2 transition-colors ${
                   errors.targetAmount
                     ? "border-auburn-500 focus:ring-auburn-500"
-                    : "border-ash-gray-600 focus:ring-night-600 focus:border-night-600"
+                    : "border-timberwolf-400 focus:ring-night-600 focus:border-night-600"
                 }`}
               />
             </div>
@@ -150,7 +150,7 @@ function AddGoalModal({ onClose }: { onClose: () => void }) {
               </p>
             )}
             {formData.targetAmount && (
-              <p className="text-ash-gray-400 text-sm mt-2">
+              <p className="text-night-700 text-sm mt-2">
                 {currency}
                 {parseInt(formData.targetAmount || "0").toLocaleString()}
               </p>

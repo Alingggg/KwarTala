@@ -36,7 +36,7 @@ function RequestEditEmailModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-6 md:p-8">
-      <div className="bg-ash-gray-900 p-5 md:p-7 rounded-lg w-full max-w-sm md:max-w-md text-night-500 relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-timberwolf-900 p-5 md:p-7 rounded-lg w-full max-w-sm md:max-w-md text-night-500 relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 z-10 cursor-pointer"
@@ -46,9 +46,9 @@ function RequestEditEmailModal({
         </button>
         {isSuccess ? (
           <div className="flex flex-col items-center justify-center text-center pt-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-4 bg-emerald-800 border border-emerald-800">
-              <FiCheckCircle className="w-5 h-5 text-emerald-100" />
-              <span className="text-base text-emerald-100 font-semibold">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-4 bg-emerald-900 border border-emerald-900">
+              <FiCheckCircle className="w-5 h-5 text-emerald-400" />
+              <span className="text-base text-night-500 font-semibold">
                 Change email link sent!
               </span>
             </div>
@@ -75,8 +75,8 @@ function RequestEditEmailModal({
             </h2>
             {error && (
               <div className="mb-4 text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-800 border border-auburn-800">
-                  <FiAlertCircle className="w-5 h-5 text-auburn-100" />
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-900 border border-auburn-900">
+                  <FiAlertCircle className="w-5 h-5 text-auburn-500" />
                   <span className="text-base text-auburn-100 font-semibold">
                     {error}
                   </span>

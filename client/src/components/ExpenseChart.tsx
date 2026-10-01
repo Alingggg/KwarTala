@@ -76,7 +76,7 @@ function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
         y={0}
         dy={16}
         textAnchor="middle"
-        fill="#999b7a"
+        fill="var(--color-night-700)"
         fontSize="10"
         fontWeight="500"
       >
@@ -88,7 +88,7 @@ function WeeklyXAxisTick({ x, y, payload, weeklyData }: any) {
           y={0}
           dy={28}
           textAnchor="middle"
-          fill="#999b7a"
+          fill="var(--color-night-700)"
           fontSize="8"
         >
           {dateRange}
@@ -218,7 +218,7 @@ function ExpenseChart({
                 <CartesianGrid
                   vertical={false}
                   strokeDasharray="3 3"
-                  stroke="#2f4b3d"
+                  stroke="var(--color-timberwolf-500)"
                 />
                 <XAxis
                   dataKey="weekNumber"
@@ -236,24 +236,24 @@ function ExpenseChart({
                   tickFormatter={tickFormatter}
                   tickCount={5}
                   domain={[0, Math.max(maxWeeklyValue + 100, 500)]}
-                  tick={{ fontSize: 9, fill: "#999b7a" }}
+                  tick={{ fontSize: 9, fill: "var(--color-night-700)" }}
                   width={35}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
                   {currentData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill="#a22c29" />
+                    <Cell key={`cell-${index}`} fill="var(--color-auburn-500)" />
                   ))}
                 </Bar>
               </BarChart>
             ) : (
               <LineChart data={currentData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2f4b3d" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-timberwolf-500)" />
                 <XAxis
                   dataKey="date"
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 8, fill: "#999b7a" }}
+                  tick={{ fontSize: 8, fill: "var(--color-night-700)" }}
                   interval={0}
                   angle={-45}
                   textAnchor="end"
@@ -268,17 +268,17 @@ function ExpenseChart({
                   tickFormatter={tickFormatter}
                   tickCount={5}
                   domain={[0, Math.max(maxDailyValue + 100, 500)]}
-                  tick={{ fontSize: 9, fill: "#999b7a" }}
+                  tick={{ fontSize: 9, fill: "var(--color-night-700)" }}
                   width={35}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line
                   type="monotone"
                   dataKey="total"
-                  stroke="#a22c29"
+                  stroke="var(--color-auburn-500)"
                   strokeWidth={2}
-                  dot={{ fill: "#a22c29", strokeWidth: 2, r: 3 }}
-                  activeDot={{ r: 5, stroke: "#a22c29", strokeWidth: 2 }}
+                  dot={{ fill: "var(--color-auburn-500)", strokeWidth: 2, r: 3 }}
+                  activeDot={{ r: 5, stroke: "var(--color-auburn-500)", strokeWidth: 2 }}
                 />
               </LineChart>
             )}

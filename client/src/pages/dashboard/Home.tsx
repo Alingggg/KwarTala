@@ -96,14 +96,14 @@ function Home() {
           ) : (
             <>
               <div className="bg-night-500 p-3 md:p-6 rounded-lg shadow-sm">
-                <p className="text-sm text-ash-gray-400">Budget</p>
+                <p className="text-sm text-night-800">Budget</p>
                 {homeData && (
                   <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
                     <p className="text-2xl md:text-4xl font-bold text-timberwolf-900">
                       {currency}
                       {homeData.remainingBudget.toFixed(2)}
                     </p>
-                    <span className="text-sm md:text-base font-normal text-ash-gray-400">
+                    <span className="text-sm md:text-base font-normal text-night-800">
                       remaining of {currency}
                       {homeData.budget}
                     </span>
@@ -112,7 +112,7 @@ function Home() {
               </div>
 
               {/* Budget Progress and Today's Spending */}
-              <div className="bg-ash-gray-800 p-3 md:p-4 rounded-lg mt-3 md:mt-4 shadow-inner">
+              <div className="bg-timberwolf-700 p-3 md:p-4 rounded-lg mt-3 md:mt-4 shadow-inner">
                 {homeData && (
                   <>
                     <Button
@@ -123,7 +123,7 @@ function Home() {
                           currentBudget: homeData.budget,
                         })
                       }
-                      variant="secondary"
+                      variant="success"
                       className="w-full mb-3 md:mb-6 text-sm md:text-base"
                     >
                       Edit Budget
@@ -138,11 +138,11 @@ function Home() {
                           {homeData.budgetUsedPercentage}% used
                         </span>
                       </div>
-                      <div className="w-full bg-ash-gray-700 rounded-full h-2 md:h-3 shadow-inner">
+                      <div className="w-full bg-timberwolf-500 rounded-full h-2 md:h-3 shadow-inner">
                         <div
                           className={`h-2 md:h-3 rounded-full shadow-sm ${
                             homeData.remainingBudget >= 0
-                              ? "bg-night-700"
+                              ? "bg-emerald-400"
                               : "bg-auburn-500"
                           }`}
                           style={{
@@ -210,7 +210,7 @@ function Home() {
           <span className="text-lg md:text-xl font-bold text-night-600">
             Today's Transactions
           </span>
-          <div className="flex-grow border-t border-ash-gray-700 ml-4"></div>
+          <div className="flex-grow border-t border-timberwolf-500 ml-4"></div>
         </div>
         <div className="space-y-3 md:space-y-4">
           {isTransactionsLoading ? (
@@ -233,7 +233,7 @@ function Home() {
         {/* No Transactions Message */}
         {!isTransactionsLoading &&
           (!transactionsWithColors || transactionsWithColors.length === 0) && (
-            <div className="text-center py-12 md:py-16 text-ash-gray-500">
+            <div className="text-center py-12 md:py-16 text-night-700">
               <FiCalendar
                 size={48}
                 className="mx-auto mb-4 opacity-50 md:w-16 md:h-16"

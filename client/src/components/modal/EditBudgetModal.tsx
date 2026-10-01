@@ -145,7 +145,7 @@ function EditBudgetModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-6 md:p-8">
-      <div className="bg-ash-gray-900 p-5 md:p-7 rounded-lg w-full max-w-sm md:max-w-md text-night-500 relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-timberwolf-900 p-5 md:p-7 rounded-lg w-full max-w-sm md:max-w-md text-night-500 relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 md:top-4 md:right-4 text-night-700 hover:text-night-500 z-10 cursor-pointer"
@@ -240,7 +240,7 @@ function EditBudgetModal({
                   : "-"}
               </span>
             </div>
-            <div className="border-t border-ash-gray-700 pt-2">
+            <div className="border-t border-timberwolf-500 pt-2">
               <p className="text-xs text-night-600">{getImpactMessage()}</p>
             </div>
           </div>
