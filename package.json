@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "client": "npm run dev --prefix client",
-    "server": "npm run dev --prefix server",
-    "dev": "concurrently \"npm run client\" \"npm run server\""
+    "client": "bun run --cwd client dev",
+    "server": "bun run --cwd server dev",
+    "dev": "concurrently \"bun run client\" \"bun run server\""
   },
   "devDependencies": {
     "concurrently": "^9.2.0"
