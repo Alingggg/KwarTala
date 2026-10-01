@@ -5,13 +5,13 @@
     "module": "commonjs", // Use CommonJS modules (Node.js default)
     "sourceMap": true, // Generate source maps for debugging
     "outDir": "dist", // Output compiled files to the `dist` folder
-    "baseUrl": "./src", // Required for path aliases
+    "rootDir": "./src", // Keep `dist` layout flat (mirrors `src`)
     "esModuleInterop": true, // Enable better compatibility with ES modules
     "strict": true, // Enable strict type-checking options
     "skipLibCheck": true, // Skip type-checking of library files
     "types": ["node"],
     "paths": {
-      "@/*": ["./*"] // General alias for the `src` directory
+      "@/*": ["./src/*"] // General alias for the `src` directory
     }
   },
   "include": ["src/**/*"],
