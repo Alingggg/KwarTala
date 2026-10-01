@@ -148,9 +148,6 @@ function ExpenseChart({
   const [chartView, setChartView] = useState<ChartView>("daily");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const currentData =
-    chartView === "weekly" ? weeklyChartsData : dailyChartsData;
-
   // Find the max value for Y-axis scaling
   const maxDailyValue = Math.max(...dailyChartsData.map((d) => d.total), 0);
   const maxWeeklyValue = Math.max(...weeklyChartsData.map((d) => d.total), 0);
@@ -214,7 +211,7 @@ function ExpenseChart({
         <div style={{ width: chartWidth, height: "100%", minHeight: "250px" }}>
           <ResponsiveContainer width="100%" height="100%">
             {chartView === "weekly" ? (
-              <BarChart data={currentData}>
+              <BarChart data={weeklyChartsData}>
                 <CartesianGrid
                   vertical={false}
                   strokeDasharray="3 3"
@@ -241,13 +238,13 @@ function ExpenseChart({
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]}>
-                  {currentData.map((_, index) => (
+                  {weeklyChartsData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill="var(--color-auburn-500)" />
                   ))}
                 </Bar>
               </BarChart>
             ) : (
-              <LineChart data={currentData}>
+              <LineChart data={dailyChartsData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-timberwolf-500)" />
                 <XAxis
                   dataKey="date"
