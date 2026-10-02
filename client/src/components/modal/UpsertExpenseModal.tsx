@@ -12,6 +12,7 @@ import { format } from "date-fns";
 type FormValues = z.infer<typeof expenseSchema>;
 
 const DEFAULT_CATEGORIES = [
+  { value: "School", label: "School" },
   { value: "Bills", label: "Bills" },
   { value: "Entertainment", label: "Entertainment" },
   { value: "Food", label: "Food" },
