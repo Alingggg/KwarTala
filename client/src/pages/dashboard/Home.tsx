@@ -99,7 +99,13 @@ function Home() {
                 <p className="text-sm text-night-800">Budget</p>
                 {homeData && (
                   <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
-                    <p className="text-2xl md:text-4xl font-bold text-timberwolf-900">
+                    <p
+                      className={`text-2xl md:text-4xl font-bold ${
+                        homeData.remainingBudget < 0
+                          ? "text-auburn-700"
+                          : "text-timberwolf-900"
+                      }`}
+                    >
                       {currency}
                       {homeData.remainingBudget.toFixed(2)}
                     </p>
