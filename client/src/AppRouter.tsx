@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import {
   Analytics,
   EditEmail,
@@ -14,6 +14,7 @@ import {
 import { DashboardLayout, ProtectedRoute, PublicRoute } from "@/components";
 import { useEffect } from "react";
 import { useLocation } from "react-router";
+import { allowRegistration } from "@/api/client";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -34,7 +35,12 @@ function AppRouter() {
         <Route element={<PublicRoute />}>
           <Route index element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route
+            path="/register"
+            element={
+              allowRegistration ? <Register /> : <Navigate to="/login" replace />
+            }
+          />
         </Route>
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>

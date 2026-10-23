@@ -10,7 +10,9 @@ import { emailVerificationRateLimit } from "@/middlewares/index";
 
 const router = express.Router();
 
-router.post("/register", registerLimiter, authController.register);
+if (process.env.ALLOW_REGISTRATION === "true") {
+  router.post("/register", registerLimiter, authController.register);
+}
 router.post("/login", loginLimiter, authController.login);
 router.post("/logout", authController.logout);
 router.post("/refresh-token", authController.refreshAccessToken);

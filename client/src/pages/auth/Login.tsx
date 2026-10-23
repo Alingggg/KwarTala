@@ -8,6 +8,7 @@ import { useState } from "react";
 import * as z from "zod";
 import { loginSchema } from "@/zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { allowRegistration } from "@/api/client";
 
 type FormValues = z.infer<typeof loginSchema>;
 
@@ -188,17 +189,19 @@ function Login() {
             </Button>
           </form>
 
-          <div className="mt-5 text-center">
-            <p className="text-sm text-night-500">
-              Don't have an account?{" "}
-              <button
-                className="text-night-600 hover:text-night-700 font-semibold"
-                onClick={() => navigate("/register")}
-              >
-                Sign up here
-              </button>
-            </p>
-          </div>
+          {allowRegistration && (
+            <div className="mt-5 text-center">
+              <p className="text-sm text-night-500">
+                Don't have an account?{" "}
+                <button
+                  className="text-night-600 hover:text-night-700 font-semibold"
+                  onClick={() => navigate("/register")}
+                >
+                  Sign up here
+                </button>
+              </p>
+            </div>
+          )}
           {isPending && <LoadingOverlay message="Signing in..." />}
         </div>
       </div>
