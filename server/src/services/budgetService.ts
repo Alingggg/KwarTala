@@ -1,6 +1,8 @@
 import db, { budgets } from "@/db/index";
 import type { Budget } from "@/types/index";
 import { and, eq } from "drizzle-orm";
+import { format, lastDayOfMonth } from "date-fns";
+import expenseService from "./expenseService";
 
 const budgetService = {
   async createBudget({ userId, month, year, amount }: Omit<Budget, "id">) {
@@ -17,12 +19,12 @@ const budgetService = {
     return budget;
   },
 
-  async getBudgetByUserIdAndDate({
+  async findBudgetByUserIdAndDate({
     userId,
     month,
     year,
   }: Omit<Budget, "id" | "amount">) {
-    let [budget] = await db
+    const [budget] = await db
       .select()
       .from(budgets)
       .where(
@@ -33,6 +35,16 @@ const budgetService = {
         )
       )
       .limit(1);
+
+    return budget;
+  },
+
+  async getBudgetByUserIdAndDate({
+    userId,
+    month,
+    year,
+  }: Omit<Budget, "id" | "amount">) {
+    let budget = await this.findBudgetByUserIdAndDate({ userId, month, year });
 
     if (!budget) {
       budget = await this.createBudget({
@@ -89,11 +101,36 @@ const budgetService = {
         userId,
         month,
         year,
-        amount: 0,
+        amount,
       });
     }
 
     return budget;
+  },
+
+  async getBudgetStatus({
+    userId,
+    month,
+    year,
+  }: Omit<Budget, "id" | "amount">) {
+    const monthStart = new Date(year, month - 1, 1);
+    const budget = await this.findBudgetByUserIdAndDate({ userId, month, year });
+    const spent = await expenseService.getTotalMonthlySpent({
+      userId,
+      startDate: format(monthStart, "yyyy-MM-dd"),
+      endDate: format(lastDayOfMonth(monthStart), "yyyy-MM-dd"),
+    });
+    const amount = budget?.amount ?? 0;
+
+    return {
+      month,
+      year,
+      budget: amount,
+      spent,
+      remaining: amount - spent,
+      usedPercentage:
+        amount > 0 ? Math.round((spent / amount) * 100 * 100) / 100 : null,
+    };
   },
 };
 

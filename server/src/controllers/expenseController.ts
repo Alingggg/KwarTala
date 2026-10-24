@@ -46,6 +46,13 @@ const expenseController = {
 
   async updateExpense(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      const { userId } = req.user;
       const { id: idParam } = req.params;
       const id = Number(idParam);
 
@@ -64,11 +71,17 @@ const expenseController = {
 
       const updatedExpense = await expenseService.updateExpense({
         id,
+        userId,
         category,
         description,
         amount,
         date,
       });
+      if (!updatedExpense) {
+        const error: CustomError = new Error("Expense not found");
+        error.statusCode = 404;
+        throw error;
+      }
 
       res.status(200).json({
         data: updatedExpense,
@@ -81,6 +94,13 @@ const expenseController = {
 
   async deleteExpense(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        const error: CustomError = new Error("User not authenticated");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      const { userId } = req.user;
       const { id: idParam } = req.params;
       const id = Number(idParam);
 
@@ -92,7 +112,12 @@ const expenseController = {
         throw error;
       }
 
-      await expenseService.deleteExpense(id);
+      const deletedExpense = await expenseService.deleteExpense({ id, userId });
+      if (!deletedExpense) {
+        const error: CustomError = new Error("Expense not found");
+        error.statusCode = 404;
+        throw error;
+      }
 
       res.status(200).json({ message: "Expense deleted successfully" });
     } catch (error) {

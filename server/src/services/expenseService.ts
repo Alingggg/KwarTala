@@ -52,6 +52,7 @@ const expenseService = {
     page,
     limit,
     orderBy,
+    category,
   }: {
     userId: number;
     startDate: string;
@@ -59,6 +60,7 @@ const expenseService = {
     page: number;
     limit: number;
     orderBy: "desc" | "asc";
+    category?: string;
   }) {
     const offset = (page - 1) * limit;
     return db
@@ -67,7 +69,8 @@ const expenseService = {
       .where(
         and(
           eq(expenses.userId, userId),
-          between(expenses.date, startDate, endDate)
+          between(expenses.date, startDate, endDate),
+          category ? eq(expenses.category, category) : undefined
         )
       )
       .offset(offset)
@@ -240,13 +243,24 @@ const expenseService = {
       .groupBy(expenses.category);
   },
 
+  async getExpenseById({ id, userId }: { id: number; userId: number }) {
+    const [expense] = await db
+      .select()
+      .from(expenses)
+      .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
+      .limit(1);
+
+    return expense;
+  },
+
   async updateExpense({
     id,
+    userId,
     category,
     description,
     amount,
     date,
-  }: Omit<Expense, "userId">) {
+  }: Expense) {
     const [expense] = await db
       .update(expenses)
       .set({
@@ -255,16 +269,16 @@ const expenseService = {
         amount,
         date,
       })
-      .where(eq(expenses.id, id))
+      .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
       .returning();
 
     return expense;
   },
 
-  async deleteExpense(id: number) {
+  async deleteExpense({ id, userId }: { id: number; userId: number }) {
     const [expense] = await db
       .delete(expenses)
-      .where(eq(expenses.id, id))
+      .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
       .returning();
 
     return expense;
