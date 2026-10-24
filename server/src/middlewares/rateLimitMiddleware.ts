@@ -32,9 +32,19 @@ const emailVerificationRateLimit = rateLimit({
   },
 });
 
+const chatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  keyGenerator: (req) => String(req.user?.userId),
+  message: {
+    message: "Too many messages, please try again later.",
+  },
+});
+
 export {
   loginLimiter,
   registerLimiter,
   passwordResetRateLimit,
   emailVerificationRateLimit,
+  chatLimiter,
 };

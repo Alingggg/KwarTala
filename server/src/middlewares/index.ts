@@ -5,4 +5,5 @@ export {
   registerLimiter,
   passwordResetRateLimit,
   emailVerificationRateLimit,
+  chatLimiter,
 } from "./rateLimitMiddleware";

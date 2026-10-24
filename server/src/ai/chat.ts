@@ -5,6 +5,7 @@ import { geminiTools, runTool } from "./tools";
 
 const MAX_STEPS = 8;
 const FALLBACK_REPLY = "Sorry, I couldn't finish that. Please try again.";
+const MUTATING_TOOLS = ["create_expense", "update_expense", "delete_expense", "set_budget"];
 
 export async function runChat({
   userId,
@@ -24,6 +25,7 @@ export async function runChat({
     systemInstruction: buildSystemPrompt({ userName, currency }),
     tools: geminiTools,
   };
+  let dataChanged = false;
 
   for (let step = 0; step < MAX_STEPS; step++) {
     const response = await ai.models.generateContent({ model: MODEL, contents, config });
@@ -34,17 +36,20 @@ export async function runChat({
 
     const calls = response.functionCalls;
     if (!calls?.length) {
-      return { reply: response.text ?? FALLBACK_REPLY, history: contents };
+      return { reply: response.text ?? FALLBACK_REPLY, history: contents, dataChanged };
     }
 
     const parts: Part[] = [];
     for (const call of calls) {
       const response = await runTool(call.name ?? "", call.args, userId);
+      if (MUTATING_TOOLS.includes(call.name ?? "") && !("error" in response)) {
+        dataChanged = true;
+      }
       parts.push({ functionResponse: { name: call.name, response } });
     }
     contents.push({ role: "user", parts });
   }
 
   contents.push({ role: "model", parts: [{ text: FALLBACK_REPLY }] });
-  return { reply: FALLBACK_REPLY, history: contents };
+  return { reply: FALLBACK_REPLY, history: contents, dataChanged };
 }

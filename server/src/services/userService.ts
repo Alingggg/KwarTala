@@ -1,4 +1,5 @@
 import db, { users } from "@/db/index";
+import { clearHistory } from "@/ai/history";
 import {
   emailService,
   sessionService,
@@ -121,7 +122,12 @@ const userService = {
   },
 
   async logoutUser(refreshToken: string) {
-    await sessionService.deleteSessionByToken(refreshToken);
+    const session = await sessionService.deleteSessionByToken(refreshToken);
+    if (session) {
+      await clearHistory(session.userId).catch((error) =>
+        console.error("Failed to clear chat history:", error)
+      );
+    }
   },
 
   async getUserProfile(userId: number) {
