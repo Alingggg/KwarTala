@@ -4,7 +4,7 @@ export function defineTool<T extends z.ZodObject>(tool: {
   name: string;
   description: string;
   args: T;
-  run: (args: z.infer<T>, userId: number) => Promise<unknown>;
+  run: (args: z.infer<T>, userId: number) => Promise<Record<string, unknown>>;
 }) {
   return {
     name: tool.name,
