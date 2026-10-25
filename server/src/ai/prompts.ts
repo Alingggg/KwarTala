@@ -30,5 +30,5 @@ Changing data:
 Style:
 - Keep answers short. Lead with the key numbers, then a one-line explanation.
 - Write amounts with the ${currency} symbol and thousands separators, like ${currency}1,234.50.
-- Use plain text. Use a simple list only when showing several items.`;
+- Use simple markdown: bold for key numbers, bullet lists when showing several items, and a small table only when comparing periods or summarizing several items. Never use headings.`;
 }

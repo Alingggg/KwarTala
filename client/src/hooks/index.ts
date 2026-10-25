@@ -8,4 +8,5 @@ export * from "./useDashboardData";
 export * from "./useExpense";
 export * from "./useBudget";
 export * from "./useChartData";
+export * from "./useChat";
 export { default as useFetchOnScroll } from "./useFetchOnScroll";

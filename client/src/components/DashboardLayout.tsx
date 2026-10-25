@@ -1,4 +1,4 @@
-import { Sidebar } from "@/components";
+import { ChatWidget, Sidebar } from "@/components";
 import { Outlet } from "react-router";
 
 function DashboardLayout() {
@@ -8,6 +8,7 @@ function DashboardLayout() {
       <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
+      <ChatWidget />
     </div>
   );
 }

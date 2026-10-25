@@ -5,7 +5,7 @@ const chatMessageSchema = z.object({
     .string({ error: "Message is required" })
     .trim()
     .min(1, { error: "Message is required" })
-    .max(1000, { error: "Message must be at most 1000 characters" }),
+    .max(500, { error: "Message must be at most 500 characters" }),
   currency: z
     .string({ error: "Currency is required" })
     .min(1, { error: "Currency is required" })

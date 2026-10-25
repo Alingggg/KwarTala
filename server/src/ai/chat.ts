@@ -5,6 +5,8 @@ import { geminiTools, runTool } from "./tools";
 
 const MAX_STEPS = 8;
 const FALLBACK_REPLY = "Sorry, I couldn't finish that. Please try again.";
+const PARTIAL_REPLY =
+  "Sorry, something went wrong before I could finish. Some of your request may already be done, so please check your dashboard before trying again.";
 const MUTATING_TOOLS = ["create_expense", "update_expense", "delete_expense", "set_budget"];
 
 export async function runChat({
@@ -28,7 +30,15 @@ export async function runChat({
   let dataChanged = false;
 
   for (let step = 0; step < MAX_STEPS; step++) {
-    const response = await ai.models.generateContent({ model: MODEL, contents, config });
+    let response;
+    try {
+      response = await ai.models.generateContent({ model: MODEL, contents, config });
+    } catch (error) {
+      if (!dataChanged) throw error;
+      console.error("Chat failed after data changed:", error);
+      contents.push({ role: "model", parts: [{ text: PARTIAL_REPLY }] });
+      return { reply: PARTIAL_REPLY, history: contents, dataChanged };
+    }
     const content = response.candidates?.[0]?.content;
     if (!content?.parts?.length) break;
 

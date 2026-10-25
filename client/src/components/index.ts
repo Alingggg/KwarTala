@@ -22,3 +22,5 @@ export { default as RequestEditEmailModal } from "./modal/RequestEditEmailModal"
 export { default as LoadingSpinner } from "./loading/LoadingSpinner";
 export { default as LoadingOverlay } from "./loading/LoadingOverlay";
 export { default as AppLoading } from "./loading/AppLoading";
+
+export { default as ChatWidget } from "./chat/ChatWidget";
