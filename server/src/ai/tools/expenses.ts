@@ -90,7 +90,9 @@ export const createExpense = defineTool({
     category: categoryArg.describe("Expense category"),
     amount: amountArg.describe("Amount spent"),
     date: dateArg.describe("Date of the expense, YYYY-MM-DD, cannot be in the future"),
-    description: descriptionArg.optional().describe("Short description, e.g. what was bought"),
+    description: descriptionArg
+      .optional()
+      .describe("Short description from what the user said, e.g. what it was for or where (\"Lunch\", \"Church offering\")"),
   }),
   async run(args, userId) {
     const { category, amount, date, description } = createExpenseSchema.parse({
