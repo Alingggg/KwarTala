@@ -14,7 +14,7 @@ import {
   useFetchOnScroll,
   useUserContext,
 } from "@/hooks";
-import type { Expense } from "@/types";
+import type { Expense, ExpenseListFilters } from "@/types";
 import { assignCategoryColors } from "@/utils";
 import { FiCalendar } from "react-icons/fi";
 import { format } from "date-fns";
@@ -27,11 +27,11 @@ function Home() {
   const currentMonthNumber = today.getMonth() + 1;
   const currentYear = today.getFullYear();
 
-  const getTransactionsOptions = {
+  const getTransactionsOptions: ExpenseListFilters = {
     startDate: format(today, "yyyy-MM-dd"),
     endDate: format(today, "yyyy-MM-dd"),
     limit: 10,
-    orderBy: "desc" as "desc" | "asc",
+    orderBy: "desc",
   };
 
   const { user } = useUserContext();

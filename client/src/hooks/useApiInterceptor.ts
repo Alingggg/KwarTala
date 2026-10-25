@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { api } from "@/api";
+import { api, queryKeys } from "@/api";
 import { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 interface QueueItem {
@@ -71,7 +71,7 @@ function useApiInterceptor(queryClient: QueryClient) {
           } catch (refreshError) {
             processQueue(refreshError as AxiosError);
 
-            queryClient.setQueryData(["me"], null);
+            queryClient.setQueryData(queryKeys.auth.me(), null);
 
             return Promise.reject(refreshError);
           } finally {

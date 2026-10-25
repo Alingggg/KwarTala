@@ -1,24 +1,16 @@
-import { api } from "@/api";
+import { api, queryKeys } from "@/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-const DASHBOARD_QUERY_KEYS = [
-  "homeData",
-  "expenses",
-  "budget",
-  "monthlyTransactionsSummaryData",
-  "analyticsData",
-  "dailyChartsData",
-  "weeklyChartsData",
-];
 
 function useSendMessage() {
   const queryClient = useQueryClient();
 
-  const refreshDashboard = () =>
-    queryClient.invalidateQueries({
-      predicate: (query) =>
-        DASHBOARD_QUERY_KEYS.includes(query.queryKey[0] as string),
-    });
+  const refreshDashboard = () => {
+    [
+      queryKeys.dashboard.all,
+      queryKeys.expenses.all,
+      queryKeys.budget.all,
+    ].forEach((queryKey) => queryClient.invalidateQueries({ queryKey }));
+  };
 
   return useMutation({
     mutationKey: ["sendMessage"],

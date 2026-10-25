@@ -7,4 +7,11 @@ interface Expense {
   date: string;
 }
 
-export type { Expense };
+type ExpenseListFilters = {
+  startDate: string;
+  endDate: string;
+  limit: number;
+  orderBy: "asc" | "desc";
+};
+
+export type { Expense, ExpenseListFilters };

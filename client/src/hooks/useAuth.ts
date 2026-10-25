@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/api";
+import { api, queryKeys } from "@/api";
 import { useNavigate } from "react-router";
 
 function useRegister() {
@@ -28,7 +28,7 @@ function useLogin() {
       return userResponse.data.data;
     },
     onSuccess: (userData) => {
-      queryClient.setQueryData(["me"], userData);
+      queryClient.setQueryData(queryKeys.auth.me(), userData);
       navigate("/home");
     },
     onError: (error: any) => {
@@ -45,7 +45,7 @@ function useLogout() {
       await api.post("/auth/logout");
     },
     onSuccess: () => {
-      queryClient.setQueryData(["me"], null);
+      queryClient.setQueryData(queryKeys.auth.me(), null);
     },
     onError: (error: any) => {
       console.error("Logout failed:", error?.response?.data?.message);
@@ -55,7 +55,7 @@ function useLogout() {
 
 function useUser() {
   return useQuery({
-    queryKey: ["me"],
+    queryKey: queryKeys.auth.me(),
     queryFn: async () => {
       const response = await api.get("/auth/me");
       return response.data.data;
@@ -124,7 +124,7 @@ function useEditUsername() {
       await api.post("/auth/change-username", { userName });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.me() });
     },
     onError: (error: any) => {
       console.error("Username change failed:", error?.response?.data?.message);
@@ -134,7 +134,7 @@ function useEditUsername() {
 
 function useCheckHasToReLogIn(isLoading: boolean) {
   const { data, isLoading: isQueryLoading } = useQuery({
-    queryKey: ["hasToReLogIn"],
+    queryKey: queryKeys.auth.hasToReLogIn(),
     queryFn: async () => {
       const response = await api.post("/auth/has-to-re-login");
       return response.data;
