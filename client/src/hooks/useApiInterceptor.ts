@@ -24,13 +24,10 @@ const processQueue = (error: AxiosError | null, token = null) => {
 };
 
 const EXCLUDED_REFRESH_PATHS = [
-  "/auth/me",
   "/auth/login",
   "/auth/register",
   "/auth/refresh-token",
   "/auth/verify-email",
-  "/auth/change-username",
-  "/auth/change-email",
   "/auth/reset-password",
 ];
 
