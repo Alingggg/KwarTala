@@ -1,13 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useApiInterceptor } from "@/hooks";
+import { setupApiInterceptor } from "@/api";
 import { CurrencyProvider, ModalProvider, UserProvider } from "@/context";
 import AppRouter from "./AppRouter.tsx";
 
 const queryClient = new QueryClient();
+setupApiInterceptor(queryClient);
 
 function App() {
-  useApiInterceptor(queryClient);
-
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
