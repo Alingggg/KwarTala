@@ -1,4 +1,4 @@
-import type { CustomError, UserPayload } from "@/types/index";
+import { HttpError, type UserPayload } from "@/types/index";
 import jwt from "jsonwebtoken";
 
 function generateToken(
@@ -39,16 +39,12 @@ function verifyToken(
     const decoded = jwt.verify(token, secret);
 
     if (!decoded) {
-      const error: CustomError = new Error("Invalid or expired token");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Invalid or expired token");
     }
 
     return decoded as UserPayload;
   } catch (err) {
-    const error: CustomError = new Error("Invalid or expired token");
-    error.statusCode = 401;
-    throw error;
+    throw new HttpError(401, "Invalid or expired token");
   }
 }
 

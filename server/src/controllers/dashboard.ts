@@ -1,15 +1,13 @@
 import { datePeriodSchema, getTransactionsSchema } from "@/zod-schemas/index";
 import { dashboardService } from "@/services/index";
-import type { CustomError } from "@/types/index";
+import { HttpError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const dashboardController = {
   async getHomeData(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -26,9 +24,7 @@ const dashboardController = {
   async getDailyChartData(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -41,10 +37,7 @@ const dashboardController = {
         year,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const dailyExpenses = await dashboardService.getDailyChartData({
@@ -65,9 +58,7 @@ const dashboardController = {
   async getWeeklyChartData(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -80,10 +71,7 @@ const dashboardController = {
         year,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const weeklyExpenses = await dashboardService.getWeeklyChartData({
@@ -108,9 +96,7 @@ const dashboardController = {
   ) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -123,10 +109,7 @@ const dashboardController = {
         year: rawYear,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { month, year } = validationResult.data;
@@ -149,9 +132,7 @@ const dashboardController = {
   async getTransactions(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -170,10 +151,7 @@ const dashboardController = {
         orderBy: rawOrderBy,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { startDate, endDate, page, limit, orderBy } =
@@ -189,9 +167,7 @@ const dashboardController = {
       });
 
       if (!transactions) {
-        const error: CustomError = new Error("No transactions found");
-        error.statusCode = 404;
-        throw error;
+        throw new HttpError(404, "No transactions found");
       }
 
       res.status(200).json(transactions);
@@ -203,9 +179,7 @@ const dashboardController = {
   async getAnalyticsData(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -218,10 +192,7 @@ const dashboardController = {
         year,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const analyticsData = await dashboardService.getAnalyticsData({

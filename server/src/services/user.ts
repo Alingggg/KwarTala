@@ -5,7 +5,7 @@ import {
   sessionService,
   verificationTokenService,
 } from "@/services/index";
-import type { CustomError, User } from "@/types/index";
+import { HttpError, type User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
 import { addMinutes, format, isBefore, subDays } from "date-fns";
@@ -22,9 +22,7 @@ const userService = {
       .from(users)
       .where(eq(users.email, email));
     if (existingUser) {
-      const error: CustomError = new Error("User already exists");
-      error.statusCode = 409;
-      throw error;
+      throw new HttpError(409, "User already exists");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,9 +36,7 @@ const userService = {
       })
       .returning();
     if (!newUser) {
-      const error: CustomError = new Error("Failed to create user.");
-      error.statusCode = 500;
-      throw error;
+      throw new HttpError(500, "Failed to create user.");
     }
 
     const { password: userPassword, ...userWithoutPassword } = newUser;
@@ -51,23 +47,17 @@ const userService = {
   async loginUser({ email, password }: { email: string; password: string }) {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     if (!user) {
-      const error: CustomError = new Error("Invalid email or password.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Invalid email or password.");
     }
     const { password: userPassword, ...userWithoutPassword } = user;
 
     const isPasswordValid = await bcrypt.compare(password, userPassword);
     if (!isPasswordValid) {
-      const error: CustomError = new Error("Invalid email or password.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Invalid email or password.");
     }
 
     if (!userWithoutPassword.isVerified) {
-      const error: CustomError = new Error("Email not verified.");
-      error.statusCode = 403;
-      throw error;
+      throw new HttpError(403, "Email not verified.");
     }
 
     const payload = {
@@ -93,27 +83,21 @@ const userService = {
   async refreshAccessToken(refreshToken: string) {
     const session = await sessionService.getSessionByToken(refreshToken);
     if (!session) {
-      const error: CustomError = new Error("Invalid refresh token.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Invalid refresh token.");
     }
 
     let cleanPayload;
     try {
       const payload = verifyToken(refreshToken, "refresh-token");
       if (!payload) {
-        const error: CustomError = new Error("Invalid token payload.");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "Invalid token payload.");
       }
 
       const { iat, exp, ...rest } = payload as any;
       cleanPayload = rest;
     } catch (error) {
-      const err: CustomError = new Error("Invalid or expired refresh token.");
-      err.statusCode = 401;
       await sessionService.deleteSessionByToken(refreshToken);
-      throw err;
+      throw new HttpError(401, "Invalid or expired refresh token.");
     }
 
     const newAccessToken = generateToken(cleanPayload, "access-token");
@@ -133,9 +117,7 @@ const userService = {
   async getUserProfile(userId: number) {
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (!user) {
-      const error: CustomError = new Error("User not found.");
-      error.statusCode = 404;
-      throw error;
+      throw new HttpError(404, "User not found.");
     }
 
     const { password, ...userWithoutPassword } = user;
@@ -154,30 +136,24 @@ const userService = {
   }) {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     if (!user) {
-      const error: CustomError = new Error("User not found.");
-      error.statusCode = 404;
-      throw error;
+      throw new HttpError(404, "User not found.");
     }
 
     if (type === "change-email") {
       const allowed = this.canChangeEmail(user);
       if (!allowed) {
-        const error: CustomError = new Error(
+        throw new HttpError(400, 
           "Email can only be changed once every 30 days."
         );
-        error.statusCode = 400;
-        throw error;
       }
     }
 
     if (type === "reset-password") {
       const allowed = this.canChangePassword(user);
       if (!allowed) {
-        const error: CustomError = new Error(
+        throw new HttpError(400, 
           "Password can only be changed once every 30 days."
         );
-        error.statusCode = 400;
-        throw error;
       }
     }
 
@@ -239,25 +215,19 @@ const userService = {
   async verifyEmail({ token, newEmail }: { token: string; newEmail?: string }) {
     const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
-      const error: CustomError = new Error("Invalid or expired token.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Invalid or expired token.");
     }
 
     const tokenPayload = verifyToken(token, "access-token");
     if (!tokenPayload) {
-      const error: CustomError = new Error("Token is invalid or expired.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Token is invalid or expired.");
     }
 
     await verificationTokenService.deleteVerificationToken(token);
 
     const user = await this.getUserByEmail(tokenPayload.email);
     if (!user) {
-      const error: CustomError = new Error("User not found.");
-      error.statusCode = 404;
-      throw error;
+      throw new HttpError(404, "User not found.");
     }
 
     if (!newEmail) {
@@ -296,24 +266,18 @@ const userService = {
   async updateEmail({ token, email }: { token: string; email: string }) {
     const tokenPayload = verifyToken(token, "access-token");
     if (!tokenPayload) {
-      const error: CustomError = new Error("Token is invalid or expired.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Token is invalid or expired.");
     }
 
     const user = await this.getUserById(tokenPayload.userId);
     if (!user) {
-      const error: CustomError = new Error("User not found.");
-      error.statusCode = 404;
-      throw error;
+      throw new HttpError(404, "User not found.");
     }
 
     if (!this.canChangeEmail(user)) {
-      const error: CustomError = new Error(
+      throw new HttpError(400, 
         "Email can only be changed once every 30 days."
       );
-      error.statusCode = 400;
-      throw error;
     }
 
     await db
@@ -335,33 +299,25 @@ const userService = {
   }) {
     const verificationToken = await verificationTokenService.getByToken(token);
     if (!verificationToken) {
-      const error: CustomError = new Error("Invalid or expired token.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Invalid or expired token.");
     }
 
     const tokenPayload = verifyToken(token, "access-token");
     if (!tokenPayload) {
-      const error: CustomError = new Error("Token is invalid or expired.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Token is invalid or expired.");
     }
 
     await verificationTokenService.deleteVerificationToken(token);
 
     const user = await this.getUserById(tokenPayload.userId);
     if (!user) {
-      const error: CustomError = new Error("User not found.");
-      error.statusCode = 404;
-      throw error;
+      throw new HttpError(404, "User not found.");
     }
 
     if (!this.canChangePassword(user)) {
-      const error: CustomError = new Error(
+      throw new HttpError(400, 
         "Password can only be changed once every 30 days."
       );
-      error.statusCode = 400;
-      throw error;
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -402,16 +358,12 @@ const userService = {
   }) {
     const user = await this.getUserById(userId);
     if (!user) {
-      const error: CustomError = new Error("User not found.");
-      error.statusCode = 404;
-      throw error;
+      throw new HttpError(404, "User not found.");
     }
 
     const session = await sessionService.getSessionByToken(refreshToken);
     if (!session) {
-      const error: CustomError = new Error("Invalid or expired session.");
-      error.statusCode = 401;
-      throw error;
+      throw new HttpError(401, "Invalid or expired session.");
     }
 
     if (

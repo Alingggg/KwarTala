@@ -7,7 +7,7 @@ import {
   verifyEmailSchema,
 } from "@/zod-schemas/index";
 import { sessionService, userService } from "@/services/index";
-import type { CustomError } from "@/types/index";
+import { HttpError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const authController = {
@@ -15,19 +15,14 @@ const authController = {
     try {
       const validationResult = registerSchema.safeParse(req.body);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { userName, email, password } = validationResult.data;
 
       const existingUser = await userService.getUserByEmail(email);
       if (existingUser) {
-        const error: CustomError = new Error("User already exists");
-        error.statusCode = 409;
-        throw error;
+        throw new HttpError(409, "User already exists");
       }
 
       const newUser = await userService.registerUser({
@@ -36,9 +31,7 @@ const authController = {
         password,
       });
       if (!newUser) {
-        const error: CustomError = new Error("User registration failed");
-        error.statusCode = 500;
-        throw error;
+        throw new HttpError(500, "User registration failed");
       }
 
       res
@@ -54,17 +47,12 @@ const authController = {
       const hasAccessToken = req.cookies.accessToken;
       const hasRefreshToken = req.cookies.refreshToken;
       if (hasAccessToken || hasRefreshToken) {
-        const error: CustomError = new Error("Already logged in");
-        error.statusCode = 409;
-        throw error;
+        throw new HttpError(409, "Already logged in");
       }
 
       const validationResult = loginSchema.safeParse(req.body);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { email, password } = validationResult.data;
@@ -104,9 +92,7 @@ const authController = {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        const error: CustomError = new Error("Refresh token is required");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "Refresh token is required");
       }
 
       const newAccessToken = await userService.refreshAccessToken(refreshToken);
@@ -158,9 +144,7 @@ const authController = {
   async getCurrentUser(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
       const { userId } = req.user;
 
@@ -178,10 +162,7 @@ const authController = {
     try {
       const validationResult = verificationEmailSchema.safeParse(req.body);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { email, type, newEmail } = validationResult.data;
@@ -202,10 +183,7 @@ const authController = {
     try {
       const validationResult = verifyEmailSchema.safeParse(req.body);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { token, newEmail } = validationResult.data;
@@ -231,18 +209,14 @@ const authController = {
   async updateUserName(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
 
       const validationResult = userNameSchema.safeParse(req.body.userName);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const userName = validationResult.data;
@@ -267,10 +241,7 @@ const authController = {
       const validationResult =
         resetPasswordSchema.safeParse(resetPasswordDetails);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { token, newPassword } = validationResult.data;
@@ -290,15 +261,11 @@ const authController = {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const userId = req.user.userId;

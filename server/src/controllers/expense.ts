@@ -4,26 +4,21 @@ import {
   updateExpenseSchema,
 } from "@/zod-schemas";
 import { expenseService } from "@/services/index";
-import type { CustomError } from "@/types/index";
+import { HttpError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const expenseController = {
   async createExpense(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
 
       const validationResult = createExpenseSchema.safeParse(req.body);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { category, description, amount, date } = validationResult.data;
@@ -47,9 +42,7 @@ const expenseController = {
   async updateExpense(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -61,10 +54,7 @@ const expenseController = {
         ...req.body,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { category, description, amount, date } = validationResult.data;
@@ -78,9 +68,7 @@ const expenseController = {
         date,
       });
       if (!updatedExpense) {
-        const error: CustomError = new Error("Expense not found");
-        error.statusCode = 404;
-        throw error;
+        throw new HttpError(404, "Expense not found");
       }
 
       res.status(200).json({
@@ -95,9 +83,7 @@ const expenseController = {
   async deleteExpense(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -106,17 +92,12 @@ const expenseController = {
 
       const validationResult = deleteExpenseSchema.safeParse({ id });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const deletedExpense = await expenseService.deleteExpense({ id, userId });
       if (!deletedExpense) {
-        const error: CustomError = new Error("Expense not found");
-        error.statusCode = 404;
-        throw error;
+        throw new HttpError(404, "Expense not found");
       }
 
       res.status(200).json({ message: "Expense deleted successfully" });

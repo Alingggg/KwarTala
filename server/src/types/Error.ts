@@ -1,5 +1,7 @@
-interface CustomError extends Error {
-  statusCode?: number;
+class HttpError extends Error {
+  constructor(public statusCode: number, message: string) {
+    super(message);
+  }
 }
 
-export type { CustomError };
+export { HttpError };

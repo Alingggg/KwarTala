@@ -16,11 +16,12 @@ const createExpenseSchema = z.object({
     .max(10000000),
   date: z
     .union([z.string(), z.date()])
-    .transform((val) => {
+    .transform((val, ctx) => {
       const date = typeof val === "string" ? new Date(val) : val;
 
       if (isNaN(date.getTime())) {
-        throw new Error("Invalid date");
+        ctx.addIssue({ code: "custom", message: "Invalid date" });
+        return z.NEVER;
       }
 
       return format(date, "yyyy-MM-dd");

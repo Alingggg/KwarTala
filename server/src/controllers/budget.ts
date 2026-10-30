@@ -1,15 +1,13 @@
 import { budgetSchema, datePeriodSchema } from "@/zod-schemas/index";
 import { budgetService } from "@/services/index";
-import type { CustomError } from "@/types/index";
+import { HttpError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const budgetController = {
   async getBudget(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -21,10 +19,7 @@ const budgetController = {
         year,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const budget = await budgetService.getBudgetByUserIdAndDate({
@@ -44,9 +39,7 @@ const budgetController = {
   async updateBudget(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId } = req.user;
@@ -60,10 +53,7 @@ const budgetController = {
         amount,
       });
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const budget = await budgetService.updateBudgetByUserIdAndDate({

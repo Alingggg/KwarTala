@@ -1,25 +1,20 @@
 import { runChat, getHistory, saveHistory, clearHistory } from "@/ai/index";
 import { chatMessageSchema } from "@/zod-schemas/index";
-import type { CustomError } from "@/types/index";
+import { HttpError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
 const chatController = {
   async sendMessage(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       const { userId, userName } = req.user;
 
       const validationResult = chatMessageSchema.safeParse(req.body);
       if (!validationResult.success) {
-        const error: CustomError = new Error();
-        error.statusCode = 400;
-        error.message = validationResult.error.issues[0].message;
-        throw error;
+        throw new HttpError(400, validationResult.error.issues[0].message);
       }
 
       const { message, currency } = validationResult.data;
@@ -61,9 +56,7 @@ const chatController = {
   async clearChat(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        const error: CustomError = new Error("User not authenticated");
-        error.statusCode = 401;
-        throw error;
+        throw new HttpError(401, "User not authenticated");
       }
 
       await clearHistory(req.user.userId);
