@@ -11,9 +11,6 @@ function useRegister() {
     }) => {
       await api.post("/auth/register", data);
     },
-    onError: (error: any) => {
-      console.error("Registration failed:", error?.response?.data?.message);
-    },
   });
 }
 
@@ -31,9 +28,6 @@ function useLogin() {
       queryClient.setQueryData(queryKeys.auth.me(), userData);
       navigate("/home");
     },
-    onError: (error: any) => {
-      console.error("Login failed:", error?.response?.data?.message);
-    },
   });
 }
 
@@ -46,9 +40,6 @@ function useLogout() {
     },
     onSuccess: () => {
       queryClient.setQueryData(queryKeys.auth.me(), null);
-    },
-    onError: (error: any) => {
-      console.error("Logout failed:", error?.response?.data?.message);
     },
   });
 }
@@ -77,12 +68,6 @@ function useGetVerificationEmail() {
     }) => {
       await api.post("/auth/verification-email", { email, type, newEmail });
     },
-    onError: (error: any) => {
-      console.error(
-        "Failed to send verification email:",
-        error?.response?.data?.message,
-      );
-    },
   });
 }
 
@@ -97,12 +82,6 @@ function useVerifyEmail() {
     }) => {
       await api.post("/auth/verify-email", { token, newEmail });
     },
-    onError: (error: any) => {
-      console.error(
-        "Email verification failed:",
-        error?.response?.data?.message,
-      );
-    },
   });
 }
 
@@ -110,9 +89,6 @@ function useResetPassword() {
   return useMutation({
     mutationFn: async (data: { token: string; newPassword: string }) => {
       await api.post("/auth/reset-password", data);
-    },
-    onError: (error: any) => {
-      console.error("Password reset failed:", error?.response?.data?.message);
     },
   });
 }
@@ -125,9 +101,6 @@ function useEditUsername() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.me() });
-    },
-    onError: (error: any) => {
-      console.error("Username change failed:", error?.response?.data?.message);
     },
   });
 }

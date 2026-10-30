@@ -55,9 +55,6 @@ function useAddExpense() {
     onSuccess: (_, variables) => {
       invalidateExpenseQueries(queryClient, variables.date);
     },
-    onError: (error: any) => {
-      console.error("Failed to add expense:", error?.response?.data?.message);
-    },
   });
 }
 
@@ -101,9 +98,6 @@ function useEditExpense() {
     onSuccess: (_, variables) => {
       invalidateExpenseQueries(queryClient, variables.date);
     },
-    onError: (error: any) => {
-      console.error("Failed to edit expense:", error?.response?.data?.message);
-    },
   });
 }
 
@@ -124,12 +118,6 @@ function useDeleteExpense() {
     },
     onSuccess: (_, variables) => {
       invalidateExpenseQueries(queryClient, variables.date);
-    },
-    onError: (error: any) => {
-      console.error(
-        "Failed to delete expense:",
-        error?.response?.data?.message
-      );
     },
   });
 }

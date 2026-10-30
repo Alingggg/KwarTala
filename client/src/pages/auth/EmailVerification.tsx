@@ -51,7 +51,7 @@ export default function EmailVerification() {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-auburn-900 border border-auburn-900">
           <FiAlertCircle className="w-5 h-5 text-auburn-500" />
           <span className="text-base text-auburn-100 font-semibold">
-            {error?.response?.data?.message ||
+            {(error as any)?.response?.data?.message ||
               "Email verification failed. Please try again."}
           </span>
         </div>

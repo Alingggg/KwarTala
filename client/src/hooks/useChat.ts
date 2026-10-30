@@ -3,11 +3,11 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 class ChatError extends Error {
-  constructor(
-    message?: string,
-    public status?: number,
-  ) {
+  status?: number;
+
+  constructor(message?: string, status?: number) {
     super(message ?? "Something went wrong. Please try again.");
+    this.status = status;
   }
 }
 
@@ -73,9 +73,8 @@ function useSendMessage() {
     onSuccess: (data) => {
       if (data.dataChanged) refreshDashboard();
     },
-    onError: (error: Error) => {
+    onError: () => {
       refreshDashboard();
-      console.error("Failed to send message:", error.message);
     },
   });
 }
@@ -85,9 +84,6 @@ function useClearChat() {
     mutationKey: ["clearChat"],
     mutationFn: async () => {
       await api.delete("/chat");
-    },
-    onError: (error: any) => {
-      console.error("Failed to clear chat:", error?.response?.data?.message);
     },
   });
 }

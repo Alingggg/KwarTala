@@ -48,15 +48,17 @@ export async function runChat({
     } catch (error) {
       if (!dataChanged) throw error;
       console.error("Chat failed after data changed:", error);
+      onDelta(text ? `\n\n${PARTIAL_REPLY}` : PARTIAL_REPLY);
       contents.push({ role: "model", parts: [{ text: PARTIAL_REPLY }] });
-      return { reply: PARTIAL_REPLY, history: contents, dataChanged };
+      return { history: contents, dataChanged };
     }
     if (!parts.length) break;
 
     contents.push({ role: "model", parts });
 
     if (!calls.length) {
-      return { reply: text || FALLBACK_REPLY, history: contents, dataChanged };
+      if (!text) onDelta(FALLBACK_REPLY);
+      return { history: contents, dataChanged };
     }
 
     const responseParts: Part[] = [];
@@ -70,6 +72,7 @@ export async function runChat({
     contents.push({ role: "user", parts: responseParts });
   }
 
+  onDelta(FALLBACK_REPLY);
   contents.push({ role: "model", parts: [{ text: FALLBACK_REPLY }] });
-  return { reply: FALLBACK_REPLY, history: contents, dataChanged };
+  return { history: contents, dataChanged };
 }
