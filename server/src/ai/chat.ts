@@ -1,4 +1,4 @@
-import type { Content, Part } from "@google/genai";
+import type { Content, FunctionCall, Part } from "@google/genai";
 import { ai, MODEL } from "./llm";
 import { buildSystemPrompt } from "./prompts";
 import { geminiTools, runTool } from "./tools";
@@ -15,12 +15,14 @@ export async function runChat({
   currency,
   history,
   message,
+  onDelta,
 }: {
   userId: number;
   userName: string;
   currency: string;
   history: Content[];
   message: string;
+  onDelta: (text: string) => void;
 }) {
   const contents: Content[] = [...history, { role: "user", parts: [{ text: message }] }];
   const config = {
@@ -30,34 +32,42 @@ export async function runChat({
   let dataChanged = false;
 
   for (let step = 0; step < MAX_STEPS; step++) {
-    let response;
+    const parts: Part[] = [];
+    const calls: FunctionCall[] = [];
+    let text = "";
     try {
-      response = await ai.models.generateContent({ model: MODEL, contents, config });
+      const stream = await ai.models.generateContentStream({ model: MODEL, contents, config });
+      for await (const chunk of stream) {
+        parts.push(...(chunk.candidates?.[0]?.content?.parts ?? []));
+        calls.push(...(chunk.functionCalls ?? []));
+        if (chunk.text) {
+          text += chunk.text;
+          onDelta(chunk.text);
+        }
+      }
     } catch (error) {
       if (!dataChanged) throw error;
       console.error("Chat failed after data changed:", error);
       contents.push({ role: "model", parts: [{ text: PARTIAL_REPLY }] });
       return { reply: PARTIAL_REPLY, history: contents, dataChanged };
     }
-    const content = response.candidates?.[0]?.content;
-    if (!content?.parts?.length) break;
+    if (!parts.length) break;
 
-    contents.push(content);
+    contents.push({ role: "model", parts });
 
-    const calls = response.functionCalls;
-    if (!calls?.length) {
-      return { reply: response.text ?? FALLBACK_REPLY, history: contents, dataChanged };
+    if (!calls.length) {
+      return { reply: text || FALLBACK_REPLY, history: contents, dataChanged };
     }
 
-    const parts: Part[] = [];
+    const responseParts: Part[] = [];
     for (const call of calls) {
       const response = await runTool(call.name ?? "", call.args, userId);
       if (MUTATING_TOOLS.includes(call.name ?? "") && !("error" in response)) {
         dataChanged = true;
       }
-      parts.push({ functionResponse: { name: call.name, response } });
+      responseParts.push({ functionResponse: { name: call.name, response } });
     }
-    contents.push({ role: "user", parts });
+    contents.push({ role: "user", parts: responseParts });
   }
 
   contents.push({ role: "model", parts: [{ text: FALLBACK_REPLY }] });

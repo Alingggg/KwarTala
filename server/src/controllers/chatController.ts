@@ -25,24 +25,34 @@ const chatController = {
       const { message, currency } = validationResult.data;
       const history = await getHistory(userId);
 
-      let result;
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      });
+
+      const send = (event: string, data: object) => {
+        res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+      };
+
       try {
-        result = await runChat({ userId, userName, currency, history, message });
+        const result = await runChat({
+          userId,
+          userName,
+          currency,
+          history,
+          message,
+          onDelta: (text) => send("delta", { text }),
+        });
+        await saveHistory(userId, result.history);
+        send("done", { dataChanged: result.dataChanged });
       } catch (cause) {
         console.error("Chat failed:", cause);
-        const error: CustomError = new Error(
-          "The assistant is unavailable right now. Please try again later."
-        );
-        error.statusCode = 503;
-        throw error;
+        send("error", {
+          message: "The assistant is unavailable right now. Please try again later.",
+        });
       }
-
-      await saveHistory(userId, result.history);
-
-      res.status(200).json({
-        data: { reply: result.reply, dataChanged: result.dataChanged },
-        message: "Message sent successfully",
-      });
+      res.end();
     } catch (error) {
       next(error);
     }

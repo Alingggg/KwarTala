@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { FiMessageCircle, FiRotateCcw, FiSend, FiX } from "react-icons/fi";
-import { isAxiosError } from "axios";
 import { useClearChat, useCurrencyContext, useSendMessage } from "@/hooks";
 import ChatMarkdown from "./ChatMarkdown";
 
@@ -64,22 +63,23 @@ function ChatWidget() {
     setMessages((prev) => [...prev, { role: "user", text: message }]);
     setInput("");
 
+    const appendDelta = (delta: string) => {
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant") {
+          return [...prev.slice(0, -1), { ...last, text: last.text + delta }];
+        }
+        return [...prev, { role: "assistant", text: delta }];
+      });
+    };
+
     sendMessage(
-      { message, currency: currency ?? "₱" },
+      { message, currency: currency ?? "₱", onDelta: appendDelta },
       {
-        onSuccess: (data) => {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", text: data.reply },
-          ]);
-        },
         onError: (error) => {
-          const text = isAxiosError(error)
-            ? error.response?.data?.message
-            : undefined;
           setMessages((prev) => [
             ...prev,
-            { role: "error", text: text ?? ERROR_FALLBACK },
+            { role: "error", text: error.message || ERROR_FALLBACK },
           ]);
         },
       }
@@ -165,7 +165,7 @@ function ChatWidget() {
                     )}
                   </div>
                 ))}
-                {isPending && (
+                {isPending && messages[messages.length - 1]?.role === "user" && (
                   <div className="self-start flex gap-1 rounded-xl bg-timberwolf-700 px-3 py-3">
                     {[0, 150, 300].map((delay) => (
                       <span
