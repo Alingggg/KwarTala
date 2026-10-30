@@ -1,14 +1,14 @@
-export { default as Sidebar } from "./Sidebar";
-export { default as DashboardLayout } from "./DashboardLayout";
+export { default as Sidebar } from "./layout/Sidebar";
+export { default as DashboardLayout } from "./layout/DashboardLayout";
 export { default as Button } from "./Button";
 export { default as ExpenseCard } from "./ExpenseCard";
 export { default as ExpenseChart } from "./ExpenseChart";
 export { default as Input } from "./Input";
-export { default as PublicRoute } from "./PublicRoute";
-export { default as ProtectedRoute } from "./ProtectedRoute";
+export { default as PublicRoute } from "./layout/PublicRoute";
+export { default as ProtectedRoute } from "./layout/ProtectedRoute";
 export { default as Dropdown } from "./Dropdown";
 
-export { default as ModalContainer } from "./ModalContainer";
+export { default as ModalContainer } from "./modal/ModalContainer";
 export { default as UpsertExpenseModal } from "./modal/UpsertExpenseModal";
 export { default as DeleteExpenseModal } from "./modal/DeleteExpenseModal";
 export { default as EditBudgetModal } from "./modal/EditBudgetModal";

@@ -1,5 +1,5 @@
-export { default as authController } from "./authController";
-export { default as expenseController } from "./expenseController";
-export { default as budgetController } from "./budgetController";
-export { default as dashboardController } from "./dashboardController";
-export { default as chatController } from "./chatController";
+export { default as authController } from "./auth";
+export { default as expenseController } from "./expense";
+export { default as budgetController } from "./budget";
+export { default as dashboardController } from "./dashboard";
+export { default as chatController } from "./chat";

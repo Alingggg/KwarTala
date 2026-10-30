@@ -1,9 +1,9 @@
-export { default as errorMiddleware } from "./errorMiddleware";
-export { default as authMiddleware } from "./authMiddleware";
+export { default as errorMiddleware } from "./error";
+export { default as authMiddleware } from "./auth";
 export {
   loginLimiter,
   registerLimiter,
   passwordResetRateLimit,
   emailVerificationRateLimit,
   chatLimiter,
-} from "./rateLimitMiddleware";
+} from "./rateLimit";

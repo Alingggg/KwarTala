@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useEditBudget, useCurrencyContext, useGetBudget } from "@/hooks";
 import { format, subYears, addMonths } from "date-fns";
 import * as z from "zod";
-import { editBudgetSchema } from "@/zod-schema";
+import { editBudgetSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = z.infer<typeof editBudgetSchema>;

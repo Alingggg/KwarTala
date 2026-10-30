@@ -5,7 +5,7 @@ import { FiAlertCircle, FiCheckCircle, FiLock } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useResetPassword } from "@/hooks";
 import * as z from "zod";
-import { resetPasswordSchema } from "@/zod-schema";
+import { resetPasswordSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = z.infer<typeof resetPasswordSchema>;

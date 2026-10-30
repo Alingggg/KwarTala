@@ -6,7 +6,7 @@ import { useGetVerificationEmail, useRegister } from "@/hooks";
 import { AppLogo } from "@/assets/images";
 import { useState } from "react";
 import * as z from "zod";
-import { registerSchema } from "@/zod-schema";
+import { registerSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = z.infer<typeof registerSchema>;

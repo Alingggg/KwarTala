@@ -5,7 +5,7 @@ import { useAddExpense, useCurrencyContext, useEditExpense } from "@/hooks";
 import type { Expense } from "@/types";
 import { useEffect, useState } from "react";
 import * as z from "zod";
-import { expenseSchema } from "@/zod-schema";
+import { expenseSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 

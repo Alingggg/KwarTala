@@ -6,7 +6,7 @@ import { useGetVerificationEmail, useLogin, useModalContext } from "@/hooks";
 import { AppLogo } from "@/assets/images";
 import { useState } from "react";
 import * as z from "zod";
-import { loginSchema } from "@/zod-schema";
+import { loginSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { allowRegistration } from "@/api/client";
 

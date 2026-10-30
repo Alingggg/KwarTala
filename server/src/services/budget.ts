@@ -2,7 +2,7 @@ import db, { budgets } from "@/db/index";
 import type { Budget } from "@/types/index";
 import { and, eq } from "drizzle-orm";
 import { format, lastDayOfMonth } from "date-fns";
-import expenseService from "./expenseService";
+import expenseService from "./expense";
 
 const budgetService = {
   async createBudget({ userId, month, year, amount }: Omit<Budget, "id">) {

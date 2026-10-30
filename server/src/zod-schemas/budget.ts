@@ -1,4 +1,4 @@
-import { datePeriodSchema } from "./datePeriodSchema";
+import { datePeriodSchema } from "./datePeriod";
 import * as z from "zod";
 
 const budgetSchema = datePeriodSchema.extend({

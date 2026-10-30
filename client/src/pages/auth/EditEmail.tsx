@@ -5,7 +5,7 @@ import { FiAlertCircle, FiCheckCircle, FiMail } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useGetVerificationEmail } from "@/hooks";
 import * as z from "zod";
-import { changeEmailSchema } from "@/zod-schema";
+import { changeEmailSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = z.infer<typeof changeEmailSchema>;

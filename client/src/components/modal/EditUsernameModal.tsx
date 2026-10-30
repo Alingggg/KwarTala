@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useEditUsername } from "@/hooks";
 import * as z from "zod";
-import { userNameSchema } from "@/zod-schema";
+import { userNameSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const formObjectSchema = z.object({ userName: userNameSchema });
