@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import { setupRoutes } from "@/routers/index";
 import { errorMiddleware } from "@/middlewares/index";
 
+// Hi
+
 const app = express();
 
 app.set("trust proxy", 1);
