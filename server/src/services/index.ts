@@ -1,4 +1,4 @@
-export { default as userService } from "./user";
+export { default as authService } from "./auth";
 export { default as sessionService } from "./session";
 export { default as expenseService } from "./expense";
 export { default as budgetService } from "./budget";

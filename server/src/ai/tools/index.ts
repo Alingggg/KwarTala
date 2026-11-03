@@ -5,8 +5,8 @@ import {
   createExpense,
   updateExpense,
   deleteExpense,
-} from "./expenses";
-import { getBudgetStatus, setBudget } from "./budgets";
+} from "./expense";
+import { getBudgetStatus, setBudget } from "./budget";
 
 const tools = [
   getExpenseSummary,

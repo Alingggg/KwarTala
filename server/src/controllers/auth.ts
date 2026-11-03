@@ -6,7 +6,7 @@ import {
   verificationEmailSchema,
   verifyEmailSchema,
 } from "@/zod-schemas/index";
-import { sessionService, userService } from "@/services/index";
+import { sessionService, authService } from "@/services/index";
 import { HttpError } from "@/types/index";
 import type { NextFunction, Request, Response } from "express";
 
@@ -20,12 +20,12 @@ const authController = {
 
       const { userName, email, password } = validationResult.data;
 
-      const existingUser = await userService.getUserByEmail(email);
+      const existingUser = await authService.getUserByEmail(email);
       if (existingUser) {
         throw new HttpError(409, "User already exists");
       }
 
-      const newUser = await userService.registerUser({
+      const newUser = await authService.registerUser({
         userName,
         email,
         password,
@@ -57,7 +57,7 @@ const authController = {
 
       const { email, password } = validationResult.data;
 
-      const { user, accessToken, refreshToken } = await userService.loginUser({
+      const { user, accessToken, refreshToken } = await authService.loginUser({
         email,
         password,
       });
@@ -95,7 +95,7 @@ const authController = {
         throw new HttpError(401, "Refresh token is required");
       }
 
-      const newAccessToken = await userService.refreshAccessToken(refreshToken);
+      const newAccessToken = await authService.refreshAccessToken(refreshToken);
 
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
@@ -121,7 +121,7 @@ const authController = {
     try {
       const refreshToken = req.cookies.refreshToken;
 
-      await userService.logoutUser(refreshToken);
+      await authService.logoutUser(refreshToken);
 
       const cookieOptions = {
         httpOnly: true,
@@ -148,7 +148,7 @@ const authController = {
       }
       const { userId } = req.user;
 
-      const user = await userService.getUserProfile(userId);
+      const user = await authService.getUserProfile(userId);
 
       res
         .status(200)
@@ -167,7 +167,7 @@ const authController = {
 
       const { email, type, newEmail } = validationResult.data;
 
-      await userService.sendVerificationEmail({
+      await authService.sendVerificationEmail({
         email,
         type,
         newEmail,
@@ -188,7 +188,7 @@ const authController = {
 
       const { token, newEmail } = validationResult.data;
 
-      await userService.verifyEmail({ token, newEmail });
+      await authService.verifyEmail({ token, newEmail });
       if (newEmail) {
         const cookieOptions = {
           httpOnly: true,
@@ -221,7 +221,7 @@ const authController = {
 
       const userName = validationResult.data;
 
-      const updatedUser = await userService.updateUserName({
+      const updatedUser = await authService.updateUserName({
         userId,
         userName,
       });
@@ -246,7 +246,7 @@ const authController = {
 
       const { token, newPassword } = validationResult.data;
 
-      await userService.updatePassword({
+      await authService.updatePassword({
         token,
         newPassword,
       });
@@ -270,7 +270,7 @@ const authController = {
 
       const userId = req.user.userId;
 
-      const hasToReLogIn = await userService.hasToReLogIn({
+      const hasToReLogIn = await authService.hasToReLogIn({
         userId,
         refreshToken,
       });

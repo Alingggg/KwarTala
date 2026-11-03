@@ -11,7 +11,7 @@ import bcrypt from "bcrypt";
 import { addMinutes, format, isBefore, subDays } from "date-fns";
 import { eq } from "drizzle-orm";
 
-const userService = {
+const authService = {
   async registerUser({
     userName,
     email,
@@ -394,4 +394,4 @@ const userService = {
   },
 };
 
-export default userService;
+export default authService;
