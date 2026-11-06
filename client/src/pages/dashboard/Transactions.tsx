@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Button, ExpenseCard, LoadingSpinner } from "@/components";
+import {
+  Button,
+  ExpenseCard,
+  ExpenseCardSkeleton,
+  SkeletonText,
+} from "@/components";
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -19,6 +24,8 @@ import { assignCategoryColors } from "@/utils";
 import { format, subMonths } from "date-fns";
 
 const MAX_MONTHS = 12;
+const SKELETON_WEEK_COUNT = 5;
+const SKELETON_TRANSACTION_COUNT = 5;
 
 function formatWeekRange(startDate: string, endDate: string): string {
   const start = new Date(startDate);
@@ -43,6 +50,7 @@ function Transactions() {
   }
 
   const { month, year } = getMonthYear(currentMonthIndex);
+  const monthDate = new Date(year, month - 1);
 
   const { data: monthSummary, isLoading: isSummaryLoading } =
     useGetMonthlyTransactionsSummary({
@@ -116,6 +124,7 @@ function Transactions() {
         <div className="flex flex-row items-center gap-2 sm:gap-4 justify-center sm:justify-end w-full sm:w-auto">
           <Button
             variant="success"
+            disabled={isSummaryLoading}
             onClick={() =>
               openModal("EDIT_BUDGET", {
                 monthNumber: monthSummary?.monthNumber,
@@ -160,12 +169,7 @@ function Transactions() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {monthSummary
-                ? format(
-                    new Date(monthSummary.year, monthSummary.monthNumber - 1),
-                    "MMMM yyyy"
-                  )
-                : ""}
+              {format(monthDate, "MMMM yyyy")}
             </h2>
           </div>
         </div>
@@ -174,7 +178,18 @@ function Transactions() {
       {/* Monthly Summary Section */}
       <div className="bg-night-500 p-4 md:p-8 rounded-xl mb-6 md:mb-8 shadow-lg hover:shadow-2xl transition-shadow duration-300">
         {isSummaryLoading ? (
-          <LoadingSpinner message="Loading summary..." />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="text-center">
+                <p className="text-xs md:text-sm mb-2">
+                  <SkeletonText tone="dark" className="w-20 md:w-24" />
+                </p>
+                <p className="text-xl md:text-3xl font-bold">
+                  <SkeletonText tone="dark" className="w-24 md:w-36" />
+                </p>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
             <div className="text-center">
@@ -249,6 +264,33 @@ function Transactions() {
           >
             <div className="text-xs md:text-sm font-semibold">All Weeks</div>
           </button>
+          {isSummaryLoading &&
+            Array.from({ length: SKELETON_WEEK_COUNT }, (_, i) => (
+              <div
+                key={i}
+                aria-hidden="true"
+                className="px-2 md:px-3 py-3 md:py-4 rounded-lg bg-timberwolf-700 shadow-sm"
+              >
+                <div className="text-center space-y-1.5">
+                  <div>
+                    <div className="text-sm md:text-base font-bold">
+                      <SkeletonText className="w-14" />
+                    </div>
+                    <div className="text-xs -mt-0.5">
+                      <SkeletonText className="w-16" />
+                    </div>
+                  </div>
+                  <div className="pt-1 border-t border-transparent">
+                    <div className="text-xs">
+                      <SkeletonText className="w-12" />
+                    </div>
+                    <div className="text-xs mt-0.5">
+                      <SkeletonText className="w-14" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           {allWeeks.map((week: any) => (
             <button
               key={week.weekNumber}
@@ -382,14 +424,7 @@ function Transactions() {
               </span>
             </>
           ) : (
-            `All ${
-              monthSummary
-                ? format(
-                    new Date(monthSummary.year, monthSummary.monthNumber - 1),
-                    "MMMM"
-                  )
-                : ""
-            } Transactions`
+            `All ${format(monthDate, "MMMM")} Transactions`
           )}
         </h3>
 
@@ -424,7 +459,9 @@ function Transactions() {
       {/* Transactions List */}
       <div className="space-y-3 md:space-y-4">
         {isTransactionsLoading ? (
-          <LoadingSpinner message="Loading transactions..." />
+          Array.from({ length: SKELETON_TRANSACTION_COUNT }, (_, i) => (
+            <ExpenseCardSkeleton key={i} />
+          ))
         ) : (
           transactionsWithColors.map((transaction: any) => (
             <ExpenseCard
@@ -440,8 +477,9 @@ function Transactions() {
         )}
         <div ref={sentinelRef}>
           {isFetchingNextPage && (
-            <div className="flex justify-center">
-              <LoadingSpinner message="Loading more..." />
+            <div className="space-y-3 md:space-y-4">
+              <ExpenseCardSkeleton />
+              <ExpenseCardSkeleton />
             </div>
           )}
         </div>
@@ -463,17 +501,7 @@ function Transactions() {
                   selectedWeekData.weekStartDate,
                   selectedWeekData.weekEndDate
                 )})`
-              : `No expenses recorded for ${
-                  monthSummary
-                    ? format(
-                        new Date(
-                          monthSummary.year,
-                          monthSummary.monthNumber - 1
-                        ),
-                        "MMMM yyyy"
-                      )
-                    : ""
-                }`}
+              : `No expenses recorded for ${format(monthDate, "MMMM yyyy")}`}
           </p>
         </div>
       )}

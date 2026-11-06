@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { ExpenseChart, LoadingSpinner } from "@/components";
+import {
+  ExpenseChart,
+  ExpenseChartSkeleton,
+  Skeleton,
+  SkeletonText,
+} from "@/components";
 import { FiCalendar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
@@ -13,6 +18,8 @@ import type { Expense } from "@/types";
 import { format, subMonths } from "date-fns";
 
 const MAX_MONTHS = 12;
+const SKELETON_CATEGORY_COUNT = 4;
+const SKELETON_TOP_EXPENSE_COUNT = 6;
 
 // Custom pie chart tooltip
 function CustomPieTooltip({ active, payload }: any) {
@@ -114,12 +121,7 @@ function Analytics() {
           <div className="flex items-center justify-center">
             <FiCalendar className="mr-2 md:mr-3 text-night-600" size={24} />
             <h2 className="text-xl md:text-3xl font-bold text-night-600">
-              {monthData
-                ? format(
-                    new Date(monthData.year, monthData.monthNumber - 1, 1),
-                    "MMMM yyyy"
-                  )
-                : ""}
+              {format(new Date(year, month - 1, 1), "MMMM yyyy")}
             </h2>
           </div>
         </div>
@@ -127,9 +129,7 @@ function Analytics() {
 
       {/* Budget Overview */}
       <div className="bg-night-500 p-4 md:p-8 rounded-xl shadow-lg mb-6 md:mb-8 hover:shadow-2xl transition-shadow duration-300">
-        {isAnalyticsLoading ? (
-          <LoadingSpinner message="Loading analytics data..." />
-        ) : (
+        {(isAnalyticsLoading || monthData) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             {/* Progress and Remaining Budget */}
             <div className="flex flex-col justify-center">
@@ -140,13 +140,19 @@ function Analytics() {
                   </p>
                   <p
                     className={`text-xl md:text-3xl font-bold ${
-                      monthData.monthlyRemainingBudget >= 0
-                        ? "text-timberwolf-900"
-                        : "text-auburn-700"
+                      monthData?.monthlyRemainingBudget < 0
+                        ? "text-auburn-700"
+                        : "text-timberwolf-900"
                     }`}
                   >
-                    {currency}
-                    {monthData.monthlyRemainingBudget}
+                    {isAnalyticsLoading ? (
+                      <SkeletonText tone="dark" className="w-28 md:w-40" />
+                    ) : (
+                      <>
+                        {currency}
+                        {monthData.monthlyRemainingBudget}
+                      </>
+                    )}
                   </p>
                 </div>
                 <div>
@@ -154,32 +160,53 @@ function Analytics() {
                     Monthly Budget
                   </p>
                   <p className="text-xl md:text-3xl font-bold text-timberwolf-900">
-                    {currency}
-                    {monthData.monthlyBudget}
+                    {isAnalyticsLoading ? (
+                      <SkeletonText tone="dark" className="w-28 md:w-40" />
+                    ) : (
+                      <>
+                        {currency}
+                        {monthData.monthlyBudget}
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 md:mt-6">
-                <div className="w-full bg-night-600 rounded-full h-2 md:h-3 shadow-inner">
-                  <div
-                    className={`${
-                      monthData.monthlyRemainingBudget >= 0
-                        ? "bg-emerald-500"
-                        : "bg-auburn-500"
-                    } h-2 md:h-3 rounded-full shadow-sm`}
-                    style={{
-                      width: `${Math.min(
-                        monthData.monthlyBudgetUsedPercentage,
-                        100
-                      )}%`,
-                    }}
-                  ></div>
-                </div>
+                {isAnalyticsLoading ? (
+                  <Skeleton
+                    tone="dark"
+                    className="w-full h-2 md:h-3 rounded-full!"
+                  />
+                ) : (
+                  <div className="w-full bg-night-600 rounded-full h-2 md:h-3 shadow-inner">
+                    <div
+                      className={`${
+                        monthData.monthlyRemainingBudget >= 0
+                          ? "bg-emerald-500"
+                          : "bg-auburn-500"
+                      } h-2 md:h-3 rounded-full shadow-sm`}
+                      style={{
+                        width: `${Math.min(
+                          monthData.monthlyBudgetUsedPercentage,
+                          100
+                        )}%`,
+                      }}
+                    ></div>
+                  </div>
+                )}
                 <div className="flex justify-between text-xs text-night-800 font-medium mt-2">
-                  <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
-                  {monthData.remainingDays > 0 && (
-                    <span>{`${monthData.remainingDays} Days Remaining`}</span>
+                  {isAnalyticsLoading ? (
+                    <span>
+                      <SkeletonText tone="dark" className="w-16" />
+                    </span>
+                  ) : (
+                    <>
+                      <span>{monthData.monthlyBudgetUsedPercentage}% Used</span>
+                      {monthData.remainingDays > 0 && (
+                        <span>{`${monthData.remainingDays} Days Remaining`}</span>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -192,8 +219,14 @@ function Analytics() {
                   Total Spent
                 </p>
                 <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
-                  {currency}
-                  {monthData.monthlyTotalSpent}
+                  {isAnalyticsLoading ? (
+                    <SkeletonText tone="dark" className="w-20 md:w-24" />
+                  ) : (
+                    <>
+                      {currency}
+                      {monthData.monthlyTotalSpent}
+                    </>
+                  )}
                 </p>
               </div>
               <div className="bg-night-600 p-3 md:p-4 rounded-lg flex flex-col justify-center items-center w-full">
@@ -201,8 +234,14 @@ function Analytics() {
                   Daily Average
                 </p>
                 <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
-                  {currency}
-                  {monthData.averageDailySpending}
+                  {isAnalyticsLoading ? (
+                    <SkeletonText tone="dark" className="w-20 md:w-24" />
+                  ) : (
+                    <>
+                      {currency}
+                      {monthData.averageDailySpending}
+                    </>
+                  )}
                 </p>
                 <p className="text-xs text-night-800 mt-1">
                   Avg. spend per day
@@ -213,10 +252,16 @@ function Analytics() {
                   Daily Limit
                 </p>
                 <p className="text-lg md:text-2xl font-bold text-timberwolf-900">
-                  {currency}
-                  {monthData.recommendedDailyLimit > 0
-                    ? monthData.recommendedDailyLimit
-                    : "0"}
+                  {isAnalyticsLoading ? (
+                    <SkeletonText tone="dark" className="w-20 md:w-24" />
+                  ) : (
+                    <>
+                      {currency}
+                      {monthData.recommendedDailyLimit > 0
+                        ? monthData.recommendedDailyLimit
+                        : "0"}
+                    </>
+                  )}
                 </p>
                 <p className="text-xs text-night-800 mt-1">
                   To stay on budget
@@ -232,7 +277,7 @@ function Analytics() {
         {/* Expense Chart */}
         <div className="bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
           {isDailyLoading || isWeeklyLoading ? (
-            <LoadingSpinner message="Loading charts..." />
+            <ExpenseChartSkeleton />
           ) : (
             <ExpenseChart
               dailyChartsData={dailyChartsData}
@@ -246,8 +291,40 @@ function Analytics() {
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Expenses by Category
           </h3>
-          {expenseByCategoryWithColors &&
-          expenseByCategoryWithColors.length > 0 ? (
+          {isAnalyticsLoading ? (
+            <div
+              aria-hidden="true"
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"
+            >
+              <div className="h-48 md:h-52 flex items-center justify-center">
+                <Skeleton className="w-[120px] h-[120px] md:w-40 md:h-40 rounded-full!" />
+              </div>
+              <div className="space-y-1">
+                {Array.from({ length: SKELETON_CATEGORY_COUNT }, (_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between text-xs md:text-sm p-2"
+                  >
+                    <div className="flex items-center min-w-0">
+                      <Skeleton className="w-3 h-3 rounded-full! mr-2 md:mr-3 flex-shrink-0" />
+                      <span>
+                        <SkeletonText className="w-20 md:w-24" />
+                      </span>
+                    </div>
+                    <div className="text-right ml-2 flex-shrink-0">
+                      <p className="font-semibold">
+                        <SkeletonText className="w-14" />
+                      </p>
+                      <p className="text-xs">
+                        <SkeletonText className="w-8" />
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : expenseByCategoryWithColors &&
+            expenseByCategoryWithColors.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Pie Chart */}
               <div className="h-48 md:h-52 flex items-center justify-center">
@@ -329,7 +406,32 @@ function Analytics() {
           <h3 className="text-base md:text-lg font-semibold text-night-600 mb-4">
             Top Expenses
           </h3>
-          {highestExpensesWithColors && highestExpensesWithColors.length > 0 ? (
+          {isAnalyticsLoading ? (
+            <div
+              aria-hidden="true"
+              className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3 md:gap-y-4"
+            >
+              {Array.from({ length: SKELETON_TOP_EXPENSE_COUNT }, (_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-2 md:py-3 border-b border-timberwolf-500"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm md:text-base">
+                      <SkeletonText className="w-32 md:w-40" />
+                    </p>
+                    <p className="text-xs md:text-sm">
+                      <SkeletonText className="w-24 md:w-32" />
+                    </p>
+                  </div>
+                  <p className="font-semibold text-sm md:text-base ml-2 flex-shrink-0">
+                    <SkeletonText className="w-14 md:w-16" />
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : highestExpensesWithColors &&
+            highestExpensesWithColors.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3 md:gap-y-4">
               {highestExpensesWithColors.map(
                 (expense: Expense & { color: string }, index: number) => (

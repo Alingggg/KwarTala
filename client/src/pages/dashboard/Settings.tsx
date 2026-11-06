@@ -1,5 +1,5 @@
 import { useLogout, useModalContext, useUserContext } from "@/hooks";
-import { Button, LoadingSpinner } from "@/components";
+import { Button, SkeletonText } from "@/components";
 import { FiUser, FiMail, FiLogOut } from "react-icons/fi";
 
 function Settings() {
@@ -57,7 +57,7 @@ function Settings() {
                 </label>
                 <div className="text-base md:text-lg font-semibold text-night-600 break-all">
                   {isUserLoading ? (
-                    <LoadingSpinner message="Loading email..." />
+                    <SkeletonText className="w-48 md:w-64" />
                   ) : (
                     user.email
                   )}

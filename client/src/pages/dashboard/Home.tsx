@@ -1,8 +1,11 @@
 import {
   Button,
   ExpenseCard,
+  ExpenseCardSkeleton,
   ExpenseChart,
-  LoadingSpinner,
+  ExpenseChartSkeleton,
+  Skeleton,
+  SkeletonText,
 } from "@/components";
 import {
   useModalContext,
@@ -74,117 +77,145 @@ function Home() {
           <h1 className="text-xl md:text-3xl font-bold text-night-600">
             Hello, {`${user.userName ?? "User"}`}!
           </h1>
-          {isHomeLoading ? (
-            <LoadingSpinner message="Loading summary..." />
-          ) : (
-            <p className="md:text-2xl font-semibold text-night-600">
-              {homeData &&
-                format(
-                  new Date(homeData.year, homeData.monthNumber - 1),
-                  "MMMM yyyy",
-                )}
-            </p>
-          )}
+          <p className="md:text-2xl font-semibold text-night-600">
+            {format(
+              homeData
+                ? new Date(homeData.year, homeData.monthNumber - 1)
+                : today,
+              "MMMM yyyy",
+            )}
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8 mb-5 md:mb-8">
         {/* Budget Section */}
         <div className="bg-timberwolf-900 text-timberwolf-800 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col justify-center">
-          {isHomeLoading ? (
-            <LoadingSpinner message="Loading budget..." />
-          ) : (
+          {(isHomeLoading || homeData) && (
             <>
               <div className="bg-night-500 p-3 md:p-6 rounded-lg shadow-sm">
                 <p className="text-sm text-night-800">Budget</p>
-                {homeData && (
-                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
-                    <p
-                      className={`text-2xl md:text-4xl font-bold ${
-                        homeData.remainingBudget < 0
-                          ? "text-auburn-700"
-                          : "text-timberwolf-900"
-                      }`}
-                    >
-                      {currency}
-                      {homeData.remainingBudget.toFixed(2)}
-                    </p>
-                    <span className="text-sm md:text-base font-normal text-night-800">
-                      remaining of {currency}
-                      {homeData.budget}
-                    </span>
-                  </div>
-                )}
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+                  <p
+                    className={`text-2xl md:text-4xl font-bold ${
+                      homeData?.remainingBudget < 0
+                        ? "text-auburn-700"
+                        : "text-timberwolf-900"
+                    }`}
+                  >
+                    {isHomeLoading ? (
+                      <SkeletonText tone="dark" className="w-32 md:w-48" />
+                    ) : (
+                      <>
+                        {currency}
+                        {homeData.remainingBudget.toFixed(2)}
+                      </>
+                    )}
+                  </p>
+                  <span className="text-sm md:text-base font-normal text-night-800">
+                    {isHomeLoading ? (
+                      <SkeletonText tone="dark" className="w-28 md:w-36" />
+                    ) : (
+                      <>
+                        remaining of {currency}
+                        {homeData.budget}
+                      </>
+                    )}
+                  </span>
+                </div>
               </div>
 
               {/* Budget Progress and Today's Spending */}
               <div className="bg-timberwolf-700 p-3 md:p-4 rounded-lg mt-3 md:mt-4 shadow-inner">
-                {homeData && (
-                  <>
-                    <Button
-                      onClick={() =>
-                        openModal("EDIT_BUDGET", {
-                          monthNumber: homeData.monthNumber,
-                          year: homeData.year,
-                          currentBudget: homeData.budget,
-                        })
-                      }
-                      variant="success"
-                      className="w-full mb-3 md:mb-6 text-sm md:text-base"
-                    >
-                      Edit Budget
-                    </Button>
+                <Button
+                  onClick={() =>
+                    openModal("EDIT_BUDGET", {
+                      monthNumber: homeData.monthNumber,
+                      year: homeData.year,
+                      currentBudget: homeData.budget,
+                    })
+                  }
+                  variant="success"
+                  disabled={isHomeLoading}
+                  className="w-full mb-3 md:mb-6 text-sm md:text-base"
+                >
+                  Edit Budget
+                </Button>
 
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-night-600">
-                          Budget Progress
-                        </span>
-                        <span className="text-sm font-semibold text-night-600">
-                          {homeData.budgetUsedPercentage}% used
-                        </span>
-                      </div>
-                      <div className="w-full bg-timberwolf-500 rounded-full h-2 md:h-3 shadow-inner">
-                        <div
-                          className={`h-2 md:h-3 rounded-full shadow-sm ${
-                            homeData.remainingBudget >= 0
-                              ? "bg-emerald-400"
-                              : "bg-auburn-500"
-                          }`}
-                          style={{
-                            width: `${Math.min(
-                              homeData.budgetUsedPercentage,
-                              100,
-                            )}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-xs md:text-sm text-night-600 font-medium">
-                        <span>{currency}0</span>
-                        <span>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-night-600">
+                      Budget Progress
+                    </span>
+                    <span className="text-sm font-semibold text-night-600">
+                      {isHomeLoading ? (
+                        <SkeletonText className="w-16" />
+                      ) : (
+                        `${homeData.budgetUsedPercentage}% used`
+                      )}
+                    </span>
+                  </div>
+                  {isHomeLoading ? (
+                    <Skeleton className="w-full h-2 md:h-3 rounded-full!" />
+                  ) : (
+                    <div className="w-full bg-timberwolf-500 rounded-full h-2 md:h-3 shadow-inner">
+                      <div
+                        className={`h-2 md:h-3 rounded-full shadow-sm ${
+                          homeData.remainingBudget >= 0
+                            ? "bg-emerald-400"
+                            : "bg-auburn-500"
+                        }`}
+                        style={{
+                          width: `${Math.min(
+                            homeData.budgetUsedPercentage,
+                            100,
+                          )}%`,
+                        }}
+                      ></div>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-xs md:text-sm text-night-600 font-medium">
+                    <span>
+                      {isHomeLoading ? (
+                        <SkeletonText className="w-8" />
+                      ) : (
+                        `${currency}0`
+                      )}
+                    </span>
+                    <span>
+                      {isHomeLoading ? (
+                        <SkeletonText className="w-14" />
+                      ) : (
+                        <>
                           {currency}
                           {homeData.budget}
-                        </span>
-                      </div>
-                    </div>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                </div>
 
-                    {/* Today's Spending */}
-                    <div className="bg-night-500 p-3 md:p-4 rounded-lg mt-3 md:mt-4 border border-night-600">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 md:gap-3">
-                          <div className="w-2 h-2 md:w-3 md:h-3 bg-auburn-500 rounded-full"></div>
-                          <span className="text-xs md:text-sm font-medium text-timberwolf-700">
-                            Today's Spending
-                          </span>
-                        </div>
-                        <span className="text-lg md:text-xl font-bold text-timberwolf-900">
+                {/* Today's Spending */}
+                <div className="bg-night-500 p-3 md:p-4 rounded-lg mt-3 md:mt-4 border border-night-600">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="w-2 h-2 md:w-3 md:h-3 bg-auburn-500 rounded-full"></div>
+                      <span className="text-xs md:text-sm font-medium text-timberwolf-700">
+                        Today's Spending
+                      </span>
+                    </div>
+                    <span className="text-lg md:text-xl font-bold text-timberwolf-900">
+                      {isHomeLoading ? (
+                        <SkeletonText tone="dark" className="w-16 md:w-20" />
+                      ) : (
+                        <>
                           {currency}
                           {homeData.spentToday}
-                        </span>
-                      </div>
-                    </div>
-                  </>
-                )}
+                        </>
+                      )}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <Button
@@ -200,7 +231,7 @@ function Home() {
         {/* Expense Chart */}
         <div className="col-span-1 bg-timberwolf-900 p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
           {isDailyLoading || isWeeklyLoading ? (
-            <LoadingSpinner message="Loading charts..." />
+            <ExpenseChartSkeleton />
           ) : (
             <ExpenseChart
               dailyChartsData={dailyChartsData}
@@ -220,7 +251,7 @@ function Home() {
         </div>
         <div className="space-y-3 md:space-y-4">
           {isTransactionsLoading ? (
-            <LoadingSpinner message="Loading transactions..." />
+            Array.from({ length: 3 }, (_, i) => <ExpenseCardSkeleton key={i} />)
           ) : (
             transactionsWithColors &&
             transactionsWithColors.map((transaction: Expense) => (
@@ -229,8 +260,9 @@ function Home() {
           )}
           <div ref={sentinelRef}>
             {isFetchingNextPage && (
-              <div className="flex justify-center">
-                <LoadingSpinner message="Loading more..." />
+              <div className="space-y-3 md:space-y-4">
+                <ExpenseCardSkeleton />
+                <ExpenseCardSkeleton />
               </div>
             )}
           </div>
