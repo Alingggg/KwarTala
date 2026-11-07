@@ -93,7 +93,7 @@ const authService = {
         throw new HttpError(401, "Invalid token payload.");
       }
 
-      const { iat, exp, ...rest } = payload as any;
+      const { iat, exp, jti, ...rest } = payload as any;
       cleanPayload = rest;
     } catch (error) {
       await sessionService.deleteSessionByToken(refreshToken);

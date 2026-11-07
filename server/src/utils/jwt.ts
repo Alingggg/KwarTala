@@ -1,5 +1,6 @@
 import { HttpError, type UserPayload } from "@/types/index";
 import jwt from "jsonwebtoken";
+import { randomUUID } from "node:crypto";
 
 function generateToken(
   user: UserPayload,
@@ -17,6 +18,7 @@ function generateToken(
 
   const options = {
     expiresIn: type === "access-token" ? "15m" : "30d",
+    jwtid: randomUUID(),
   };
 
   return jwt.sign(payload, secret, options as jwt.SignOptions);
