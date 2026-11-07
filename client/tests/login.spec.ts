@@ -1,40 +1,66 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto('/login');
+const email = process.env.TEST_EMAIL;
+const password = process.env.TEST_PASSWORD;
+if (!email || !password) {
+  throw new Error("Set TEST_EMAIL and TEST_PASSWORD in .env.test");
+}
+
+async function login(page: Page) {
+  await page.goto("/login");
+  await page.getByLabel("email").fill(email!);
+  await page.getByLabel("password").fill(password!);
+  await page.getByRole("button", { name: "Sign In" }).click();
+  await expect(page).toHaveURL("/home");
+}
+
+test.describe("Login form", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/login");
+  });
+
+  test("should display error messages for empty fields", async ({ page }) => {
+    await page.getByRole("button", { name: "Sign In" }).click();
+    await expect(page.getByText("Email is required")).toBeVisible();
+    await expect(page.getByText("Password is required")).toBeVisible();
+  });
+
+  test("should display error message for invalid email format", async ({ page }) => {
+    await page.getByLabel("email").fill("invalid-email");
+    await page.getByLabel("password").fill("password123");
+    await page.getByRole("button", { name: "Sign In" }).click();
+    await expect(page.getByText("Invalid email format")).toBeVisible();
+  });
+
+  test("should fail to login with invalid credentials", async ({ page }) => {
+    await page.getByLabel("email").fill("invalid-email@example.com");
+    await page.getByLabel("password").fill("wrongpassword");
+    await page.getByRole("button", { name: "Sign In" }).click();
+    await expect(page.getByText("Invalid email or password")).toBeVisible();
+  });
+
+  test("should login successfully with valid credentials", async ({ page }) => {
+    await login(page);
+    await expect(page.getByRole("heading", { name: /^Hello, / })).toBeVisible();
+  });
 });
 
-test.describe("Login Page",  () => {
+test.describe("Route guards", () => {
+  test("should redirect logged-out users from /home to /login", async ({ page }) => {
+    await page.goto("/home");
+    await expect(page).toHaveURL("/login");
+  });
 
-    test("should display the login form", async ({ page }) => {
-        await expect(page.getByLabel("email")).toBeVisible();
-        await expect(page.getByLabel("password")).toBeVisible();
-    })
+  test("should redirect logged-in users from /login to /home", async ({ page }) => {
+    await login(page);
+    await page.goto("/login");
+    await expect(page).toHaveURL("/home");
+  });
 
-    test("should display error messages for empty fields", async ({ page }) => {
-        await page.getByRole("button", { name: "Sign In" }).click();
-        await expect(page.getByText("Email is required")).toBeVisible();
-        await expect(page.getByText("Password is required")).toBeVisible();
-    })
-
-    test("should display error message for invalid email format", async ({ page }) => {
-        await page.getByLabel("email").fill("invalid-email");
-        await page.getByLabel("password").fill("password123");
-        await page.getByRole("button", { name: "Sign In" }).click();
-        await expect(page.getByText("Invalid email format")).toBeVisible();
-    })
-
-    test("should fail to login with invalid credentials", async ({ page }) => {
-        await page.getByLabel("email").fill("invalid-email@example.com");
-        await page.getByLabel("password").fill("wrongpassword");
-        await page.getByRole("button", { name: "Sign In" }).click();
-        await expect(page.getByText("Invalid email or password")).toBeVisible();
-    })
-
-    test("should login successfully with valid credentials", async ({ page }) => {
-        await page.getByLabel("email").fill(process.env.TEST_EMAIL!);
-        await page.getByLabel("password").fill(process.env.TEST_PASSWORD!);
-        await page.getByRole("button", { name: "Sign In" }).click();
-        await expect(page).toHaveURL("/home");
-    })
-})
+  test("should return to /login after logging out", async ({ page }) => {
+    await login(page);
+    await page.goto("/settings");
+    await page.getByRole("button", { name: "Log Out" }).click();
+    await expect(page).toHaveURL("/login");
+  });
+});
