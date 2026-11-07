@@ -6,7 +6,7 @@ import { useEffect } from "react";
 function ProtectedRoute() {
   const { isAuthenticated, isLoading: isUserLoading } = useUserContext();
   const { hasToReLogIn, isLoading: isReLoginLoading } =
-    useCheckHasToReLogIn(isUserLoading);
+    useCheckHasToReLogIn(isAuthenticated);
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
   useEffect(() => {
