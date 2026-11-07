@@ -1,5 +1,14 @@
 import * as z from "zod";
 
+const passwordSchema = z
+  .string()
+  .min(1, "Password is required")
+  .min(8, { error: "Password must be at least 8 characters" })
+  .max(64, { error: "Password must be at most 64 characters" })
+  .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/, {
+    error: "Must include upper & lowercase letters, a number, and a symbol",
+  });
+
 const registerSchema = z.object({
   userName: z
     .string()
@@ -14,14 +23,7 @@ const registerSchema = z.object({
     .string()
     .min(1, { error: "Email is required" })
     .email({ error: "Invalid email format" }),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, { error: "Password must be at least 8 characters" })
-    .max(64, { error: "Password must be at most 64 characters" })
-    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/, {
-      error: "Must include upper & lowercase letters, a number, and a symbol",
-    }),
+  password: passwordSchema,
 });
 
 const loginSchema = z.object({
@@ -29,14 +31,7 @@ const loginSchema = z.object({
     .string()
     .min(1, { error: "Email is required" })
     .email({ error: "Invalid email format" }),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, { error: "Password must be at least 8 characters" })
-    .max(64, { error: "Password must be at most 64 characters" })
-    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/, {
-      error: "Must include upper & lowercase letters, a number, and a symbol",
-    }),
+  password: z.string().min(1, { error: "Password is required" }),
 });
 
 const verificationEmailSchema = z.object({
@@ -69,14 +64,7 @@ const userNameSchema = z
 
 const resetPasswordSchema = z.object({
   token: z.string().min(1, { error: "Token is required" }),
-  newPassword: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, { error: "Password must be at least 8 characters" })
-    .max(64, { error: "Password must be at most 64 characters" })
-    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/, {
-      error: "Must include upper & lowercase letters, a number, and a symbol",
-    }),
+  newPassword: passwordSchema,
 });
 
 export {
