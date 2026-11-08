@@ -1,18 +1,7 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { authFile, loggedOut, login } from "./helpers/auth";
 
-const email = process.env.TEST_EMAIL;
-const password = process.env.TEST_PASSWORD;
-if (!email || !password) {
-  throw new Error("Set TEST_EMAIL and TEST_PASSWORD in .env.test");
-}
-
-async function login(page: Page) {
-  await page.goto("/login");
-  await page.getByLabel("email").fill(email!);
-  await page.getByLabel("password").fill(password!);
-  await page.getByRole("button", { name: "Sign In" }).click();
-  await expect(page).toHaveURL("/home");
-}
+test.use({ storageState: loggedOut });
 
 test.describe("Login form", () => {
   test.beforeEach(async ({ page }) => {
@@ -51,16 +40,19 @@ test.describe("Route guards", () => {
     await expect(page).toHaveURL("/login");
   });
 
-  test("should redirect logged-in users from /login to /home", async ({ page }) => {
-    await login(page);
-    await page.goto("/login");
-    await expect(page).toHaveURL("/home");
-  });
-
   test("should return to /login after logging out", async ({ page }) => {
     await login(page);
     await page.goto("/settings");
     await page.getByRole("button", { name: "Log Out" }).click();
     await expect(page).toHaveURL("/login");
+  });
+
+  test.describe("when logged in", () => {
+    test.use({ storageState: authFile });
+
+    test("should redirect logged-in users from /login to /home", async ({ page }) => {
+      await page.goto("/login");
+      await expect(page).toHaveURL("/home");
+    });
   });
 });

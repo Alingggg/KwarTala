@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import { existsSync } from 'node:fs';
 
 /**
- * Load test credentials (E2E_EMAIL, E2E_PASSWORD) from .env.test.
+ * Load test credentials (TEST_EMAIL, TEST_PASSWORD) from .env.test.
  * Skipped when the file is missing, e.g. on CI where they come from secrets.
  */
 if (existsSync('.env.test')) process.loadEnvFile('.env.test');
@@ -34,8 +34,14 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+
+    {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], storageState: 'playwright/.auth/user.json' },
+      dependencies: ['setup'],
     },
 
     // {
@@ -59,7 +65,8 @@ export default defineConfig({
     // },
     {
       name: 'mobile',
-      use: { ...devices['iPhone 15'] },
+      use: { ...devices['iPhone 15'], storageState: 'playwright/.auth/user.json' },
+      dependencies: ['setup'],
     },
 
     /* Test against branded browsers. */
