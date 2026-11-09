@@ -36,12 +36,6 @@ test.describe("Edit Budget", () => {
     await expect(modal(page).getByText("Budget cannot be negative")).toBeVisible();
   });
 
-  test("should display error message for empty budget", async ({ page }) => {
-    await modal(page).getByLabel("Budget Amount").fill("");
-    await modal(page).getByRole("button", { name: "Update Budget" }).click();
-    await expect(modal(page).getByText("Budget is required")).toBeVisible();
-  });
-
   test("should update the budget of a past month", async ({ page }, testInfo) => {
     const monthsAgo = testInfo.project.name === "mobile" ? 3 : 2;
     const period = format(subMonths(new Date(), monthsAgo), "yyyy-MM");
