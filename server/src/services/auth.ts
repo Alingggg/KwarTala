@@ -9,7 +9,7 @@ import { HttpError, type User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
 import bcrypt from "bcrypt";
 import { addMinutes, format, isBefore, subDays } from "date-fns";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 const authService = {
   async registerUser({
@@ -284,7 +284,7 @@ const authService = {
       .update(users)
       .set({
         email,
-        emailChangedAt: format(new Date(), "yyyy-MM-dd"),
+        emailChangedAt: sql`now()`,
       })
       .where(eq(users.id, user.id));
     await sessionService.deleteSessionByUserId(user.id);
@@ -326,7 +326,7 @@ const authService = {
       .update(users)
       .set({
         password: hashedPassword,
-        passwordChangedAt: format(new Date(), "yyyy-MM-dd"),
+        passwordChangedAt: sql`now()`,
       })
       .where(eq(users.id, user.id))
       .returning();
@@ -336,7 +336,7 @@ const authService = {
     const CHANGE_COOLDOWN_DAYS = 30;
 
     return !(
-      new Date(user.emailChangedAt) > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
+      user.emailChangedAt > subDays(new Date(), CHANGE_COOLDOWN_DAYS)
     );
   },
 
@@ -344,7 +344,7 @@ const authService = {
     const CHANGE_COOLDOWN_DAYS = 30;
 
     return !(
-      new Date(user.passwordChangedAt) >
+      user.passwordChangedAt >
       subDays(new Date(), CHANGE_COOLDOWN_DAYS)
     );
   },

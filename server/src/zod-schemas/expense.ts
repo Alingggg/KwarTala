@@ -1,4 +1,4 @@
-import { format, isAfter } from "date-fns";
+import { format, isAfter, parseISO } from "date-fns";
 import * as z from "zod";
 
 const createExpenseSchema = z.object({
@@ -17,7 +17,7 @@ const createExpenseSchema = z.object({
   date: z
     .union([z.string(), z.date()])
     .transform((val, ctx) => {
-      const date = typeof val === "string" ? new Date(val) : val;
+      const date = typeof val === "string" ? parseISO(val) : val;
 
       if (isNaN(date.getTime())) {
         ctx.addIssue({ code: "custom", message: "Invalid date" });
@@ -28,7 +28,7 @@ const createExpenseSchema = z.object({
     })
     .refine(
       (date) => {
-        return !isAfter(new Date(date), new Date());
+        return !isAfter(parseISO(date), new Date());
       },
       { error: "Date cannot be in the future" }
     ),

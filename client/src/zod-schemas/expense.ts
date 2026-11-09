@@ -1,4 +1,4 @@
-import { format, isAfter } from "date-fns";
+import { format, isAfter, parseISO } from "date-fns";
 import * as z from "zod";
 
 const expenseSchema = z.object({
@@ -15,7 +15,7 @@ const expenseSchema = z.object({
     .max(10000000),
   date: z
     .string()
-    .transform((val) => new Date(val))
+    .transform((val) => parseISO(val))
     .refine((dateObj) => !isNaN(dateObj.getTime()), { error: "Invalid date" })
     .refine((dateObj) => !isAfter(dateObj, new Date()), {
       error: "Date must not be in the future",

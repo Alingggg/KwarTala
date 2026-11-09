@@ -7,6 +7,7 @@ import {
   text,
   boolean,
   date,
+  timestamp,
   foreignKey,
   integer,
   numeric,
@@ -21,11 +22,11 @@ export const users = pgTable(
     password: text().notNull(),
     userName: varchar("user_name", { length: 20 }).notNull(),
     isVerified: boolean("is_verified").default(false).notNull(),
-    emailChangedAt: date("email_changed_at")
-      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
+    emailChangedAt: timestamp("email_changed_at", { withTimezone: true, mode: "date" })
+      .defaultNow()
       .notNull(),
-    passwordChangedAt: date("password_changed_at")
-      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
+    passwordChangedAt: timestamp("password_changed_at", { withTimezone: true, mode: "date" })
+      .defaultNow()
       .notNull(),
   },
   (table) => [
@@ -61,8 +62,8 @@ export const sessions = pgTable(
     id: serial().primaryKey().notNull(),
     userId: integer("user_id").notNull(),
     refreshToken: text("refresh_token").notNull(),
-    createdAt: date("created_at")
-      .default(sql`(now() AT TIME ZONE 'utc'::text)`)
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+      .defaultNow()
       .notNull(),
   },
   (table) => [
