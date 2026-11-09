@@ -8,6 +8,7 @@ interface ButtonProps {
   size?: "default" | "sm" | "lg";
   disabled?: boolean;
   onClick?: () => void;
+  "aria-label"?: string;
 }
 
 const buttonStyles = {
@@ -37,6 +38,7 @@ function Button({
   size = "default",
   disabled = false,
   onClick,
+  "aria-label": ariaLabel,
 }: ButtonProps) {
   const variantClass = buttonStyles.variants[variant];
   const sizeClass = buttonStyles.sizes[size];
@@ -49,6 +51,7 @@ function Button({
       }`}
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel}
     >
       {children}
     </button>

@@ -6,13 +6,13 @@ import {
   useQueryClient,
   type QueryClient,
 } from "@tanstack/react-query";
-import { isWithinInterval } from "date-fns";
+import { isWithinInterval, parseISO } from "date-fns";
 
 function invalidateExpenseQueries(
   queryClient: QueryClient,
-  date: Date | string
+  date: string
 ) {
-  const expenseDate = new Date(date);
+  const expenseDate = parseISO(date);
   const period = {
     month: expenseDate.getMonth() + 1,
     year: expenseDate.getFullYear(),
@@ -32,8 +32,8 @@ function invalidateExpenseQueries(
       const [, , { startDate, endDate }] = query.queryKey as ExpenseListKey;
 
       return isWithinInterval(expenseDate, {
-        start: new Date(startDate),
-        end: new Date(endDate),
+        start: parseISO(startDate),
+        end: parseISO(endDate),
       });
     },
   });
@@ -111,7 +111,7 @@ function useDeleteExpense() {
       date: _date,
     }: {
       id: number;
-      date: Date | string;
+      date: string;
     }) => {
       const response = await api.delete(`/expenses/${id}`);
       return response.data.data;

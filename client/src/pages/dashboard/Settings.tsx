@@ -39,6 +39,7 @@ function Settings() {
                 variant="secondary"
                 className="text-xs md:text-sm px-4 py-2 w-auto"
                 disabled={isUserLoading}
+                aria-label="Edit username"
                 onClick={() =>
                   openModal("EDIT_USERNAME", {
                     currentUsername: user.userName,
@@ -67,6 +68,7 @@ function Settings() {
                 variant="secondary"
                 className="text-xs md:text-sm px-4 py-2 w-auto"
                 disabled={isUserLoading}
+                aria-label="Edit email"
                 onClick={() =>
                   openModal("REQUEST_EDIT_EMAIL", { currentEmail: user.email })
                 }

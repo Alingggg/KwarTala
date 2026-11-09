@@ -3,7 +3,7 @@ import { Button, Input, LoadingOverlay } from "@/components";
 import { FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useEditBudget, useCurrencyContext, useGetBudget } from "@/hooks";
-import { format, subYears, addMonths } from "date-fns";
+import { format, parseISO, subYears, addMonths } from "date-fns";
 import * as z from "zod";
 import { editBudgetSchema } from "@/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -91,7 +91,7 @@ function EditBudgetModal({
       "yyyy-MM"
     );
 
-    const selectedDate = new Date(budgetPeriod + "-01");
+    const selectedDate = parseISO(budgetPeriod);
     const currentMonthDate = new Date(currentYear, currentMonth - 1, 1);
 
     return {
