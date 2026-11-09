@@ -253,10 +253,19 @@ function Home() {
           {isTransactionsLoading ? (
             Array.from({ length: 3 }, (_, i) => <ExpenseCardSkeleton key={i} />)
           ) : (
-            transactionsWithColors &&
-            transactionsWithColors.map((transaction: Expense) => (
-              <ExpenseCard key={transaction.id} {...transaction} />
-            ))
+            transactionsWithColors && (
+              <ul
+                role="list"
+                aria-label="Today's transactions"
+                className="space-y-3 md:space-y-4"
+              >
+                {transactionsWithColors.map((transaction: Expense) => (
+                  <li key={transaction.id}>
+                    <ExpenseCard {...transaction} />
+                  </li>
+                ))}
+              </ul>
+            )
           )}
           <div ref={sentinelRef}>
             {isFetchingNextPage && (

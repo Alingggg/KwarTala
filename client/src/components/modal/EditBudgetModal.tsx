@@ -223,7 +223,7 @@ function EditBudgetModal({
           <div className="bg-timberwolf-800 p-3 md:p-4 rounded-lg">
             <div className="flex justify-between mb-2 text-xs md:text-sm">
               <span className="text-night-700">Current Budget:</span>
-              <span className="font-semibold">
+              <span data-testid="current-budget" className="font-semibold">
                 {currency}
                 {fetchedBudget?.amount}
               </span>

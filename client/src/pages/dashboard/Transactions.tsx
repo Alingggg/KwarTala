@@ -463,17 +463,24 @@ function Transactions() {
             <ExpenseCardSkeleton key={i} />
           ))
         ) : (
-          transactionsWithColors.map((transaction: any) => (
-            <ExpenseCard
-              key={transaction.id}
-              id={transaction.id}
-              category={transaction.category}
-              amount={transaction.amount}
-              description={transaction.description}
-              color={transaction.color}
-              date={transaction.date}
-            />
-          ))
+          <ul
+            role="list"
+            aria-label="Transactions"
+            className="space-y-3 md:space-y-4"
+          >
+            {transactionsWithColors.map((transaction: any) => (
+              <li key={transaction.id}>
+                <ExpenseCard
+                  id={transaction.id}
+                  category={transaction.category}
+                  amount={transaction.amount}
+                  description={transaction.description}
+                  color={transaction.color}
+                  date={transaction.date}
+                />
+              </li>
+            ))}
+          </ul>
         )}
         <div ref={sentinelRef}>
           {isFetchingNextPage && (
