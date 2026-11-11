@@ -11,20 +11,21 @@ import {
   Cell,
   CartesianGrid,
 } from "recharts";
-import { format } from "date-fns";
 import { useCurrencyContext } from "@/hooks";
+import { format, parseISO } from "date-fns";
+import { formatAxisTick, formatWeekRange } from "@/utils";
 
 type ChartView = "weekly" | "daily";
 
 interface DailyChartDatum {
-  date: string | Date;
+  date: string;
   total: number;
 }
 
 interface WeeklyChartDatum {
   weekNumber: number;
-  weekStartDate: string | Date;
-  weekEndDate: string | Date;
+  weekStartDate: string;
+  weekEndDate: string;
   total: number;
   days: number;
   dailyAverage: number;
@@ -33,32 +34,6 @@ interface WeeklyChartDatum {
 interface ExpenseChartProps {
   dailyChartsData: DailyChartDatum[];
   weeklyChartsData: WeeklyChartDatum[];
-}
-
-function formatWeekRange(start: string | Date, end: string | Date) {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-
-  if (startDate.getMonth() === endDate.getMonth()) {
-    return `${format(startDate, "MMM. d")}-${format(endDate, "d")}`;
-  }
-  return `${format(startDate, "MMM. d")} - ${format(endDate, "MMM. d")}`;
-}
-
-function tickFormatter(value: any): string {
-  const numValue = Number(value);
-  if (isNaN(numValue)) return String(value);
-
-  if (numValue >= 1000) {
-    const kValue = numValue / 1000;
-    // Show decimal only if not a whole number and less than 10k
-    if (kValue % 1 === 0 || kValue >= 10) {
-      return `${Math.round(kValue)}k`;
-    } else {
-      return `${kValue.toFixed(1)}k`;
-    }
-  }
-  return String(numValue);
 }
 
 // Custom tick for weekly X axis (shows week number and date range)
@@ -108,7 +83,7 @@ function CustomTooltip({ active, payload, label }: any) {
     const dailyAverage = data.dailyAverage;
     const title =
       (data.weekNumber && `Week ${data.weekNumber}`) ||
-      (data.date && format(new Date(data.date), "MMMM d")) ||
+      (data.date && format(parseISO(data.date), "MMMM d")) ||
       label;
     const dateRange =
       data.weekStartDate && data.weekEndDate
@@ -230,7 +205,7 @@ function ExpenseChart({
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={tickFormatter}
+                  tickFormatter={formatAxisTick}
                   tickCount={5}
                   domain={[0, Math.max(maxWeeklyValue + 100, 500)]}
                   tick={{ fontSize: 9, fill: "var(--color-night-700)" }}
@@ -256,13 +231,13 @@ function ExpenseChart({
                   textAnchor="end"
                   height={50}
                   tickFormatter={(dateStr) =>
-                    format(new Date(dateStr), "MMM. d")
+                    format(parseISO(dateStr), "MMM. d")
                   }
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={tickFormatter}
+                  tickFormatter={formatAxisTick}
                   tickCount={5}
                   domain={[0, Math.max(maxDailyValue + 100, 500)]}
                   tick={{ fontSize: 9, fill: "var(--color-night-700)" }}

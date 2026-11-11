@@ -20,22 +20,12 @@ import {
   useGetExpenses,
   useFetchOnScroll,
 } from "@/hooks";
-import { assignCategoryColors } from "@/utils";
+import { assignCategoryColors, formatWeekRange } from "@/utils";
 import { format, subMonths } from "date-fns";
 
 const MAX_MONTHS = 12;
 const SKELETON_WEEK_COUNT = 5;
 const SKELETON_TRANSACTION_COUNT = 5;
-
-function formatWeekRange(startDate: string, endDate: string): string {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  if (start.getMonth() === end.getMonth()) {
-    return `${format(start, "MMM. d")}-${format(end, "d")}`;
-  }
-  return `${format(start, "MMM. d")} - ${format(end, "MMM. d")}`;
-}
 
 function Transactions() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -150,6 +140,7 @@ function Transactions() {
         {/* Navigation Buttons */}
         <button
           onClick={() => navigateMonth("prev")}
+          aria-label="Previous month"
           disabled={currentMonthIndex >= MAX_MONTHS - 1}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
@@ -158,6 +149,7 @@ function Transactions() {
 
         <button
           onClick={() => navigateMonth("next")}
+          aria-label="Next month"
           disabled={currentMonthIndex === 0}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
@@ -463,17 +455,24 @@ function Transactions() {
             <ExpenseCardSkeleton key={i} />
           ))
         ) : (
-          transactionsWithColors.map((transaction: any) => (
-            <ExpenseCard
-              key={transaction.id}
-              id={transaction.id}
-              category={transaction.category}
-              amount={transaction.amount}
-              description={transaction.description}
-              color={transaction.color}
-              date={transaction.date}
-            />
-          ))
+          <ul
+            role="list"
+            aria-label="Transactions"
+            className="space-y-3 md:space-y-4"
+          >
+            {transactionsWithColors.map((transaction: any) => (
+              <li key={transaction.id}>
+                <ExpenseCard
+                  id={transaction.id}
+                  category={transaction.category}
+                  amount={transaction.amount}
+                  description={transaction.description}
+                  color={transaction.color}
+                  date={transaction.date}
+                />
+              </li>
+            ))}
+          </ul>
         )}
         <div ref={sentinelRef}>
           {isFetchingNextPage && (

@@ -15,7 +15,7 @@ import {
 } from "@/hooks";
 import { assignCategoryColors } from "@/utils";
 import type { Expense } from "@/types";
-import { format, subMonths } from "date-fns";
+import { format, parseISO, subMonths } from "date-fns";
 
 const MAX_MONTHS = 12;
 const SKELETON_CATEGORY_COUNT = 4;
@@ -102,6 +102,7 @@ function Analytics() {
         {/* Navigation Buttons */}
         <button
           onClick={() => navigateMonth("prev")}
+          aria-label="Previous month"
           disabled={currentMonthIndex >= MAX_MONTHS - 1}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
@@ -110,6 +111,7 @@ function Analytics() {
 
         <button
           onClick={() => navigateMonth("next")}
+          aria-label="Next month"
           disabled={currentMonthIndex === 0}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 md:p-3 rounded-full bg-night-500 text-timberwolf-900 hover:bg-night-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10 shadow-lg cursor-pointer"
         >
@@ -447,7 +449,7 @@ function Analytics() {
                       </p>
                       <p className="text-xs md:text-sm text-night-700">
                         {expense.category} •{" "}
-                        {format(new Date(expense.date), "MMMM d")}
+                        {format(parseISO(expense.date), "MMMM d")}
                       </p>
                     </div>
                     <p className="font-semibold text-auburn-500 text-sm md:text-base ml-2 flex-shrink-0">

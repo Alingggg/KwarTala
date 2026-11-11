@@ -1,6 +1,6 @@
 import db, { expenses } from "@/db/index";
 import type { Expense } from "@/types/index";
-import { and, between, count, desc, eq, sql } from "drizzle-orm";
+import { and, asc, between, count, desc, eq, sql } from "drizzle-orm";
 import { format } from "date-fns";
 
 const expenseService = {
@@ -75,7 +75,11 @@ const expenseService = {
       )
       .offset(offset)
       .limit(limit)
-      .orderBy(orderBy === "desc" ? desc(expenses.date) : expenses.date);
+      .orderBy(
+        ...(orderBy === "desc"
+          ? [desc(expenses.date), desc(expenses.id)]
+          : [asc(expenses.date), asc(expenses.id)])
+      );
   },
 
   async getNumberOfExpensesByUserIdAndDateRange({

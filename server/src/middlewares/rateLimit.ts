@@ -6,6 +6,7 @@ const loginLimiter = rateLimit({
   message: {
     message: "Too many login attempts, please try again later.",
   },
+  skip: () => process.env.DISABLE_RATE_LIMIT === "true",
 });
 
 const registerLimiter = rateLimit({

@@ -101,7 +101,7 @@ function EditUsernameModal({
             >
               <div className="flex flex-col gap-1">
                 <label
-                  htmlFor="username"
+                  htmlFor="userName"
                   className="text-xs md:text-sm font-semibold text-night-600"
                 >
                   Username <span className="text-auburn-600">*</span>

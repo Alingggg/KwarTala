@@ -10,24 +10,31 @@ const userNameSchema = z
     error: "Username can only contain letters and numbers",
   });
 
+const passwordSchema = z
+  .string()
+  .min(1, "Password is required")
+  .min(8, { error: "Password must be at least 8 characters" })
+  .max(64, { error: "Password must be at most 64 characters" })
+  .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/, {
+    error: "Must include upper & lowercase letters, a number, and a symbol",
+  });
+
 const loginSchema = z.object({
   email: z
     .string()
     .min(1, { error: "Email is required" })
     .email({ error: "Invalid email format" }),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, { error: "Password must be at least 8 characters" })
-    .max(64, { error: "Password must be at most 64 characters" })
-    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/, {
-      error: "Must include upper & lowercase letters, a number, and a symbol",
-    }),
+  password: z.string().min(1, { error: "Password is required" }),
 });
 
-const registerSchema = loginSchema
-  .extend({
+const registerSchema = z
+  .object({
     userName: userNameSchema,
+    email: z
+      .string()
+      .min(1, { error: "Email is required" })
+      .email({ error: "Invalid email format" }),
+    password: passwordSchema,
     confirmPassword: z
       .string()
       .min(1, { error: "Confirm password is required" }),
@@ -39,14 +46,7 @@ const registerSchema = loginSchema
 
 const resetPasswordSchema = z
   .object({
-    password: z
-      .string()
-      .min(1, "Password is required")
-      .min(8, { error: "Password must be at least 8 characters" })
-      .max(64, { error: "Password must be at most 64 characters" })
-      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).+$/, {
-        error: "Must include upper & lowercase letters, a number, and a symbol",
-      }),
+    password: passwordSchema,
     confirmPassword: z
       .string()
       .min(1, { error: "Confirm password is required" }),

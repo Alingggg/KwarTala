@@ -1,6 +1,7 @@
 import { api, queryKeys, type ExpenseListKey } from "@/api";
 import type { Period } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { parseISO } from "date-fns";
 
 function useGetBudget({ month, year }: Period) {
   return useQuery({
@@ -44,7 +45,7 @@ function useEditBudget() {
         queryKey: queryKeys.expenses.lists(),
         predicate: (query) => {
           const [, , { startDate }] = query.queryKey as ExpenseListKey;
-          const queryStartDate = new Date(startDate);
+          const queryStartDate = parseISO(startDate);
 
           return (
             queryStartDate.getMonth() + 1 === month &&

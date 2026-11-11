@@ -1,7 +1,7 @@
 import { useCurrencyContext } from "@/hooks";
 import type { Expense } from "@/types";
 import { FiX } from "react-icons/fi";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 interface ExpenseDescriptionModalProps extends Omit<Expense, "id" | "userId"> {
   color?: string;
@@ -18,7 +18,7 @@ function ExpenseDescriptionModal({
 }: ExpenseDescriptionModalProps) {
   const { currency } = useCurrencyContext();
 
-  const formattedDate = format(new Date(date), "MMMM d");
+  const formattedDate = format(parseISO(date), "MMMM d");
 
   return (
     <div

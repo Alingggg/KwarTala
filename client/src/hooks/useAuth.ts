@@ -105,14 +105,14 @@ function useEditUsername() {
   });
 }
 
-function useCheckHasToReLogIn(isLoading: boolean) {
+function useCheckHasToReLogIn(isAuthenticated: boolean) {
   const { data, isLoading: isQueryLoading } = useQuery({
     queryKey: queryKeys.auth.hasToReLogIn(),
     queryFn: async () => {
       const response = await api.post("/auth/has-to-re-login");
       return response.data;
     },
-    enabled: !isLoading,
+    enabled: isAuthenticated,
   });
 
   return { hasToReLogIn: data?.hasToReLogIn, isLoading: isQueryLoading };
