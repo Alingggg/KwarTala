@@ -5,6 +5,7 @@ import { modal } from "./helpers/expense";
 async function openEditBudget(page: Page) {
   await page.getByRole("button", { name: "Edit Budget" }).click();
   await expect(modal(page).getByRole("heading", { name: "Edit Budget" })).toBeVisible();
+  await expect(currentBudget(page)).toHaveText(/₱\d/);
 }
 
 async function selectPeriod(page: Page, period: string) {
