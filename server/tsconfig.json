@@ -1,19 +1,18 @@
 {
   "compilerOptions": {
-    "target": "esnext", // Compile to ES5 for broader compatibility
+    "target": "esnext",
     "lib": ["esnext", "dom"],
-    "module": "commonjs", // Use CommonJS modules (Node.js default)
-    "sourceMap": true, // Generate source maps for debugging
-    "outDir": "dist", // Output compiled files to the `dist` folder
-    "rootDir": "./src", // Keep `dist` layout flat (mirrors `src`)
+    "module": "Preserve",
+    "moduleResolution": "bundler",
     "esModuleInterop": true, // Enable better compatibility with ES modules
     "strict": true, // Enable strict type-checking options
     "skipLibCheck": true, // Skip type-checking of library files
-    "types": ["node"],
+    "types": ["bun"],
+    "noEmit": true,
     "paths": {
       "@/*": ["./src/*"] // General alias for the `src` directory
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "drizzle.config.ts", "vitest.config.mts"],
   "exclude": ["node_modules"]
 }
