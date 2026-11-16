@@ -7,7 +7,6 @@ import {
 } from "@/services/index";
 import { HttpError, type User } from "@/types/index";
 import { generateToken, verifyToken } from "@/utils/index";
-import bcrypt from "bcrypt";
 import { addMinutes, format, isBefore, subDays } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 
@@ -25,7 +24,7 @@ const authService = {
       throw new HttpError(409, "User already exists");
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await Bun.password.hash(password, { algorithm: "bcrypt", cost: 10 });
 
     const [newUser] = await db
       .insert(users)
@@ -51,7 +50,7 @@ const authService = {
     }
     const { password: userPassword, ...userWithoutPassword } = user;
 
-    const isPasswordValid = await bcrypt.compare(password, userPassword);
+    const isPasswordValid = await Bun.password.verify(password, userPassword);
     if (!isPasswordValid) {
       throw new HttpError(401, "Invalid email or password.");
     }
@@ -320,7 +319,7 @@ const authService = {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await Bun.password.hash(newPassword, { algorithm: "bcrypt", cost: 10 });
 
     await db
       .update(users)
